@@ -1,0 +1,3381 @@
+From 4db79d038d17cb8a63cc711bef2aac26deaeee07 Mon Sep 17 00:00:00 2001
+From: gozkf <gozkfla1234@gmail.com>
+Date: Sat, 22 Aug 2026 21:13:57 +0900
+Subject: [PATCH] =?UTF-8?q?=EC=95=8C=EB=9D=BC=EB=AF=B8=20=ED=86=A4?=
+ =?UTF-8?q?=EC=9C=BC=EB=A1=9C=20=ED=99=94=EB=A9=B4=20=EB=94=94=EC=9E=90?=
+ =?UTF-8?q?=EC=9D=B8=20=EC=A0=84=EB=A9=B4=20=EA=B5=90=EC=B2=B4=20+=20?=
+ =?UTF-8?q?=EC=96=B4=EB=A5=B4=EC=8B=A0=20=ED=99=94=EB=A9=B4=20=EC=84=A4?=
+ =?UTF-8?q?=EC=A0=95(=EB=B0=94=ED=83=95=C2=B7=EA=B8=80=EC=94=A8)=20?=
+ =?UTF-8?q?=EC=B6=94=EA=B0=80?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+색값은 눈대중이 아니라 알라미(Alarmy) UI 스크린샷 5장의 픽셀을 집계해 뽑은
+실제 값이다 — 배경 #121416 / 카드 #1E1F25 / 주요 버튼 #404ED7 / 강조 #FC314D.
+예전 토큰 이름(--dawn, --mist, --ink2 …)은 지우지 않고 새 값으로 다시 이어뒀다.
+
+넓은 화면에서 화면 성격에 따라 다르게 편다:
+- 어르신: 폰 비율 액자 유지, 폭 대신 글자·버튼을 키움(--e-zoom)
+- 보호자: 사이드바 + 요약 타일 + 2단 카드로 모니터 폭 사용
+- 폼(가입·등록·지병): 좁은 카드 유지 — 입력 폼은 넓힐수록 읽기 어려움
+
+어르신 화면 설정을 새로 넣었다. 잘 보이는 화면은 사람마다 다르다 — 백내장이
+있으면 어두운 배경의 흰 글씨가 번져 보이고 노안만 있으면 크기만 키우면 되므로,
+하나를 정해주는 대신 바탕 4종 × 글씨 3단계를 직접 눌러보고 고르게 한다.
+글씨 배율 1/1.15/1.3은 기존 FontSizeToggle 값을 그대로 쓴다.
+FontSizeToggle은 삭제 — 순환식이라 지금 몇 단계인지 알 수 없고 되돌리려면
+끝까지 눌러야 했다.
+
+인라인 스타일 133곳을 클래스로 옮겼다(남은 16곳은 데이터로 색이 정해지는 것들).
+이걸 해야 바탕을 바꿔도 전 화면이 따라온다.
+
+리디자인과 별개로 보다가 발견해 함께 고친 것:
+- theme.css가 "Pretendard"를 찾지만 어디서도 불러오지 않아 조용히 맑은고딕으로
+  떨어지고 있었다. Gothic A1을 실제로 불러온다.
+- 한글이 단어 중간에서 끊겼다("전해볼까요" → "전 / 해볼까요"). word-break: keep-all.
+- <html lang="en"> → "ko". 한국어 서비스인데 스크린리더가 영어로 읽었다.
+
+로직·라우팅·데이터 흐름은 건드리지 않았다.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ demo/v1/index.html                           |  11 +-
+ demo/v1/src/components/AppShell.tsx          |  51 +-
+ demo/v1/src/components/ConsentItem.tsx       |  20 +-
+ demo/v1/src/components/DisplaySettings.tsx   | 117 ++++
+ demo/v1/src/components/FontSizeToggle.tsx    |  28 -
+ demo/v1/src/components/MedicalDisclaimer.tsx |   2 +-
+ demo/v1/src/components/ProgressBar.tsx       |  15 +-
+ demo/v1/src/components/RecordingNotice.tsx   |  14 +-
+ demo/v1/src/components/RiskDot.tsx           |  15 +-
+ demo/v1/src/components/TrendChart.tsx        | 104 ++-
+ demo/v1/src/lib/elderDisplay.ts              |  66 ++
+ demo/v1/src/lib/fontScale.ts                 |  11 +-
+ demo/v1/src/screens/authCallback.tsx         |   2 +-
+ demo/v1/src/screens/cond.tsx                 |  14 +-
+ demo/v1/src/screens/eCheck.tsx               |  14 +-
+ demo/v1/src/screens/eDone.tsx                |  23 +-
+ demo/v1/src/screens/eHome.tsx                |  15 +-
+ demo/v1/src/screens/eInvited.tsx             |  20 +-
+ demo/v1/src/screens/eLetters.tsx             |  38 +-
+ demo/v1/src/screens/eRecord.tsx              |  29 +-
+ demo/v1/src/screens/eSpeech.tsx              |  12 +-
+ demo/v1/src/screens/gAdmin.tsx               | 110 ++-
+ demo/v1/src/screens/gDetail.tsx              | 186 ++---
+ demo/v1/src/screens/gLetter.tsx              |   6 +-
+ demo/v1/src/screens/gList.tsx                | 149 +++--
+ demo/v1/src/screens/gStart.tsx               |   6 +-
+ demo/v1/src/screens/invite.tsx               |   6 +-
+ demo/v1/src/screens/reg.tsx                  |   2 +-
+ demo/v1/src/screens/signup.tsx               |   4 +-
+ demo/v1/src/screens/terms.tsx                |  22 +-
+ demo/v1/src/styles/elder.css                 | 560 ++++++++++++++--
+ demo/v1/src/styles/guardian.css              | 670 +++++++++++++++++--
+ demo/v1/src/styles/theme.css                 | 135 +++-
+ 33 files changed, 1965 insertions(+), 512 deletions(-)
+ create mode 100644 demo/v1/src/components/DisplaySettings.tsx
+ delete mode 100644 demo/v1/src/components/FontSizeToggle.tsx
+ create mode 100644 demo/v1/src/lib/elderDisplay.ts
+
+diff --git a/demo/v1/index.html b/demo/v1/index.html
+index be27268..3f15310 100644
+--- a/demo/v1/index.html
++++ b/demo/v1/index.html
+@@ -1,9 +1,18 @@
+ <!doctype html>
+-<html lang="en">
++<html lang="ko">
+   <head>
+     <meta charset="UTF-8" />
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <meta name="color-scheme" content="dark" />
++    <!-- theme.css가 "Pretendard"를 먼저 찾지만 어디서도 불러오지 않아 조용히 맑은고딕으로
++         떨어지고 있었다. 알라미 톤에 가장 가까운 Gothic A1을 실제로 불러온다. -->
++    <link rel="preconnect" href="https://fonts.googleapis.com" />
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++    <link
++      rel="stylesheet"
++      href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;800&display=swap"
++    />
+     <title>Callog(콜록)</title>
+   </head>
+   <body>
+diff --git a/demo/v1/src/components/AppShell.tsx b/demo/v1/src/components/AppShell.tsx
+index 9a115d8..2f6fe88 100644
+--- a/demo/v1/src/components/AppShell.tsx
++++ b/demo/v1/src/components/AppShell.tsx
+@@ -1,18 +1,57 @@
+-import type { ReactNode } from "react";
++import { useEffect, type ReactNode } from "react";
+ import { supabaseConfigured } from "../lib/supabase";
++import { clearElderDisplay, restoreElderDisplay } from "../lib/elderDisplay";
+ 
+ interface AppShellProps {
+   variant?: "guardian" | "elder";
++  /**
++   * 넓은 화면에서 왼쪽 사이드바에 놓을 것. 넘기면 폼용 좁은 카드 대신
++   * 모니터 폭을 쓰는 대시보드 레이아웃이 된다(대상자 목록·상세·관리자 화면).
++   * 입력 폼은 넓힐수록 읽기 어려우므로 넘기지 않는다.
++   */
++  aside?: ReactNode;
+   children: ReactNode;
+ }
+ 
+-export function AppShell({ variant = "guardian", children }: AppShellProps) {
++export function AppShell({ variant = "guardian", aside, children }: AppShellProps) {
++  // 어르신이 고른 바탕/글씨 크기는 어르신 화면에서만 적용한다.
++  // 보호자가 같은 기기에서 열었을 때 "또렷하게"(검정+노랑)로 보이면 곤란하다.
++  useEffect(() => {
++    if (variant === "elder") restoreElderDisplay();
++    else clearElderDisplay();
++  }, [variant]);
++
++  const banner = !supabaseConfigured ? (
++    <div className="env-banner">Supabase 환경변수가 설정되지 않았습니다</div>
++  ) : null;
++
++  if (variant === "elder") {
++    return (
++      <div className="app-shell app-shell--elder">
++        {banner}
++        <div className="app-card app-card--elder">{children}</div>
++      </div>
++    );
++  }
++
++  if (aside) {
++    return (
++      <div className="app-shell app-shell--wide">
++        {banner}
++        <div className="g-layout">
++          <aside className="g-aside">{aside}</aside>
++          <main className="g-main">
++            <div className="g-main-inner">{children}</div>
++          </main>
++        </div>
++      </div>
++    );
++  }
++
+   return (
+     <div className="app-shell">
+-      {!supabaseConfigured && (
+-        <div className="env-banner">Supabase 환경변수가 설정되지 않았습니다</div>
+-      )}
+-      <div className={variant === "elder" ? "app-card app-card--elder" : "app-card"}>{children}</div>
++      {banner}
++      <div className="app-card">{children}</div>
+     </div>
+   );
+ }
+diff --git a/demo/v1/src/components/ConsentItem.tsx b/demo/v1/src/components/ConsentItem.tsx
+index c8f3a38..1f34c0a 100644
+--- a/demo/v1/src/components/ConsentItem.tsx
++++ b/demo/v1/src/components/ConsentItem.tsx
+@@ -12,25 +12,17 @@ interface ConsentItemProps {
+ export function ConsentItem({ checked, onChange, label, detail }: ConsentItemProps) {
+   const [open, setOpen] = useState(false);
+   return (
+-    <div style={{ marginBottom: 12 }}>
+-      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+-        <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "var(--ink2)", flex: 1 }}>
+-          <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} required style={{ marginTop: 2 }} />
++    <div className="g-consent">
++      <div className="g-consent-row">
++        <label className="g-check">
++          <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} required />
+           <span>{label}</span>
+         </label>
+-        <button
+-          type="button"
+-          onClick={() => setOpen((o) => !o)}
+-          style={{ fontSize: 12, color: "var(--dawn)", background: "none", border: "none", padding: 0, textDecoration: "underline", whiteSpace: "nowrap" }}
+-        >
++        <button type="button" className="g-consent-toggle" onClick={() => setOpen((o) => !o)}>
+           {open ? "접기" : "자세히"}
+         </button>
+       </div>
+-      {open && (
+-        <div style={{ fontSize: 12, color: "var(--ink3)", background: "var(--mist)", borderRadius: 8, padding: "10px 12px", marginTop: 6, marginLeft: 24, lineHeight: 1.7 }}>
+-          {detail}
+-        </div>
+-      )}
++      {open && <div className="g-consent-detail">{detail}</div>}
+     </div>
+   );
+ }
+diff --git a/demo/v1/src/components/DisplaySettings.tsx b/demo/v1/src/components/DisplaySettings.tsx
+new file mode 100644
+index 0000000..febab79
+--- /dev/null
++++ b/demo/v1/src/components/DisplaySettings.tsx
+@@ -0,0 +1,117 @@
++import { useEffect, useState, type CSSProperties } from "react";
++import {
++  SCALES,
++  SCALE_LABELS,
++  THEME_OPTIONS,
++  applyScaleIndex,
++  applyTheme,
++  getStoredScaleIndex,
++  getStoredTheme,
++  type ElderTheme,
++} from "../lib/elderDisplay";
++
++// 어르신이 바탕과 글씨 크기를 직접 눌러보며 고르는 시트.
++// 예전의 FontSizeToggle(글씨 크기만 순환)을 대신한다 — 순환식은 지금 몇 단계인지
++// 알 수 없고 되돌리려면 끝까지 눌러야 해서, 고른 것이 보이는 방식으로 바꿨다.
++//
++// 고른 값은 즉시 화면에 반영된다. 미리보기를 따로 두지 않고 화면 자체가 바뀌는 편이
++// "이게 내가 고른 것"을 알기 쉽다.
++export function DisplaySettings() {
++  const [open, setOpen] = useState(false);
++  const [theme, setTheme] = useState<ElderTheme>("night");
++  const [scaleIndex, setScaleIndex] = useState(0);
++
++  useEffect(() => {
++    setTheme(getStoredTheme());
++    setScaleIndex(getStoredScaleIndex());
++  }, []);
++
++  useEffect(() => {
++    if (!open) return;
++    function onKey(e: KeyboardEvent) {
++      if (e.key === "Escape") setOpen(false);
++    }
++    window.addEventListener("keydown", onKey);
++    return () => window.removeEventListener("keydown", onKey);
++  }, [open]);
++
++  function chooseTheme(next: ElderTheme) {
++    setTheme(next);
++    applyTheme(next);
++  }
++
++  function chooseScale(index: number) {
++    setScaleIndex(index);
++    applyScaleIndex(index);
++  }
++
++  return (
++    <>
++      <button type="button" className="e-pill" onClick={() => setOpen(true)}>
++        가+ 화면 설정
++      </button>
++
++      {open && (
++        <div className="e-sheet-backdrop" onClick={() => setOpen(false)}>
++          <div
++            className="e-sheet"
++            role="dialog"
++            aria-modal="true"
++            aria-label="화면 설정"
++            onClick={(e) => e.stopPropagation()}
++          >
++            <div className="e-sheet-head">
++              <h2 className="e-sheet-title">화면 설정</h2>
++              <button type="button" className="e-sheet-close" onClick={() => setOpen(false)}>
++                닫기
++              </button>
++            </div>
++            <p className="e-sheet-sub">눌러보시고 제일 잘 보이는 것으로 고르세요. 고르면 바로 바뀝니다.</p>
++
++            <div className="e-opt-group">
++              <div className="e-opt-legend">바탕</div>
++              <div className="e-opt-row e-opt-row--four">
++                {THEME_OPTIONS.map((option) => (
++                  <button
++                    key={option.id}
++                    type="button"
++                    className="e-opt e-opt--theme"
++                    aria-pressed={theme === option.id}
++                    onClick={() => chooseTheme(option.id)}
++                    style={
++                      {
++                        background: option.sample.bg,
++                        color: option.sample.fg,
++                        "--opt-ring": option.sample.ring,
++                      } as CSSProperties
++                    }
++                  >
++                    {option.label}
++                  </button>
++                ))}
++              </div>
++            </div>
++
++            <div className="e-opt-group">
++              <div className="e-opt-legend">글씨 크기</div>
++              <div className="e-opt-row e-opt-row--three">
++                {SCALES.map((scale, index) => (
++                  <button
++                    key={scale}
++                    type="button"
++                    className="e-opt e-opt-size"
++                    aria-pressed={scaleIndex === index}
++                    onClick={() => chooseScale(index)}
++                    style={{ fontSize: `calc(15px * ${scale})` }}
++                  >
++                    {SCALE_LABELS[index]}
++                  </button>
++                ))}
++              </div>
++            </div>
++          </div>
++        </div>
++      )}
++    </>
++  );
++}
+diff --git a/demo/v1/src/components/FontSizeToggle.tsx b/demo/v1/src/components/FontSizeToggle.tsx
+deleted file mode 100644
+index 16dc88a..0000000
+--- a/demo/v1/src/components/FontSizeToggle.tsx
++++ /dev/null
+@@ -1,28 +0,0 @@
+-import { useEffect, useState } from "react";
+-
+-const KEY = "callog.fontScale";
+-const SCALES = [1, 1.15, 1.3];
+-
+-// 기능설계서 §1 접근성: 글씨 크기 확대 가능 기능
+-export function FontSizeToggle() {
+-  const [index, setIndex] = useState(0);
+-
+-  useEffect(() => {
+-    const saved = Number(window.localStorage.getItem(KEY) ?? "0");
+-    setIndex(saved);
+-    document.documentElement.style.setProperty("--font-scale", String(SCALES[saved] ?? 1));
+-  }, []);
+-
+-  function cycle() {
+-    const next = (index + 1) % SCALES.length;
+-    setIndex(next);
+-    window.localStorage.setItem(KEY, String(next));
+-    document.documentElement.style.setProperty("--font-scale", String(SCALES[next]));
+-  }
+-
+-  return (
+-    <button type="button" className="e-speak" onClick={cycle}>
+-      가+ 글씨 크게
+-    </button>
+-  );
+-}
+diff --git a/demo/v1/src/components/MedicalDisclaimer.tsx b/demo/v1/src/components/MedicalDisclaimer.tsx
+index b3394d2..545d5c6 100644
+--- a/demo/v1/src/components/MedicalDisclaimer.tsx
++++ b/demo/v1/src/components/MedicalDisclaimer.tsx
+@@ -3,7 +3,7 @@
+ // 근거: Help4/법적문제 피해가기 공략.pdf §4, 체크리스트 3번
+ export function MedicalDisclaimer() {
+   return (
+-    <p style={{ fontSize: 12, color: "var(--ink3)", marginTop: 24, lineHeight: 1.6 }}>
++    <p className="g-legal">
+       본 서비스는 의료기기나 의료 진단 서비스가 아니며, AI 분석 결과는 일상 안부 확인을 위한 참고용 신호입니다.
+       정확한 건강 상태는 반드시 전문 의료기관의 진료를 받으시기 바랍니다.
+     </p>
+diff --git a/demo/v1/src/components/ProgressBar.tsx b/demo/v1/src/components/ProgressBar.tsx
+index 2e0f6d1..158a103 100644
+--- a/demo/v1/src/components/ProgressBar.tsx
++++ b/demo/v1/src/components/ProgressBar.tsx
+@@ -1,3 +1,16 @@
++// 몇 번째 질문인지 숫자로만 알리던 것을 칸으로 바꿨다.
++// 숫자를 읽지 않아도 얼마나 남았는지 보이는 편이 어르신 화면에 맞는다.
+ export function ProgressBar({ current, total }: { current: number; total: number }) {
+-  return <div className="e-progress">{current} / {total}</div>;
++  return (
++    <>
++      <div className="e-progress" role="progressbar" aria-valuenow={current} aria-valuemin={1} aria-valuemax={total}>
++        {Array.from({ length: total }, (_, i) => (
++          <i key={i} className={i < current ? "e-progress-seg e-progress-seg--on" : "e-progress-seg"} />
++        ))}
++      </div>
++      <div className="e-progress-label">
++        {current} / {total}
++      </div>
++    </>
++  );
+ }
+diff --git a/demo/v1/src/components/RecordingNotice.tsx b/demo/v1/src/components/RecordingNotice.tsx
+index 632d655..2a8aedd 100644
+--- a/demo/v1/src/components/RecordingNotice.tsx
++++ b/demo/v1/src/components/RecordingNotice.tsx
+@@ -1,20 +1,8 @@
+-import { fs } from "../lib/fontScale";
+-
+ // 통신비밀보호법/민법(타인 초상권·음성권) 대응 — 녹화/녹음 화면에 상시 노출.
+ // 근거: Help4/법적문제 피해가기 공략.pdf §5, 체크리스트 4번
+ export function RecordingNotice() {
+   return (
+-    <p
+-      style={{
+-        fontSize: fs(13),
+-        color: "rgba(255,255,255,0.75)",
+-        background: "rgba(255,255,255,0.06)",
+-        border: "1px solid rgba(255,255,255,0.15)",
+-        borderRadius: 10,
+-        padding: "10px 12px",
+-        marginBottom: 12,
+-      }}
+-    >
++    <p className="e-notice">
+       본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있습니다.
+     </p>
+   );
+diff --git a/demo/v1/src/components/RiskDot.tsx b/demo/v1/src/components/RiskDot.tsx
+index b4ca4a8..7a9aed1 100644
+--- a/demo/v1/src/components/RiskDot.tsx
++++ b/demo/v1/src/components/RiskDot.tsx
+@@ -1,9 +1,9 @@
+ import type { RiskLevel } from "../config/riskConstants";
+ 
+ const COLOR: Record<RiskLevel, string> = {
+-  안전: "var(--jade)",
+-  위험: "var(--gold)",
+-  심각: "var(--red)",
++  안전: "var(--safe)",
++  위험: "var(--warn)",
++  심각: "var(--crit)",
+ };
+ 
+ export function RiskDot({ level }: { level: RiskLevel }) {
+@@ -14,9 +14,16 @@ export function RiskDot({ level }: { level: RiskLevel }) {
+         width: 10,
+         height: 10,
+         borderRadius: "50%",
++        flex: "none",
+         background: COLOR[level],
++        boxShadow: "0 0 0 3px rgba(255,255,255,0.05)",
+       }}
+-      aria-label={level}
++      aria-hidden="true"
+     />
+   );
+ }
++
++// 색맹·저조도에서 점 하나만으로는 등급이 구분되지 않는다. 등급 글자를 함께 내보내는 배지.
++export function RiskPill({ level }: { level: RiskLevel }) {
++  return <span className={`g-pill g-pill--${level}`}>{level}</span>;
++}
+diff --git a/demo/v1/src/components/TrendChart.tsx b/demo/v1/src/components/TrendChart.tsx
+index dd66e0c..fd4bda0 100644
+--- a/demo/v1/src/components/TrendChart.tsx
++++ b/demo/v1/src/components/TrendChart.tsx
+@@ -1,10 +1,19 @@
++import { useId } from "react";
+ import type { RiskLevel } from "../config/riskConstants";
+ 
+ // 기능설계서.md §1 "꺾은선 그래프 기록" — 최근 위험도 추이를 가벼운 인라인 SVG로 시각화한다.
+ // 차트 라이브러리를 새로 추가하지 않고 직접 그리는 이유: 점 개수가 최대 14개뿐이라
+ // 굳이 무거운 의존성을 늘릴 필요가 없음.
++//
++// 선만 그리면 "올라갔다"는 사실이 눈에 안 들어와서, 선 아래를 옅게 채우고
++// 마지막 점(=오늘)만 등급 색으로 크게 찍어 시선이 먼저 가게 했다.
+ const LEVEL_Y: Record<RiskLevel, number> = { 안전: 0, 위험: 1, 심각: 2 };
+-const LEVEL_COLOR: Record<RiskLevel, string> = { 안전: "var(--jade)", 위험: "var(--gold)", 심각: "var(--red)" };
++const LEVEL_COLOR: Record<RiskLevel, string> = {
++  안전: "var(--safe)",
++  위험: "var(--warn)",
++  심각: "var(--crit)",
++};
++const LEVELS: RiskLevel[] = ["안전", "위험", "심각"];
+ 
+ export interface TrendPoint {
+   date: string; // yyyy-mm-dd
+@@ -12,16 +21,20 @@ export interface TrendPoint {
+ }
+ 
+ const WIDTH = 320;
+-const HEIGHT = 120;
+-const PAD_X = 16;
++const HEIGHT = 128;
++const PAD_L = 34; // 왼쪽 등급 이름 자리
++const PAD_R = 12;
+ const PAD_Y = 16;
++const BASE_Y = HEIGHT - 18; // 면 채우기의 바닥 + 날짜 라벨 자리
+ 
+ export function TrendChart({ points }: { points: TrendPoint[] }) {
++  const gradientId = useId();
+   if (points.length === 0) return null;
+-  const innerW = WIDTH - PAD_X * 2;
+-  const innerH = HEIGHT - PAD_Y * 2;
++
++  const innerW = WIDTH - PAD_L - PAD_R;
++  const innerH = HEIGHT - PAD_Y - 28;
+   const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
+-  const xFor = (i: number) => PAD_X + stepX * i;
++  const xFor = (i: number) => PAD_L + stepX * i;
+   const yFor = (level: RiskLevel) => PAD_Y + innerH - (LEVEL_Y[level] / 2) * innerH;
+ 
+   // 결측일(그날 안부 기록 없음)까지 억지로 잇지 않고, 연속된 구간끼리만 선을 그린다
+@@ -37,30 +50,69 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
+   });
+   if (current.length) segments.push(current);
+ 
++  const lastIndex = points.map((p) => Boolean(p.level)).lastIndexOf(true);
++  const last = lastIndex >= 0 ? points[lastIndex] : null;
++
+   return (
+-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} style={{ width: "100%", height: "auto" }}>
+-      {(["안전", "위험", "심각"] as RiskLevel[]).map((level) => (
+-        <line
+-          key={level}
+-          x1={PAD_X}
+-          x2={WIDTH - PAD_X}
+-          y1={yFor(level)}
+-          y2={yFor(level)}
+-          stroke="rgba(255,255,255,0.08)"
+-          strokeWidth={1}
++    <svg className="g-trend" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={describe(points)}>
++      <defs>
++        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
++          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.42" />
++          <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
++        </linearGradient>
++      </defs>
++
++      {LEVELS.map((level) => (
++        <g key={level}>
++          <line x1={PAD_L} x2={WIDTH - PAD_R} y1={yFor(level)} y2={yFor(level)} stroke="var(--line)" strokeWidth={1} />
++          <text x={0} y={yFor(level) + 3} fontSize={9} fill="var(--text-3)">
++            {level}
++          </text>
++        </g>
++      ))}
++
++      {segments.map((seg, si) => (
++        <path
++          key={`a${si}`}
++          d={`M${seg[0].x} ${BASE_Y} ${seg.map((p) => `L${p.x} ${p.y}`).join(" ")} L${seg[seg.length - 1].x} ${BASE_Y} Z`}
++          fill={`url(#${gradientId})`}
+         />
+       ))}
++
+       {segments.map((seg, si) => (
+-        <polyline key={si} points={seg.map((p) => `${p.x},${p.y}`).join(" ")} fill="none" stroke="var(--ink3)" strokeWidth={2} />
++        <polyline
++          key={`l${si}`}
++          points={seg.map((p) => `${p.x},${p.y}`).join(" ")}
++          fill="none"
++          stroke="var(--primary-hi)"
++          strokeWidth={2.2}
++          strokeLinecap="round"
++          strokeLinejoin="round"
++        />
+       ))}
++
+       {points.map(
+-        (p, i) => p.level && <circle key={i} cx={xFor(i)} cy={yFor(p.level)} r={4} fill={LEVEL_COLOR[p.level]} />
++        (p, i) =>
++          p.level &&
++          i !== lastIndex && <circle key={`d${i}`} cx={xFor(i)} cy={yFor(p.level)} r={3} fill={LEVEL_COLOR[p.level]} />
++      )}
++
++      {last?.level && (
++        <circle
++          cx={xFor(lastIndex)}
++          cy={yFor(last.level)}
++          r={4.8}
++          fill="var(--surface)"
++          stroke={LEVEL_COLOR[last.level]}
++          strokeWidth={2.6}
++        />
+       )}
++
+       {points.map((p, i) => {
+-        if (points.length > 7 && i % 2 !== 0) return null;
+-        const label = `${Number(p.date.slice(5, 7))}/${Number(p.date.slice(8, 10))}`;
++        if (points.length > 7 && i % 2 !== 0 && i !== points.length - 1) return null;
++        const label = i === points.length - 1 ? "오늘" : `${Number(p.date.slice(5, 7))}/${Number(p.date.slice(8, 10))}`;
+         return (
+-          <text key={`l${i}`} x={xFor(i)} y={HEIGHT - 2} fontSize={9} fill="var(--ink3)" textAnchor="middle">
++          <text key={`t${i}`} x={xFor(i)} y={HEIGHT - 2} fontSize={9} fill="var(--text-3)" textAnchor="middle">
+             {label}
+           </text>
+         );
+@@ -68,3 +120,13 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
+     </svg>
+   );
+ }
++
++// 그래프를 못 보는 경우에도 추이를 알 수 있어야 한다
++function describe(points: TrendPoint[]): string {
++  const recorded = points.filter((p) => p.level);
++  if (recorded.length === 0) return "최근 위험도 기록이 없습니다.";
++  const counts = LEVELS.map((level) => `${level} ${recorded.filter((p) => p.level === level).length}일`);
++  return `최근 ${points.length}일 중 ${recorded.length}일 기록 — ${counts.join(", ")}. 가장 최근은 ${
++    recorded[recorded.length - 1].level
++  }.`;
++}
+diff --git a/demo/v1/src/lib/elderDisplay.ts b/demo/v1/src/lib/elderDisplay.ts
+new file mode 100644
+index 0000000..1d35891
+--- /dev/null
++++ b/demo/v1/src/lib/elderDisplay.ts
+@@ -0,0 +1,66 @@
++// 어르신이 고른 화면 설정(바탕 + 글씨 크기)을 저장하고 문서에 적용한다.
++//
++// 잘 보이는 화면은 사람마다 다르다. 백내장이 있으면 어두운 배경의 흰 글씨가 번져 보이고,
++// 노안만 있으면 크기만 키우면 된다. 그래서 하나를 정해주는 대신 직접 눌러보고 고르게 한다.
++// 근거: 기능설계서 §1 접근성 — "글씨 크기 확대 가능"을 바탕 선택까지 넓힌 것.
++
++const THEME_KEY = "callog.elderTheme";
++const SCALE_KEY = "callog.fontScale";
++
++export type ElderTheme = "night" | "daylight" | "warm" | "maxcontrast";
++
++export interface ThemeOption {
++  id: ElderTheme;
++  label: string;
++  /**
++   * 고르는 버튼을 그 바탕 자체로 칠하는 데 쓴다. 옆에 작은 색 견본을 붙이는 것보다
++   * 버튼이 곧 미리보기인 편이 "고르면 이렇게 된다"를 바로 보여준다.
++   */
++  sample: { bg: string; fg: string; ring: string };
++}
++
++export const THEME_OPTIONS: ThemeOption[] = [
++  { id: "night", label: "밤하늘", sample: { bg: "#121416", fg: "#FFFFFF", ring: "#6865D8" } },
++  { id: "daylight", label: "한낮", sample: { bg: "#F7F8FB", fg: "#111318", ring: "#2A37B8" } },
++  { id: "warm", label: "노을", sample: { bg: "#1B1512", fg: "#FFF6EE", ring: "#E8A33C" } },
++  { id: "maxcontrast", label: "또렷하게", sample: { bg: "#000000", fg: "#FFD400", ring: "#FFD400" } },
++];
++
++/** styles/elder.css의 --font-scale 단계와 같아야 한다 */
++export const SCALES = [1, 1.15, 1.3] as const;
++
++export const SCALE_LABELS = ["보통", "크게", "아주 크게"] as const;
++
++export function getStoredTheme(): ElderTheme {
++  const saved = window.localStorage.getItem(THEME_KEY);
++  return THEME_OPTIONS.some((o) => o.id === saved) ? (saved as ElderTheme) : "night";
++}
++
++export function getStoredScaleIndex(): number {
++  const saved = Number(window.localStorage.getItem(SCALE_KEY) ?? "0");
++  return Number.isInteger(saved) && saved >= 0 && saved < SCALES.length ? saved : 0;
++}
++
++export function applyTheme(theme: ElderTheme): void {
++  // "밤하늘"은 :root의 기본값이라 속성을 아예 붙이지 않는다
++  if (theme === "night") document.documentElement.removeAttribute("data-elder-theme");
++  else document.documentElement.setAttribute("data-elder-theme", theme);
++  window.localStorage.setItem(THEME_KEY, theme);
++}
++
++export function applyScaleIndex(index: number): void {
++  document.documentElement.style.setProperty("--font-scale", String(SCALES[index] ?? 1));
++  window.localStorage.setItem(SCALE_KEY, String(index));
++}
++
++/** 어르신 화면에 들어올 때 저장된 설정을 복원한다 */
++export function restoreElderDisplay(): void {
++  applyTheme(getStoredTheme());
++  applyScaleIndex(getStoredScaleIndex());
++}
++
++/** 보호자 화면은 어르신이 고른 바탕/글씨 크기를 따라가지 않는다 */
++export function clearElderDisplay(): void {
++  document.documentElement.removeAttribute("data-elder-theme");
++  document.documentElement.style.removeProperty("--font-scale");
++}
+diff --git a/demo/v1/src/lib/fontScale.ts b/demo/v1/src/lib/fontScale.ts
+index ab95300..021c241 100644
+--- a/demo/v1/src/lib/fontScale.ts
++++ b/demo/v1/src/lib/fontScale.ts
+@@ -1,6 +1,9 @@
+-// 어르신 화면의 "글씨 크게" 배율(components/FontSizeToggle.tsx가 --font-scale로 설정)에
+-// 맞춰 폰트 크기를 계산한다. 절대 px로 박아둔 값은 --font-scale이 바뀌어도 반응하지
+-// 않으므로, 어르신 화면의 인라인 fontSize는 반드시 이 헬퍼를 거쳐야 한다.
++// 어르신 화면의 글자 배율을 계산한다.
++//
++// --e-fs = --font-scale(어르신이 고른 "글씨 크기") × --e-zoom(넓은 화면 확대분).
++// styles/elder.css의 .app-card--elder가 두 값을 곱해 --e-fs로 내려주므로,
++// 어르신 화면의 인라인 fontSize는 반드시 이 헬퍼를 거쳐야 둘 다 반영된다.
++// 어르신 화면 밖에서 쓰이면 --e-fs가 없으므로 --font-scale로 물러난다.
+ export function fs(px: number): string {
+-  return `calc(${px}px * var(--font-scale))`;
++  return `calc(${px}px * var(--e-fs, var(--font-scale)))`;
+ }
+diff --git a/demo/v1/src/screens/authCallback.tsx b/demo/v1/src/screens/authCallback.tsx
+index 0eeff64..c98cfdb 100644
+--- a/demo/v1/src/screens/authCallback.tsx
++++ b/demo/v1/src/screens/authCallback.tsx
+@@ -9,7 +9,7 @@ export default function AuthCallback() {
+     <AppShell>
+       <h1 className="g-title">처리 중입니다</h1>
+       <p className="g-sub">인증이 완료되었습니다. 아래에서 계속하세요.</p>
+-      <Link className="g-button" to="/" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
++      <Link className="g-button" to="/">
+         시작 화면으로
+       </Link>
+     </AppShell>
+diff --git a/demo/v1/src/screens/cond.tsx b/demo/v1/src/screens/cond.tsx
+index d0c9356..729f361 100644
+--- a/demo/v1/src/screens/cond.tsx
++++ b/demo/v1/src/screens/cond.tsx
+@@ -60,7 +60,7 @@ export default function Cond() {
+ 
+       {CONDITION_CATEGORIES.map((category) => (
+         <div key={category} style={{ marginBottom: 16 }}>
+-          <div style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 8 }}>{category}</div>
++          <div className="g-header">{category}</div>
+           {getConditionsByCategory(category).map((c) => (
+             <Chip key={c.id} label={c.label} selected={selected.includes(c.id)} onClick={() => toggle(c.id)} />
+           ))}
+@@ -72,15 +72,17 @@ export default function Cond() {
+         <input value={customText} onChange={(e) => setCustomText(e.target.value)} placeholder="예: 갑상선 질환" />
+       </div>
+ 
+-      <div style={{ background: "var(--mist)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+-        <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 8 }}>오늘 어르신께 물을 질문 {preview.length}개</div>
+-        <ol style={{ margin: 0, paddingLeft: 20, fontSize: 14 }}>
++      <div className="g-card" style={{ marginBottom: 16 }}>
++        <div className="g-card-title">
++          <span>오늘 어르신께 물을 질문 {preview.length}개</span>
++        </div>
++        <ol className="g-questions">
+           {preview.map((q, i) => (
+             <li key={i}>{q}</li>
+           ))}
+         </ol>
+         {riskNotes.length > 0 && (
+-          <div style={{ marginTop: 12, fontSize: 13, color: "var(--ink2)" }}>
++          <div className="g-note">
+             {riskNotes.map((c) => (
+               <div key={c.id}>· {c.label} — {c.riskNote}</div>
+             ))}
+@@ -106,7 +108,7 @@ export default function Cond() {
+         }
+       />
+ 
+-      {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++      {error && <p className="g-error">{error}</p>}
+       <button className="g-button" onClick={handleSubmit} disabled={loading || (hasHealthData && !consentHealth) || !supabaseConfigured}>
+         {loading ? "저장 중..." : "저장하고 초대하기"}
+       </button>
+diff --git a/demo/v1/src/screens/eCheck.tsx b/demo/v1/src/screens/eCheck.tsx
+index 8bc65e3..aa90d70 100644
+--- a/demo/v1/src/screens/eCheck.tsx
++++ b/demo/v1/src/screens/eCheck.tsx
+@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
+ import { SpeakButton } from "../components/SpeakButton";
+ import { ProgressBar } from "../components/ProgressBar";
+-import { FontSizeToggle } from "../components/FontSizeToggle";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { getStoredElderProfileId } from "../lib/elderSession";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+ 
+@@ -147,21 +147,19 @@ export default function ECheck() {
+     navigate("/elder/speech");
+   }
+ 
+-  if (loading) return <AppShell variant="elder"><p>오늘의 안부를 준비하고 있어요...</p></AppShell>;
++  if (loading) return <AppShell variant="elder"><p className="e-lead">오늘의 안부를 준비하고 있어요...</p></AppShell>;
+   const question = questions[index];
+-  if (!question) return <AppShell variant="elder"><p>준비된 질문이 없습니다.</p></AppShell>;
++  if (!question) return <AppShell variant="elder"><p className="e-lead">준비된 질문이 없습니다.</p></AppShell>;
+ 
+   return (
+     <AppShell variant="elder">
+       <div className="e-topbar">
+-        <FontSizeToggle />
+-        <span>Callog</span>
++        <DisplaySettings />
++        <span className="e-brand">Callog</span>
+       </div>
+       <ProgressBar current={index + 1} total={questions.length} />
+-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+-        <SpeakButton text={question.question} />
+-      </div>
+       <h1 className="e-question">{question.question}</h1>
++      <SpeakButton text={question.question} />
+ 
+       {question.options.map((option) => (
+         <button key={option.text} className="e-choice" onClick={() => answer(option)}>
+diff --git a/demo/v1/src/screens/eDone.tsx b/demo/v1/src/screens/eDone.tsx
+index 819477a..7f0904f 100644
+--- a/demo/v1/src/screens/eDone.tsx
++++ b/demo/v1/src/screens/eDone.tsx
+@@ -1,12 +1,12 @@
+ import { useEffect, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { SpeakButton } from "../components/SpeakButton";
+ import { getStoredElderProfileId } from "../lib/elderSession";
+ import { getSignedUrl } from "../lib/storage";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+ import { computeStreak } from "../lib/streak";
+-import { fs } from "../lib/fontScale";
+ 
+ export const SCREEN_ID = "eDone";
+ 
+@@ -59,25 +59,26 @@ export default function EDone() {
+   return (
+     <AppShell variant="elder">
+       <div className="e-topbar">
+-        <span>Callog</span>
++        <DisplaySettings />
++        <span className="e-brand">Callog</span>
+       </div>
+-      <div style={{ textAlign: "center", padding: "24px 0" }}>
+-        <div style={{ fontSize: fs(40) }}>✓</div>
+-        <h1 style={{ fontSize: fs(26) }}>잘 하셨어요</h1>
+-        <p style={{ color: "rgba(255,255,255,0.75)" }}>오늘 안부를 가족에게 전했어요.</p>
++      <div className="e-hero">
++        <div className="e-hero-mark">✓</div>
++        <h1 className="e-question">잘 하셨어요</h1>
++        <p className="e-lead">오늘 안부를 가족에게 전했어요.</p>
+         <div className="e-streak">
+           {dots.map((filled, i) => (
+             <span key={i} className={filled ? "e-streak-dot e-streak-dot--filled" : "e-streak-dot"} />
+           ))}
+         </div>
+-        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: fs(13) }}>{streak}일 연속 안부를 남기셨어요</p>
++        <p className="e-meta">{streak}일 연속 안부를 남기셨어요</p>
+       </div>
+ 
+       {letter && (
+-        <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+-          <div style={{ fontSize: fs(13), color: "rgba(255,255,255,0.6)" }}>가족이 보냈어요</div>
+-          <div style={{ marginBottom: 8 }}>{letter.title}</div>
+-          {letterUrl && <video src={letterUrl} controls style={{ width: "100%", borderRadius: 8 }} />}
++        <div className="e-card">
++          <div className="e-card-label">가족이 보냈어요</div>
++          <div className="e-card-title">{letter.title}</div>
++          {letterUrl && <video src={letterUrl} controls className="e-media" />}
+         </div>
+       )}
+ 
+diff --git a/demo/v1/src/screens/eHome.tsx b/demo/v1/src/screens/eHome.tsx
+index 1b4e1fd..3131d4c 100644
+--- a/demo/v1/src/screens/eHome.tsx
++++ b/demo/v1/src/screens/eHome.tsx
+@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
+ import { SpeakButton } from "../components/SpeakButton";
+-import { FontSizeToggle } from "../components/FontSizeToggle";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { getStoredElderProfileId } from "../lib/elderSession";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+ import { computeStreak } from "../lib/streak";
+-import { fs } from "../lib/fontScale";
+ 
+ export const SCREEN_ID = "eHome";
+ 
+@@ -49,19 +48,19 @@ export default function EHome() {
+       .then(({ data }) => setStreak(computeStreak((data ?? []).map((r) => r.date as string))));
+   }, []);
+ 
+-  if (loading) return <AppShell variant="elder"><p style={{ color: "rgba(255,255,255,0.7)" }}>불러오는 중...</p></AppShell>;
++  if (loading) return <AppShell variant="elder"><p className="e-lead">불러오는 중...</p></AppShell>;
+ 
+   const message = doneToday ? "오늘 안부는 이미 전했어요" : "오늘 안부를 전해볼까요?";
+ 
+   return (
+     <AppShell variant="elder">
+       <div className="e-topbar">
+-        <FontSizeToggle />
+-        <span>Callog</span>
++        <DisplaySettings />
++        <span className="e-brand">Callog</span>
+       </div>
+-      <div style={{ textAlign: "center", padding: "24px 0" }}>
+-        <h1 className="e-question" style={{ fontSize: fs(24) }}>{message}</h1>
+-        {streak > 0 && <p style={{ color: "rgba(255,255,255,0.6)" }}>{streak}일 연속 참여 중이에요</p>}
++      <div className="e-hero">
++        <h1 className="e-question">{message}</h1>
++        {streak > 0 && <p className="e-meta">{streak}일 연속 참여 중이에요</p>}
+       </div>
+ 
+       <SpeakButton text={message} />
+diff --git a/demo/v1/src/screens/eInvited.tsx b/demo/v1/src/screens/eInvited.tsx
+index cc55bfa..d4f2d18 100644
+--- a/demo/v1/src/screens/eInvited.tsx
++++ b/demo/v1/src/screens/eInvited.tsx
+@@ -1,11 +1,11 @@
+ import { useEffect, useState } from "react";
+ import { useNavigate, useParams } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { SpeakButton } from "../components/SpeakButton";
+ import { redeemInvite } from "../lib/elderSession";
+ import { supabaseConfigured } from "../lib/supabase";
+ import { getErrorMessage } from "../lib/errors";
+-import { fs } from "../lib/fontScale";
+ 
+ export const SCREEN_ID = "eInvited";
+ 
+@@ -32,19 +32,19 @@ export default function EInvited() {
+   return (
+     <AppShell variant="elder">
+       <div className="e-topbar">
+-        <span>Callog</span>
++        <DisplaySettings />
++        <span className="e-brand">Callog</span>
+       </div>
+-      <div style={{ textAlign: "center", padding: "40px 0" }}>
+-        <div style={{ fontSize: fs(40), marginBottom: 16 }}>🌿</div>
+-        <h1 className="e-question" style={{ fontSize: fs(24) }}>{message}</h1>
+-        <p style={{ color: "rgba(255,255,255,0.75)" }}>하루에 한 번, 잘 지내시는지 짧게 여쭐게요.</p>
++      <div className="e-hero">
++        <div className="e-hero-mark">🌿</div>
++        <h1 className="e-question">{message}</h1>
++        <p className="e-lead">하루에 한 번, 잘 지내시는지 짧게 여쭐게요.</p>
++        {loading && <p className="e-meta">확인 중...</p>}
++        {error && <p className="e-error">{error}</p>}
+       </div>
+ 
+-      {loading && <p style={{ textAlign: "center" }}>확인 중...</p>}
+-      {error && <p style={{ color: "#ffb4a8", textAlign: "center" }}>{error}</p>}
+-
+       <SpeakButton text={message + ". 하루에 한 번, 잘 지내시는지 짧게 여쭐게요."} />
+-      <button className="e-primary" style={{ marginTop: 16 }} disabled={loading} onClick={() => navigate("/elder/home")}>
++      <button className="e-primary" disabled={loading} onClick={() => navigate("/elder/home")}>
+         시작하기
+       </button>
+     </AppShell>
+diff --git a/demo/v1/src/screens/eLetters.tsx b/demo/v1/src/screens/eLetters.tsx
+index dc442cb..0957368 100644
+--- a/demo/v1/src/screens/eLetters.tsx
++++ b/demo/v1/src/screens/eLetters.tsx
+@@ -1,10 +1,10 @@
+ import { useEffect, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { getStoredElderProfileId } from "../lib/elderSession";
+ import { getSignedUrl } from "../lib/storage";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+-import { fs } from "../lib/fontScale";
+ 
+ export const SCREEN_ID = "eLetters";
+ 
+@@ -57,39 +57,27 @@ export default function ELetters() {
+ 
+   return (
+     <AppShell variant="elder">
+-      <button
+-        className="e-secondary"
+-        onClick={() => navigate(-1)}
+-        style={{ marginBottom: 12, width: "auto", padding: "8px 16px" }}
+-      >
++      <button className="e-back" onClick={() => navigate(-1)}>
+         ← 이전 화면
+       </button>
+       <div className="e-topbar">
+-        <span>영상편지 모아보기</span>
++        <DisplaySettings />
++        <span className="e-brand">영상편지 모아보기</span>
+       </div>
+-      <h1 className="e-question" style={{ fontSize: fs(24) }}>가족이 보낸 영상편지</h1>
++      <h1 className="e-question">가족이 보낸 영상편지</h1>
+ 
+-      {loading && <p style={{ color: "rgba(255,255,255,0.7)" }}>불러오는 중...</p>}
+-      {!loading && letters.length === 0 && (
+-        <p style={{ color: "rgba(255,255,255,0.7)" }}>아직 받은 영상편지가 없습니다.</p>
+-      )}
++      {loading && <p className="e-lead">불러오는 중...</p>}
++      {!loading && letters.length === 0 && <p className="e-lead">아직 받은 영상편지가 없습니다.</p>}
+ 
+       {letters.map((letter) => (
+-        <div key={letter.id} style={{ background: "rgba(255,255,255,0.08)", borderRadius: 14, padding: 16, marginBottom: 14 }}>
+-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+-            <div style={{ fontSize: fs(13), color: "rgba(255,255,255,0.6)" }}>
+-              {new Date(letter.sent_at).toLocaleString("ko-KR")}
+-            </div>
+-            {!letter.viewed_at && <span style={{ fontSize: fs(12), color: "var(--gold)", fontWeight: 700 }}>새 편지</span>}
++        <div key={letter.id} className="e-card">
++          <div className="e-card-head">
++            <div className="e-card-label">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
++            {!letter.viewed_at && <span className="e-badge-new">새 편지</span>}
+           </div>
+-          <div style={{ marginBottom: 8, fontSize: fs(17) }}>{letter.title}</div>
++          <div className="e-card-title">{letter.title}</div>
+           {letter.signedUrl && (
+-            <video
+-              src={letter.signedUrl}
+-              controls
+-              style={{ width: "100%", borderRadius: 10 }}
+-              onPlay={() => markViewed(letter)}
+-            />
++            <video src={letter.signedUrl} controls className="e-media" onPlay={() => markViewed(letter)} />
+           )}
+         </div>
+       ))}
+diff --git a/demo/v1/src/screens/eRecord.tsx b/demo/v1/src/screens/eRecord.tsx
+index eaa0f56..c35ce1a 100644
+--- a/demo/v1/src/screens/eRecord.tsx
++++ b/demo/v1/src/screens/eRecord.tsx
+@@ -1,12 +1,12 @@
+ import { useEffect, useRef, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { SpeakButton } from "../components/SpeakButton";
+ import { createTestBlob, startRecording, type RecordingHandle } from "../lib/recorder";
+ import { uploadToBucket } from "../lib/storage";
+ import { getStoredElderProfileId } from "../lib/elderSession";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+-import { fs } from "../lib/fontScale";
+ import { RecordingNotice } from "../components/RecordingNotice";
+ 
+ export const SCREEN_ID = "eRecord";
+@@ -83,13 +83,14 @@ export default function ERecord() {
+     return (
+       <AppShell variant="elder">
+         <div className="e-topbar">
+-          <span>영상편지</span>
+           <SpeakButton text="하고 싶은 말씀을 하세요" />
++          <DisplaySettings />
++          <span className="e-brand">영상편지</span>
+         </div>
+-        <h1 className="e-question" style={{ fontSize: fs(24) }}>하고 싶은 말씀을 하세요</h1>
++        <h1 className="e-question">하고 싶은 말씀을 하세요</h1>
+         <RecordingNotice />
+ 
+-        <video ref={liveRef} autoPlay muted style={{ width: "100%", borderRadius: 12, background: "rgba(0,0,0,0.3)", aspectRatio: "4/3", marginBottom: 16 }} />
++        <video ref={liveRef} autoPlay muted className="e-media e-media--live" />
+ 
+         {!recording && (
+           <>
+@@ -119,14 +120,13 @@ export default function ERecord() {
+     return (
+       <AppShell variant="elder">
+         <div className="e-topbar">
+-          <span>영상편지</span>
++          <DisplaySettings />
++          <span className="e-brand">영상편지</span>
+         </div>
+-        <h1 className="e-question" style={{ fontSize: fs(24) }}>이렇게 보낼까요?</h1>
+-        <p style={{ color: "rgba(255,255,255,0.7)" }}>다시 찍으시려면 아래 버튼을 눌러주세요</p>
++        <h1 className="e-question">이렇게 보낼까요?</h1>
++        <p className="e-lead">다시 찍으시려면 아래 버튼을 눌러주세요</p>
+ 
+-        {previewUrl.current && (
+-          <video src={previewUrl.current} controls style={{ width: "100%", borderRadius: 12, background: "#000", aspectRatio: "4/3", marginBottom: 16 }} />
+-        )}
++        {previewUrl.current && <video src={previewUrl.current} controls className="e-media e-media--live" />}
+ 
+         <button className="e-primary" onClick={confirmSend} disabled={busy}>
+           {busy ? "보내는 중..." : "이 영상 보내기"}
+@@ -141,13 +141,12 @@ export default function ERecord() {
+   return (
+     <AppShell variant="elder">
+       <div className="e-topbar">
+-        <span>영상편지</span>
++        <DisplaySettings />
++        <span className="e-brand">영상편지</span>
+       </div>
+-      <h1 className="e-question" style={{ fontSize: fs(24) }}>영상편지를 보냈어요</h1>
++      <h1 className="e-question">영상편지를 보냈어요</h1>
+ 
+-      {previewUrl.current && (
+-        <video src={previewUrl.current} controls style={{ width: "100%", borderRadius: 12, background: "#000", aspectRatio: "4/3", marginBottom: 16 }} />
+-      )}
++      {previewUrl.current && <video src={previewUrl.current} controls className="e-media e-media--live" />}
+ 
+       <button className="e-primary" onClick={() => navigate("/elder/home")}>
+         처음 화면으로
+diff --git a/demo/v1/src/screens/eSpeech.tsx b/demo/v1/src/screens/eSpeech.tsx
+index b170421..c18a639 100644
+--- a/demo/v1/src/screens/eSpeech.tsx
++++ b/demo/v1/src/screens/eSpeech.tsx
+@@ -1,6 +1,7 @@
+ import { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
++import { DisplaySettings } from "../components/DisplaySettings";
+ import { SpeakButton } from "../components/SpeakButton";
+ import { createTestBlob, startRecording, type RecordingHandle } from "../lib/recorder";
+ import { uploadToBucket, deleteFromBucket } from "../lib/storage";
+@@ -107,19 +108,16 @@ export default function ESpeech() {
+ 
+   return (
+     <AppShell variant="elder">
+-      <button
+-        className="e-secondary"
+-        onClick={() => navigate(-1)}
+-        style={{ marginBottom: 12, width: "auto", padding: "8px 16px" }}
+-      >
++      <button className="e-back" onClick={() => navigate(-1)}>
+         ← 이전 화면
+       </button>
+       <div className="e-topbar">
+-        <span>마지막</span>
+         <SpeakButton text={topic} />
++        <DisplaySettings />
++        <span className="e-brand">마지막</span>
+       </div>
+       <h1 className="e-question">{topic}</h1>
+-      <p style={{ color: "rgba(255,255,255,0.7)" }}>천천히 말씀하시면 됩니다</p>
++      <p className="e-lead">천천히 말씀하시면 됩니다</p>
+       <RecordingNotice />
+ 
+       {!recording && (
+diff --git a/demo/v1/src/screens/gAdmin.tsx b/demo/v1/src/screens/gAdmin.tsx
+index 4318440..b3aed76 100644
+--- a/demo/v1/src/screens/gAdmin.tsx
++++ b/demo/v1/src/screens/gAdmin.tsx
+@@ -1,8 +1,8 @@
+-import { useEffect, useState } from "react";
++import { useEffect, useState, type CSSProperties } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
+ import { BackButton } from "../components/BackButton";
+-import { RiskDot } from "../components/RiskDot";
++import { RiskDot, RiskPill } from "../components/RiskDot";
+ import { MedicalDisclaimer } from "../components/MedicalDisclaimer";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+ import { getErrorMessage } from "../lib/errors";
+@@ -86,46 +86,88 @@ export default function GAdmin() {
+     {} as Record<RiskLevel, number>
+   );
+ 
++  const statStyle = (color: string) => ({ "--stat-color": color }) as CSSProperties;
++
+   return (
+-    <AppShell>
+-      <BackButton to="/guardian" />
+-      <div className="g-header">관리자 대시보드</div>
+-      <h1 className="g-title">전체 현황</h1>
+-      <p className="g-sub">전체 가족의 데이터를 읽기 전용으로 모니터링합니다.</p>
+-
+-      <div style={{ display: "flex", gap: 8, margin: "16px 0" }}>
+-        <div style={{ flex: 1, background: "var(--mist)", borderRadius: 12, padding: 12, textAlign: "center" }}>
+-          <div style={{ fontSize: 20, fontWeight: 700 }}>{elders.length}</div>
+-          <div style={{ fontSize: 12, color: "var(--ink3)" }}>전체</div>
++    <AppShell
++      aside={
++        <>
++          <div className="g-brand">Callog(콜록)</div>
++          <div className="g-aside-actions">
++            <BackButton to="/guardian" />
++          </div>
++          <div className="g-aside-foot">
++            전체 가족의 데이터를 읽기 전용으로 봅니다. 수정·삭제는 각 보호자만 할 수 있습니다.
++          </div>
++        </>
++      }
++    >
++      <div className="g-toolbar">
++        <div>
++          <div className="g-header">관리자 대시보드</div>
++          <h1 className="g-title">전체 현황</h1>
++          <p className="g-sub">전체 가족의 데이터를 읽기 전용으로 모니터링합니다.</p>
++        </div>
++      </div>
++
++      <div className="g-stats">
++        <div className="g-stat" style={statStyle("var(--primary)")}>
++          <div className="g-stat-label">전체</div>
++          <div className="g-stat-value">
++            {elders.length}
++            <small>명</small>
++          </div>
+         </div>
+-        <div style={{ flex: 1, background: "var(--mist)", borderRadius: 12, padding: 12, textAlign: "center" }}>
+-          <div style={{ fontSize: 20, fontWeight: 700, color: "var(--gold)" }}>{counts["위험"] ?? 0}</div>
+-          <div style={{ fontSize: 12, color: "var(--ink3)" }}>위험</div>
++        <div className="g-stat" style={statStyle("var(--warn)")}>
++          <div className="g-stat-label">위험</div>
++          <div className="g-stat-value">
++            {counts["위험"] ?? 0}
++            <small>명</small>
++          </div>
+         </div>
+-        <div style={{ flex: 1, background: "var(--mist)", borderRadius: 12, padding: 12, textAlign: "center" }}>
+-          <div style={{ fontSize: 20, fontWeight: 700, color: "var(--red)" }}>{counts["심각"] ?? 0}</div>
+-          <div style={{ fontSize: 12, color: "var(--ink3)" }}>심각</div>
++        <div className="g-stat" style={statStyle("var(--crit)")}>
++          <div className="g-stat-label">심각</div>
++          <div className="g-stat-value">
++            {counts["심각"] ?? 0}
++            <small>명</small>
++          </div>
+         </div>
+       </div>
+ 
+-      {loading && <p>불러오는 중...</p>}
+-      {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++      {error && <p className="g-error">{error}</p>}
++      {loading && <p className="g-sub">불러오는 중...</p>}
+       {!loading && sorted.length === 0 && !error && <p className="g-sub">등록된 어르신이 없습니다.</p>}
+ 
+-      {sorted.map((elder) => {
+-        const risk = riskByElder[elder.id];
+-        return (
+-          <button key={elder.id} className="g-list-item" onClick={() => navigate(`/guardian/elders/${elder.id}`)}>
+-            <RiskDot level={elder.priority_status} />
+-            <div style={{ flex: 1 }}>
+-              <div className="g-list-name">{elder.name} <span style={{ fontSize: 12, color: "var(--ink3)" }}>{elder.relationship}</span></div>
+-              <div className="g-list-meta">보호자: {elder.family_account?.email ?? "알 수 없음"}</div>
+-              {risk && <div className="g-list-meta">{risk.reason}</div>}
+-            </div>
+-            <span style={{ color: "var(--ink3)" }}>›</span>
+-          </button>
+-        );
+-      })}
++      {sorted.length > 0 && (
++        <div className="g-card">
++          <div className="g-card-title">
++            <span>대상자</span>
++            <span>위험도순</span>
++          </div>
++          {sorted.map((elder) => {
++            const risk = riskByElder[elder.id];
++            return (
++              <button
++                key={elder.id}
++                className="g-list-item"
++                onClick={() => navigate(`/guardian/elders/${elder.id}`)}
++              >
++                <RiskDot level={elder.priority_status} />
++                <div className="g-list-body">
++                  <div className="g-list-name">
++                    {elder.name}
++                    <small>{elder.relationship}</small>
++                  </div>
++                  <div className="g-list-meta">보호자: {elder.family_account?.email ?? "알 수 없음"}</div>
++                  {risk && <div className="g-list-meta">{risk.reason}</div>}
++                </div>
++                <RiskPill level={elder.priority_status} />
++                <span className="g-chev">›</span>
++              </button>
++            );
++          })}
++        </div>
++      )}
+ 
+       <MedicalDisclaimer />
+     </AppShell>
+diff --git a/demo/v1/src/screens/gDetail.tsx b/demo/v1/src/screens/gDetail.tsx
+index 74397ba..dd62db7 100644
+--- a/demo/v1/src/screens/gDetail.tsx
++++ b/demo/v1/src/screens/gDetail.tsx
+@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
+ import { useNavigate, useParams } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
+ import { BackButton } from "../components/BackButton";
+-import { RiskDot } from "../components/RiskDot";
++import { RiskPill } from "../components/RiskDot";
+ import { TrendChart, type TrendPoint } from "../components/TrendChart";
+ import { MedicalDisclaimer } from "../components/MedicalDisclaimer";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+@@ -189,112 +189,140 @@ export default function GDetail() {
+     setter((prev) => prev.filter((l) => l.id !== letter.id));
+   }
+ 
+-  if (!elder) return <AppShell>{error ? <p style={{ color: "var(--red)" }}>{error}</p> : <p>불러오는 중...</p>}</AppShell>;
++  if (!elder) return <AppShell>{error ? <p className="g-error">{error}</p> : <p className="g-sub">불러오는 중...</p>}</AppShell>;
+ 
+   return (
+-    <AppShell>
+-      <BackButton to="/guardian" />
+-      <div className="g-header" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+-        <RiskDot level={elder.priority_status} /> {elder.priority_status}
++    <AppShell
++      aside={
++        <>
++          <div className="g-brand">Callog(콜록)</div>
++          <div className="g-aside-actions">
++            <BackButton to="/guardian" />
++          </div>
++          <div className="g-aside-foot">
++            본 서비스는 의료기기가 아니며, 표시되는 위험도는 참고용 신호입니다.
++          </div>
++        </>
++      }
++    >
++      <div className="g-toolbar">
++        <div>
++          <div className="g-header">
++            <RiskPill level={elder.priority_status} />
++          </div>
++          <h1 className="g-title">
++            {elder.name}
++            <small>{elder.relationship}</small>
++          </h1>
++          <p className="g-sub">
++            {streak > 0 && `${streak}일 연속 안부를 남기고 있어요. `}
++            {risk ? risk.reason : "특별한 위험 신호가 없습니다."}
++          </p>
++        </div>
+       </div>
+-      <h1 className="g-title">{elder.name} <span style={{ fontSize: 14, color: "var(--ink3)" }}>{elder.relationship}</span></h1>
+ 
+-      {streak > 0 && <p className="g-sub">{streak}일 연속 안부를 남기고 있어요</p>}
+-      {risk ? <p className="g-sub">{risk.reason}</p> : <p className="g-sub">특별한 위험 신호가 없습니다.</p>}
+-
+-      <div style={{ display: "flex", gap: 8 }}>
++      <div className="g-actions">
+         {elder.phone ? (
+-          <a
+-            className="g-button"
+-            style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
+-            href={`tel:${elder.phone}`}
+-          >
++          <a className="g-button" href={`tel:${elder.phone}`}>
+             전화하기
+           </a>
+         ) : (
+-          <button className="g-button" disabled style={{ flex: 1 }} title="등록된 전화번호가 없습니다">
++          <button className="g-button" disabled title="등록된 전화번호가 없습니다">
+             전화하기
+           </button>
+         )}
+-        <button className="g-button g-button--secondary" disabled={busy || !risk} onClick={markChecked} style={{ flex: 1 }}>
++        <button className="g-button g-button--secondary" disabled={busy || !risk} onClick={markChecked}>
+           확인했어요
+         </button>
++        <button
++          className="g-button g-button--secondary"
++          onClick={() => navigate(`/guardian/elders/${elderId}/letter`)}
++        >
++          영상편지 보내기
++        </button>
++        <button className="g-button g-button--secondary" onClick={reinvite} disabled={busy}>
++          재초대 (기기 변경 시)
++        </button>
+       </div>
++      {error && <p className="g-error">{error}</p>}
+ 
+-      <button className="g-button g-button--secondary" style={{ marginTop: 16 }} onClick={() => navigate(`/guardian/elders/${elderId}/letter`)}>
+-        영상편지 보내기
+-      </button>
+-      <button className="g-button g-button--secondary" onClick={reinvite} disabled={busy}>
+-        재초대 (기기 변경 시)
+-      </button>
+-      {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
+-
+-      {trend.some((p) => p.level) && (
+-        <div style={{ marginTop: 24 }}>
+-          <div className="g-header">최근 {TREND_DAYS}일 추이</div>
+-          <TrendChart points={trend} />
+-        </div>
+-      )}
+-
+-      {voice?.signedUrl && (
+-        <div style={{ marginTop: 24 }}>
+-          <div className="g-header">최근 말하기 안부</div>
+-          <div style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 6 }}>
+-            {new Date(voice.created_at).toLocaleString("ko-KR")}
+-          </div>
+-          <audio src={voice.signedUrl} controls style={{ width: "100%" }} />
+-          {voice.analysis_status === "failed" && (
+-            <p style={{ color: "var(--red)", fontSize: 13, marginTop: 8 }}>음성 분석에 실패했습니다. 직접 들어보고 확인해주세요.</p>
++      {/* 넓은 화면에서는 추이·음성과 영상편지를 2단으로 나눠, 스크롤하지 않고 함께 본다 */}
++      <div className="g-grid g-section">
++        <div>
++          {trend.some((p) => p.level) && (
++            <div className="g-card">
++              <div className="g-card-title">
++                <span>최근 {TREND_DAYS}일 추이</span>
++              </div>
++              <TrendChart points={trend} />
++            </div>
+           )}
+-          {voice.analysis_status === "ok" && (voice.transcript || voice.observations) && (
+-            <div style={{ background: "var(--mist)", borderRadius: 12, padding: 12, marginTop: 8, fontSize: 14 }}>
+-              {voice.transcript && (
+-                <div style={{ marginBottom: voice.observations ? 6 : 0 }}>
+-                  <span style={{ color: "var(--ink3)" }}>말씀 내용: </span>{voice.transcript}
+-                </div>
++
++          {voice?.signedUrl && (
++            <div className="g-card">
++              <div className="g-card-title">
++                <span>최근 말하기 안부</span>
++              </div>
++              <div className="g-timestamp">{new Date(voice.created_at).toLocaleString("ko-KR")}</div>
++              <audio src={voice.signedUrl} controls style={{ width: "100%" }} />
++              {voice.analysis_status === "failed" && (
++                <p className="g-error">음성 분석에 실패했습니다. 직접 들어보고 확인해주세요.</p>
+               )}
+-              {voice.observations && (
+-                <div>
+-                  <span style={{ color: "var(--ink3)" }}>AI 소견: </span>{voice.observations}
++              {voice.analysis_status === "ok" && (voice.transcript || voice.observations) && (
++                <div className="g-note">
++                  {voice.transcript && (
++                    <div>
++                      <span className="g-note-label">말씀 내용</span>
++                      {voice.transcript}
++                    </div>
++                  )}
++                  {voice.observations && (
++                    <div style={{ marginTop: voice.transcript ? 10 : 0 }}>
++                      <span className="g-note-label">AI 소견</span>
++                      {voice.observations}
++                    </div>
++                  )}
+                 </div>
+               )}
+             </div>
+           )}
+         </div>
+-      )}
+ 
+-      <div style={{ marginTop: 24 }}>
+-        <div className="g-header">{elder.name}님이 보낸 영상편지</div>
+-        {letters.length === 0 && <p className="g-sub">아직 받은 영상편지가 없습니다.</p>}
+-        {letters.map((letter) => (
+-          <div key={letter.id} style={{ background: "var(--mist)", borderRadius: 12, padding: 12, marginBottom: 12 }}>
+-            <div style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 6 }}>
+-              {new Date(letter.sent_at).toLocaleString("ko-KR")}
++        <div>
++          <div className="g-card">
++            <div className="g-card-title">
++              <span>{elder.name}님이 보낸 영상편지</span>
+             </div>
+-            <div style={{ marginBottom: 8 }}>{letter.title}</div>
+-            {letter.signedUrl && <video src={letter.signedUrl} controls style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />}
+-            <button className="g-button g-button--secondary" onClick={() => deleteLetter(letter, "elder")}>
+-              삭제
+-            </button>
++            {letters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 받은 영상편지가 없습니다.</p>}
++            {letters.map((letter) => (
++              <div key={letter.id} className="g-letter">
++                <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
++                <div className="g-letter-title">{letter.title}</div>
++                {letter.signedUrl && <video src={letter.signedUrl} controls className="g-media" />}
++                <button className="g-button g-button--danger" onClick={() => deleteLetter(letter, "elder")}>
++                  삭제
++                </button>
++              </div>
++            ))}
+           </div>
+-        ))}
+-      </div>
+ 
+-      <div style={{ marginTop: 24 }}>
+-        <div className="g-header">내가 보낸 영상편지</div>
+-        {myLetters.length === 0 && <p className="g-sub">아직 보낸 영상편지가 없습니다.</p>}
+-        {myLetters.map((letter) => (
+-          <div key={letter.id} style={{ background: "var(--mist)", borderRadius: 12, padding: 12, marginBottom: 12 }}>
+-            <div style={{ fontSize: 13, color: "var(--ink3)", marginBottom: 6 }}>
+-              {new Date(letter.sent_at).toLocaleString("ko-KR")}
++          <div className="g-card">
++            <div className="g-card-title">
++              <span>내가 보낸 영상편지</span>
+             </div>
+-            <div style={{ marginBottom: 8 }}>{letter.title}</div>
+-            {letter.signedUrl && <video src={letter.signedUrl} controls style={{ width: "100%", borderRadius: 8, marginBottom: 8 }} />}
+-            <button className="g-button g-button--secondary" onClick={() => deleteLetter(letter, "family")}>
+-              삭제
+-            </button>
++            {myLetters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 보낸 영상편지가 없습니다.</p>}
++            {myLetters.map((letter) => (
++              <div key={letter.id} className="g-letter">
++                <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
++                <div className="g-letter-title">{letter.title}</div>
++                {letter.signedUrl && <video src={letter.signedUrl} controls className="g-media" />}
++                <button className="g-button g-button--danger" onClick={() => deleteLetter(letter, "family")}>
++                  삭제
++                </button>
++              </div>
++            ))}
+           </div>
+-        ))}
++        </div>
+       </div>
+ 
+       <MedicalDisclaimer />
+diff --git a/demo/v1/src/screens/gLetter.tsx b/demo/v1/src/screens/gLetter.tsx
+index 1a696eb..16e932d 100644
+--- a/demo/v1/src/screens/gLetter.tsx
++++ b/demo/v1/src/screens/gLetter.tsx
+@@ -72,11 +72,11 @@ export default function GLetter() {
+       <h1 className="g-title">{topic}</h1>
+       <p className="g-sub">어르신이 오늘 안부를 남기면 완료 화면에서 이 편지가 열립니다.</p>
+       {/* 통신비밀보호법/민법(타인 초상권·음성권) 대응 — 근거: Help4/법적문제 피해가기 공략.pdf §5, 체크리스트 4번 */}
+-      <p style={{ fontSize: 13, color: "var(--ink2)", background: "var(--mist)", borderRadius: 10, padding: "10px 12px", marginBottom: 12 }}>
++      <p className="g-note" style={{ marginTop: 0, marginBottom: 12 }}>
+         본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있습니다.
+       </p>
+ 
+-      <video ref={videoRef} autoPlay muted style={{ width: "100%", borderRadius: 12, background: "#000", aspectRatio: "4/3" }} />
++      <video ref={videoRef} autoPlay muted className="g-media g-media--live" />
+ 
+       {!blob && !recording && (
+         <>
+@@ -101,7 +101,7 @@ export default function GLetter() {
+             <label>한 줄 제목</label>
+             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={topic} />
+           </div>
+-          {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++          {error && <p className="g-error">{error}</p>}
+           <button className="g-button" onClick={send} disabled={sending}>
+             {sending ? "전송 중..." : "편지 보내기"}
+           </button>
+diff --git a/demo/v1/src/screens/gList.tsx b/demo/v1/src/screens/gList.tsx
+index a8de7b0..d3b3094 100644
+--- a/demo/v1/src/screens/gList.tsx
++++ b/demo/v1/src/screens/gList.tsx
+@@ -1,7 +1,7 @@
+-import { useEffect, useState } from "react";
++import { useEffect, useState, type CSSProperties } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { AppShell } from "../components/AppShell";
+-import { RiskDot } from "../components/RiskDot";
++import { RiskDot, RiskPill } from "../components/RiskDot";
+ import { MedicalDisclaimer } from "../components/MedicalDisclaimer";
+ import { getSupabase, supabaseConfigured } from "../lib/supabase";
+ import type { RiskLevel } from "../config/riskConstants";
+@@ -15,6 +15,16 @@ interface ElderRow {
+   priority_status: RiskLevel;
+ }
+ 
++const LEVELS: RiskLevel[] = ["안전", "위험", "심각"];
++const LEVEL_COLOR: Record<RiskLevel, string> = {
++  안전: "var(--safe)",
++  위험: "var(--warn)",
++  심각: "var(--crit)",
++};
++
++// 요약 타일 왼쪽의 등급 색 띠 — CSS의 --stat-color로 넘긴다
++const statStyle = (color: string) => ({ "--stat-color": color }) as CSSProperties;
++
+ export default function GList() {
+   const navigate = useNavigate();
+   const [elders, setElders] = useState<ElderRow[]>([]);
+@@ -55,63 +65,104 @@ export default function GList() {
+     setElders((prev) => prev.filter((e) => e.id !== elder.id));
+   }
+ 
++  // 목록을 세지 않고도 오늘 상태가 한눈에 보이도록 위쪽에 등급별 인원을 먼저 놓는다
++  const counts = Object.fromEntries(
++    LEVELS.map((level) => [level, elders.filter((e) => e.priority_status === level).length])
++  ) as Record<RiskLevel, number>;
++
+   return (
+-    <AppShell>
+-      <div className="g-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+-        <span>Callog(콜록)</span>
+-        <div style={{ display: "flex", gap: 8 }}>
+-          {isAdmin && (
+-            <button className="g-back" onClick={() => navigate("/admin")}>
+-              관리자 대시보드
++    <AppShell
++      aside={
++        <>
++          <div className="g-brand">Callog(콜록)</div>
++          <div className="g-aside-actions">
++            {isAdmin && (
++              <button className="g-back" onClick={() => navigate("/admin")}>
++                관리자 대시보드
++              </button>
++            )}
++            <button className="g-back" onClick={logout}>
++              로그아웃
+             </button>
+-          )}
+-          <button className="g-back" onClick={logout}>
+-            로그아웃
+-          </button>
++          </div>
++          <div className="g-aside-foot">
++            본 서비스는 의료기기가 아니며, 표시되는 위험도는 참고용 신호입니다.
++          </div>
++        </>
++      }
++    >
++      <div className="g-toolbar">
++        <div>
++          <h1 className="g-title">대상자 목록</h1>
++          <p className="g-sub">등록된 어르신 {elders.length}명의 오늘 상태입니다.</p>
+         </div>
++        <button className="g-button" onClick={() => navigate("/guardian/elders/new")}>
++          어르신 추가
++        </button>
+       </div>
+-      <h1 className="g-title">대상자 목록</h1>
+ 
+-      {loading && <p>불러오는 중...</p>}
+-      {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++      {elders.length > 0 && (
++        <div className="g-stats">
++          {LEVELS.map((level) => (
++            <div key={level} className="g-stat" style={statStyle(LEVEL_COLOR[level])}>
++              <div className="g-stat-label">{level}</div>
++              <div className="g-stat-value">
++                {counts[level]}
++                <small>명</small>
++              </div>
++            </div>
++          ))}
++        </div>
++      )}
++
++      {error && <p className="g-error">{error}</p>}
++      {loading && <p className="g-sub">불러오는 중...</p>}
+       {!loading && elders.length === 0 && !error && (
+         <p className="g-sub">등록된 어르신이 없습니다. 어르신을 추가해보세요.</p>
+       )}
+ 
+-      {elders.map((elder) => (
+-        <button key={elder.id} className="g-list-item" onClick={() => navigate(`/guardian/elders/${elder.id}`)}>
+-          <RiskDot level={elder.priority_status} />
+-          <div style={{ flex: 1 }}>
+-            <div className="g-list-name">{elder.name}</div>
+-            <div className="g-list-meta">{elder.relationship}</div>
++      {elders.length > 0 && (
++        <div className="g-card">
++          <div className="g-card-title">
++            <span>대상자</span>
+           </div>
+-          <span
+-            role="button"
+-            style={{ color: "var(--ink3)", fontSize: 13, padding: "4px 8px" }}
+-            onClick={(e) => {
+-              e.stopPropagation();
+-              navigate(`/guardian/elders/${elder.id}/edit`);
+-            }}
+-          >
+-            수정
+-          </span>
+-          <span
+-            role="button"
+-            style={{ color: "var(--red)", fontSize: 13, padding: "4px 8px" }}
+-            onClick={(e) => {
+-              e.stopPropagation();
+-              deleteElder(elder);
+-            }}
+-          >
+-            삭제
+-          </span>
+-          <span style={{ color: "var(--ink3)" }}>›</span>
+-        </button>
+-      ))}
+-
+-      <button className="g-button" style={{ marginTop: 20 }} onClick={() => navigate("/guardian/elders/new")}>
+-        어르신 추가
+-      </button>
++          {elders.map((elder) => (
++            <button
++              key={elder.id}
++              className="g-list-item"
++              onClick={() => navigate(`/guardian/elders/${elder.id}`)}
++            >
++              <RiskDot level={elder.priority_status} />
++              <div className="g-list-body">
++                <div className="g-list-name">{elder.name}</div>
++                <div className="g-list-meta">{elder.relationship}</div>
++              </div>
++              <RiskPill level={elder.priority_status} />
++              <span
++                role="button"
++                className="g-rowaction"
++                onClick={(e) => {
++                  e.stopPropagation();
++                  navigate(`/guardian/elders/${elder.id}/edit`);
++                }}
++              >
++                수정
++              </span>
++              <span
++                role="button"
++                className="g-rowaction g-rowaction--danger"
++                onClick={(e) => {
++                  e.stopPropagation();
++                  deleteElder(elder);
++                }}
++              >
++                삭제
++              </span>
++              <span className="g-chev">›</span>
++            </button>
++          ))}
++        </div>
++      )}
+ 
+       <MedicalDisclaimer />
+     </AppShell>
+diff --git a/demo/v1/src/screens/gStart.tsx b/demo/v1/src/screens/gStart.tsx
+index 64c9e9a..88f4aaa 100644
+--- a/demo/v1/src/screens/gStart.tsx
++++ b/demo/v1/src/screens/gStart.tsx
+@@ -62,11 +62,11 @@ export default function GStart() {
+             <label>비밀번호</label>
+             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={!supabaseConfigured} />
+           </div>
+-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--ink2)", marginBottom: 16 }}>
++          <label className="g-check" style={{ marginBottom: 16 }}>
+             <input type="checkbox" checked={autoLogin} onChange={(e) => toggleAutoLogin(e.target.checked)} />
+             로그인 상태 유지
+           </label>
+-          {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++          {error && <p className="g-error">{error}</p>}
+           <button className="g-button" type="submit" disabled={loading || !supabaseConfigured}>
+             {loading ? "로그인 중..." : "로그인"}
+           </button>
+@@ -76,7 +76,7 @@ export default function GStart() {
+         </form>
+       )}
+ 
+-      <a href="/terms" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--ink3)", display: "block", marginTop: 24, textAlign: "center" }}>
++      <a href="/terms" target="_blank" rel="noreferrer" className="g-link g-link--block">
+         이용약관 및 개인정보 처리 안내
+       </a>
+     </AppShell>
+diff --git a/demo/v1/src/screens/invite.tsx b/demo/v1/src/screens/invite.tsx
+index 4a7073a..0aecc99 100644
+--- a/demo/v1/src/screens/invite.tsx
++++ b/demo/v1/src/screens/invite.tsx
+@@ -43,8 +43,8 @@ export default function Invite() {
+       <h1 className="g-title">어르신께 링크를 보내세요</h1>
+       <p className="g-sub">어르신은 이 링크만 한 번 누르면 됩니다.</p>
+ 
+-      {loading && <p>링크 생성 중...</p>}
+-      {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++      {loading && <p className="g-sub">링크 생성 중...</p>}
++      {error && <p className="g-error">{error}</p>}
+ 
+       {link && (
+         <>
+@@ -60,7 +60,7 @@ export default function Invite() {
+             <label>어르신 전화번호 (문자로 보내기)</label>
+             <input value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="010-0000-0000" maxLength={13} />
+           </div>
+-          <a className="g-button" style={{ display: "block", textAlign: "center", textDecoration: "none" }} href={smsHref}>
++          <a className="g-button" href={smsHref}>
+             문자로 보내기
+           </a>
+ 
+diff --git a/demo/v1/src/screens/reg.tsx b/demo/v1/src/screens/reg.tsx
+index 3a068c0..db11497 100644
+--- a/demo/v1/src/screens/reg.tsx
++++ b/demo/v1/src/screens/reg.tsx
+@@ -128,7 +128,7 @@ export default function Reg() {
+           <label>안부 묻는 시각</label>
+           <input type="time" value={checkinTime} onChange={(e) => setCheckinTime(e.target.value)} required />
+         </div>
+-        {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++        {error && <p className="g-error">{error}</p>}
+         <button className="g-button" type="submit" disabled={loading || !supabaseConfigured}>
+           {loading ? "저장 중..." : isEdit ? "수정 완료" : "다음 — 지병 확인"}
+         </button>
+diff --git a/demo/v1/src/screens/signup.tsx b/demo/v1/src/screens/signup.tsx
+index 38f8e1f..7558f32 100644
+--- a/demo/v1/src/screens/signup.tsx
++++ b/demo/v1/src/screens/signup.tsx
+@@ -77,7 +77,7 @@ export default function Signup() {
+             disabled={!supabaseConfigured}
+           />
+         </div>
+-        <a href="/terms" target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--dawn)", display: "inline-block", marginBottom: 10 }}>
++        <a href="/terms" target="_blank" rel="noreferrer" className="g-link" style={{ marginBottom: 10 }}>
+           이용약관 및 개인정보 처리 안내 보기
+         </a>
+         {/* 개인정보보호법 §23·§28-8 대응 — 일반 개인정보 동의와 국외이전(Google Gemini) 동의를
+@@ -110,7 +110,7 @@ export default function Signup() {
+             </>
+           }
+         />
+-        {error && <p style={{ color: "var(--red)", fontSize: 13 }}>{error}</p>}
++        {error && <p className="g-error">{error}</p>}
+         <button className="g-button" type="submit" disabled={loading || !consent || !consentOverseas || !supabaseConfigured}>
+           {loading ? "가입 중..." : "다음 — 어르신 정보"}
+         </button>
+diff --git a/demo/v1/src/screens/terms.tsx b/demo/v1/src/screens/terms.tsx
+index 55509bb..2bc0c2a 100644
+--- a/demo/v1/src/screens/terms.tsx
++++ b/demo/v1/src/screens/terms.tsx
+@@ -16,8 +16,8 @@ export default function Terms() {
+       <div className="g-header">이용약관 및 서비스 안내</div>
+       <h1 className="g-title">Callog(콜록) 이용약관</h1>
+ 
+-      <section style={{ marginBottom: 20 }}>
+-        <h2 style={{ fontSize: 15 }}>1. 서비스 성격</h2>
++      <section className="g-terms-section">
++        <h2 className="g-terms-heading">1. 서비스 성격</h2>
+         <p className="g-sub">
+           Callog는 독거 어르신과 가족(보호자)이 매일 짧은 안부를 주고받도록 돕는 서비스입니다. 안부 응답과 음성을
+           바탕으로 AI가 참고용 신호를 제공하지만, <strong>본 서비스는 의료기기나 의료 진단 서비스가 아닙니다.</strong> AI
+@@ -26,8 +26,8 @@ export default function Terms() {
+         </p>
+       </section>
+ 
+-      <section style={{ marginBottom: 20 }}>
+-        <h2 style={{ fontSize: 15 }}>2. 응급 상황 및 알림 관련 면책</h2>
++      <section className="g-terms-section">
++        <h2 className="g-terms-heading">2. 응급 상황 및 알림 관련 면책</h2>
+         <p className="g-sub">
+           본 서비스는 119 등 응급 구조 서비스가 아니며, 응급 상황을 감지하거나 신고하지 않습니다. 네트워크·서버 장애,
+           어르신의 기기 문제 등으로 인해 위험 알림이 지연되거나 누락될 수 있습니다. 위험 알림 수신 여부와 관계없이
+@@ -36,8 +36,8 @@ export default function Terms() {
+         </p>
+       </section>
+ 
+-      <section style={{ marginBottom: 20 }}>
+-        <h2 style={{ fontSize: 15 }}>3. 개인정보 수집·이용</h2>
++      <section className="g-terms-section">
++        <h2 className="g-terms-heading">3. 개인정보 수집·이용</h2>
+         <p className="g-sub">
+           가입 시 이름·이메일 등 일반 개인정보를 수집합니다. 어르신의 지병 등 건강에 관한 정보는 개인정보보호법상
+           민감정보로, 일반 개인정보와 별도로 동의를 받습니다. 음성 안부와 영상편지는 AI 분석을 위해 Google Gemini
+@@ -46,23 +46,23 @@ export default function Terms() {
+         </p>
+       </section>
+ 
+-      <section style={{ marginBottom: 20 }}>
+-        <h2 style={{ fontSize: 15 }}>4. 녹화/녹음 시 유의사항</h2>
++      <section className="g-terms-section">
++        <h2 className="g-terms-heading">4. 녹화/녹음 시 유의사항</h2>
+         <p className="g-sub">
+           영상편지·말하기 안부를 녹화·녹음할 때는 본인의 음성과 모습만 담아주세요. 타인의 동의 없이 촬영·녹음할 경우
+           법적 책임을 질 수 있습니다.
+         </p>
+       </section>
+ 
+-      <section style={{ marginBottom: 20 }}>
+-        <h2 style={{ fontSize: 15 }}>5. 보호자의 대리 입력 책임</h2>
++      <section className="g-terms-section">
++        <h2 className="g-terms-heading">5. 보호자의 대리 입력 책임</h2>
+         <p className="g-sub">
+           보호자가 어르신을 대신하여 지병 등 정보를 입력하는 경우, 어르신(정보주체) 본인의 사전 동의를 받았음을
+           전제로 합니다.
+         </p>
+       </section>
+ 
+-      <p style={{ fontSize: 12, color: "var(--ink3)", marginTop: 32 }}>
++      <p className="g-legal">
+         본 약관은 팀이 정한 서비스 운영 방침을 안내하는 것으로, 정식 법률 자문을 대체하지 않습니다.
+       </p>
+     </AppShell>
+diff --git a/demo/v1/src/styles/elder.css b/demo/v1/src/styles/elder.css
+index 0f91548..6e13a0d 100644
+--- a/demo/v1/src/styles/elder.css
++++ b/demo/v1/src/styles/elder.css
+@@ -1,98 +1,548 @@
++/* 어르신 화면
++ *
++ * 두 가지 원칙만 지킨다.
++ *  1. 한 화면에 할 일 하나. 넓혀봐야 나눌 정보가 없으므로 폭 대신 크기를 키운다.
++ *  2. 기본 상태에서 이미 읽혀야 한다. "글씨 크게"는 더 필요한 분을 위한 것이지,
++ *     기본이 작아도 된다는 뜻이 아니다. 본문 17px / 인사말 27px / 버튼 높이 60px 이상.
++ *
++ * 바탕은 4종을 두고 어르신이 직접 고른다(components/DisplaySettings.tsx).
++ * 백내장이 있으면 어두운 배경의 흰 글씨가 번져 보이고, 노안만 있으면 크기만 키우면 되므로
++ * 하나를 정해주는 것보다 고르게 하는 편이 맞다.
++ */
++
++/* ===== 바탕 4종 ===== */
++
++:root {
++  /* 밤하늘 — 기본값 */
++  --e-bg: #121416;
++  --e-card: #1e1f25;
++  --e-card-2: #282b33;
++  --e-text: #ffffff;
++  --e-text-2: rgba(255, 255, 255, 0.64);
++  --e-primary: #404ed7;
++  --e-primary-ink: #ffffff;
++  --e-accent: #fc314d;
++  --e-line: rgba(255, 255, 255, 0.1);
++  --e-glow: rgba(64, 78, 215, 0.22);
++  --e-bezel: #2a2c34;
++}
++
++:root[data-elder-theme="daylight"] {
++  /* 한낮 — 백내장·수정체 혼탁으로 다크에서 글자가 번져 보이는 경우 */
++  --e-bg: #f7f8fb;
++  --e-card: #ffffff;
++  --e-card-2: #edeff5;
++  --e-text: #111318;
++  --e-text-2: #565c6b;
++  --e-primary: #2a37b8;
++  --e-primary-ink: #ffffff;
++  --e-accent: #c81734;
++  --e-line: rgba(17, 19, 24, 0.12);
++  --e-glow: rgba(42, 55, 184, 0.12);
++  --e-bezel: #d5d8e2;
++}
++
++:root[data-elder-theme="warm"] {
++  /* 노을 — 청색광이 부담스럽거나 잠들기 전 사용이 잦은 경우 */
++  --e-bg: #1b1512;
++  --e-card: #2a211c;
++  --e-card-2: #382c25;
++  --e-text: #fff6ee;
++  --e-text-2: rgba(255, 246, 238, 0.68);
++  --e-primary: #c4622a;
++  --e-primary-ink: #ffffff;
++  --e-accent: #e8a33c;
++  --e-line: rgba(255, 246, 238, 0.14);
++  --e-glow: rgba(196, 98, 42, 0.24);
++  --e-bezel: #3a2e26;
++}
++
++:root[data-elder-theme="maxcontrast"] {
++  /* 또렷하게 — 저시력용 검정 바탕 + 노란 글자(고대비 표준 조합) */
++  --e-bg: #000000;
++  --e-card: #101010;
++  --e-card-2: #1c1c1c;
++  --e-text: #ffffff;
++  --e-text-2: #d6d6d6;
++  --e-primary: #ffd400;
++  --e-primary-ink: #000000;
++  --e-accent: #ffd400;
++  --e-line: #4a4a4a;
++  --e-glow: rgba(255, 212, 0, 0.16);
++  --e-bezel: #333333;
++}
++
++/* ===== 셸 ===== */
++
++.app-shell--elder {
++  padding: 0;
++  justify-content: center;
++  background:
++    radial-gradient(110% 66% at 50% 0%, var(--e-glow), transparent 62%),
++    var(--e-bg);
++}
++
++.app-card--elder {
++  /* --e-fs = 어르신 화면 전용 글자 배율. FontSizeToggle이 바꾸는 --font-scale에
++     넓은 화면 확대분(--e-zoom)을 곱한 값이다. lib/fontScale.ts의 fs()도 이 값을 쓴다. */
++  --e-fs: calc(var(--font-scale) * var(--e-zoom, 1));
++
++  width: 100%;
++  max-width: 520px;
++  min-height: 100vh;
++  background: transparent;
++  color: var(--e-text);
++  border: none;
++  border-radius: 0;
++  padding: 20px 20px 44px;
++  display: flex;
++  flex-direction: column;
++  /* 화면 설정 시트(.e-sheet-backdrop)가 넓은 화면에서 이 카드를 기준으로 앉는다 */
++  position: relative;
++}
++
++/* 넓은 화면에서는 폰 비율 액자에 넣고 글자를 한 단계 키운다.
++   PC에서도 스마트폰과 같은 자리에 같은 것이 있어야, 자녀가 전화로
++   "가운데 파란 버튼 누르세요"라고 설명할 수 있다. */
++@media (min-width: 768px) {
++  .app-shell--elder {
++    padding: 40px 16px;
++  }
++
++  .app-card--elder {
++    --e-zoom: 1.08;
++    max-width: 468px;
++    min-height: 0;
++    background: var(--e-bg);
++    border-radius: 42px;
++    padding: 34px 30px 40px;
++    box-shadow:
++      var(--shadow-frame),
++      0 0 0 10px var(--e-bezel),
++      0 0 0 11px rgba(255, 255, 255, 0.09);
++    overflow: hidden;
++  }
++}
++
++/* ===== 머리 ===== */
++
+ .e-topbar {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+-  font-size: calc(13px * var(--font-scale));
+-  color: rgba(255, 255, 255, 0.7);
+-  margin-bottom: 16px;
++  gap: 12px;
++  font-size: calc(14px * var(--e-fs, 1));
++  color: var(--e-text-2);
++  margin-bottom: 14px;
++  flex: none;
++}
++
++.e-brand {
++  font-weight: 800;
++  letter-spacing: 0.01em;
++  color: var(--e-text);
++}
++
++.e-back {
++  align-self: flex-start;
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  background: var(--e-card);
++  border: 1px solid var(--e-line);
++  border-radius: 999px;
++  color: var(--e-text);
++  font-size: calc(15px * var(--e-fs, 1));
++  font-weight: 700;
++  padding: 10px 18px;
++  margin-bottom: 14px;
++  flex: none;
+ }
+ 
++/* 읽어주기 · 글씨 크게 같은 작은 알약 버튼 */
++.e-speak,
++.e-pill {
++  display: inline-flex;
++  /* .app-card--elder가 세로 flex라 그냥 두면 알약이 가로로 늘어난다 */
++  align-self: flex-start;
++  align-items: center;
++  gap: 6px;
++  /* 터치 타깃 44px 이상 — 손이 떨리는 분도 한 번에 누를 수 있어야 한다 */
++  padding: 12px 16px;
++  border-radius: 999px;
++  border: 1px solid var(--e-line);
++  background: var(--e-card);
++  color: var(--e-text);
++  font-size: calc(14px * var(--e-fs, 1));
++  font-weight: 700;
++  flex: none;
++}
++
++/* ===== 본문 ===== */
++
+ .e-question {
+-  font-family: "Gowun Batang", serif;
+-  font-size: calc(28px * var(--font-scale));
+-  line-height: 1.4;
+-  margin: 12px 0 24px;
++  font-family: inherit;
++  font-size: calc(27px * var(--e-fs, 1));
++  font-weight: 800;
++  line-height: 1.34;
++  letter-spacing: -0.02em;
++  text-wrap: balance;
++  margin: 14px 0 18px;
++  color: var(--e-text);
+ }
+ 
+-.e-choice {
+-  display: block;
+-  width: 100%;
+-  text-align: left;
+-  padding: 18px 20px;
+-  margin-bottom: 12px;
+-  border-radius: 14px;
+-  border: 1px solid rgba(255, 255, 255, 0.25);
+-  background: rgba(255, 255, 255, 0.08);
+-  color: #fff;
+-  font-size: calc(17px * var(--font-scale));
++.e-lead {
++  font-size: calc(17px * var(--e-fs, 1));
++  line-height: 1.62;
++  color: var(--e-text-2);
++  margin: 0 0 6px;
+ }
+ 
+-.e-choice--selected {
+-  background: var(--gold);
+-  border-color: var(--gold);
+-  color: var(--deep);
++.e-meta {
++  font-size: calc(15px * var(--e-fs, 1));
++  color: var(--e-text-2);
++  margin: 0;
++}
++
++.e-error {
++  font-size: calc(15px * var(--e-fs, 1));
++  color: var(--e-accent);
++  font-weight: 700;
++  margin: 8px 0;
++}
++
++.e-hero {
++  text-align: center;
++  padding: 26px 0 10px;
++  flex: none;
++}
++
++.e-hero .e-question {
++  margin-top: 8px;
++}
++
++.e-hero-mark {
++  font-size: calc(42px * var(--e-fs, 1));
++  line-height: 1;
++  margin-bottom: 10px;
++}
++
++/* ===== 카드 ===== */
++
++.e-card {
++  background: var(--e-card);
++  border: 1px solid var(--e-line);
++  border-radius: var(--r-lg);
++  padding: 16px 18px;
++  margin-bottom: 14px;
++  flex: none;
++}
++
++.e-card-label {
++  font-size: calc(14px * var(--e-fs, 1));
++  color: var(--e-text-2);
++  font-weight: 600;
++  margin-bottom: 4px;
++}
++
++.e-card-title {
++  font-size: calc(18px * var(--e-fs, 1));
+   font-weight: 700;
++  margin-bottom: 10px;
+ }
+ 
++.e-card-head {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  gap: 10px;
++  margin-bottom: 8px;
++}
++
++.e-badge-new {
++  font-size: calc(13px * var(--e-fs, 1));
++  font-weight: 800;
++  color: var(--e-primary-ink);
++  background: var(--e-accent);
++  border-radius: 999px;
++  padding: 3px 10px;
++  flex: none;
++}
++
++.e-media {
++  width: 100%;
++  border-radius: var(--r);
++  background: #000;
++  display: block;
++}
++
++.e-media--live {
++  aspect-ratio: 4 / 3;
++  margin-bottom: 16px;
++  background: var(--e-card-2);
++}
++
++/* ===== 버튼 ===== */
++
+ .e-primary {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 8px;
+   width: 100%;
+-  padding: 18px;
+-  border-radius: 14px;
+   border: none;
+-  background: var(--gold);
+-  color: var(--deep);
+-  font-size: calc(18px * var(--font-scale));
+-  font-weight: 700;
+-  margin-top: 8px;
++  border-radius: var(--r-lg);
++  background: var(--e-primary);
++  color: var(--e-primary-ink);
++  font-size: calc(19px * var(--e-fs, 1));
++  font-weight: 800;
++  letter-spacing: -0.01em;
++  padding: calc(19px * var(--e-fs, 1)) 16px;
++  margin-top: 14px;
++  flex: none;
+ }
+ 
+ .e-primary:disabled {
+-  opacity: 0.5;
++  opacity: 0.45;
+ }
+ 
+ .e-secondary {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 8px;
+   width: 100%;
+-  padding: 14px;
+-  border-radius: 14px;
+-  border: 1px solid rgba(255, 255, 255, 0.3);
+-  background: transparent;
+-  color: #fff;
+-  font-size: calc(15px * var(--font-scale));
++  border: 1px solid var(--e-line);
++  border-radius: var(--r-lg);
++  background: var(--e-card);
++  color: var(--e-text);
++  font-size: calc(17px * var(--e-fs, 1));
++  font-weight: 700;
++  padding: calc(16px * var(--e-fs, 1)) 16px;
+   margin-top: 10px;
++  flex: none;
+ }
+ 
+-.e-speak {
+-  display: inline-flex;
+-  align-items: center;
+-  gap: 6px;
+-  padding: 8px 14px;
+-  border-radius: 999px;
+-  border: 1px solid rgba(255, 255, 255, 0.3);
+-  background: rgba(255, 255, 255, 0.08);
+-  color: #fff;
+-  font-size: calc(13px * var(--font-scale));
++.e-secondary:disabled {
++  opacity: 0.45;
++}
++
++.e-choice {
++  display: block;
++  width: 100%;
++  text-align: left;
++  padding: calc(17px * var(--e-fs, 1)) 18px;
++  margin-top: 11px;
++  border-radius: var(--r-lg);
++  border: 1px solid var(--e-line);
++  background: var(--e-card);
++  color: var(--e-text);
++  font-size: calc(17px * var(--e-fs, 1));
++  font-weight: 700;
++  flex: none;
+ }
+ 
++.e-choice--selected {
++  background: var(--e-primary);
++  border-color: var(--e-primary);
++  color: var(--e-primary-ink);
++}
++
++/* ===== 진행 표시 ===== */
++
+ .e-progress {
+-  font-size: calc(13px * var(--font-scale));
+-  color: rgba(255, 255, 255, 0.6);
+-  margin-bottom: 8px;
++  display: flex;
++  gap: 5px;
++  margin: 12px 0 4px;
++  flex: none;
+ }
+ 
++.e-progress-seg {
++  flex: 1;
++  height: 6px;
++  border-radius: 999px;
++  background: var(--e-line);
++}
++
++.e-progress-seg--on {
++  background: var(--e-primary);
++}
++
++.e-progress-label {
++  font-size: calc(14px * var(--e-fs, 1));
++  color: var(--e-text-2);
++  font-weight: 700;
++  flex: none;
++}
++
++/* ===== 연속 참여 ===== */
++
+ .e-streak {
+   display: flex;
+-  gap: 6px;
++  gap: 7px;
+   justify-content: center;
+-  margin: 16px 0;
++  margin: 18px 0;
+ }
+ 
+ .e-streak-dot {
+-  width: 10px;
+-  height: 10px;
++  width: 11px;
++  height: 11px;
+   border-radius: 50%;
+-  background: rgba(255, 255, 255, 0.25);
++  background: var(--e-line);
+ }
+ 
+ .e-streak-dot--filled {
+-  background: var(--jade);
++  background: var(--e-accent);
++}
++
++/* ===== 안내 문구 ===== */
++
++.e-notice {
++  font-size: calc(14px * var(--e-fs, 1));
++  line-height: 1.6;
++  color: var(--e-text-2);
++  background: var(--e-card-2);
++  border: 1px solid var(--e-line);
++  border-radius: var(--r-sm);
++  padding: 11px 13px;
++  margin: 0 0 12px;
++  flex: none;
++}
++
++/* ===== 화면 설정 시트 =====
++ * 바탕과 글씨 크기를 직접 눌러보며 고르는 곳.
++ *
++ * 어두운 막을 깔지 않는다. 고르는 대상이 바탕색인데 그 위에 검은 막을 덮으면
++ * "한낮"을 골라도 흰 바탕이 회색으로 보여서, 무엇을 고른 건지 판단할 수가 없다.
++ * 대신 시트를 아래쪽 절반에만 띄워 위쪽 인사말과 바탕이 제 색으로 남게 한다.
++ */
++
++.e-sheet-backdrop {
++  position: fixed;
++  inset: 0;
++  background: transparent;
++  display: flex;
++  align-items: flex-end;
++  justify-content: center;
++  z-index: 50;
++  padding: 10px;
++}
++
++.e-sheet {
++  width: 100%;
++  max-width: 500px;
++  /* 인사말과 바탕이 시트 위로 남을 만큼만 차지한다 */
++  max-height: 58vh;
++  overflow-y: auto;
++  background: var(--e-card);
++  color: var(--e-text);
++  border: 1px solid var(--e-line);
++  border-radius: 26px;
++  padding: 16px 18px 20px;
++  box-shadow: 0 -12px 44px rgba(0, 0, 0, 0.45);
++}
++
++/* 넓은 화면에서는 폰 액자 안쪽 아래에 띄운다 — 액자 밖 화면 하단에 붙으면
++   폰과 상관없는 판이 하나 더 열린 것처럼 읽힌다. */
++@media (min-width: 768px) {
++  .e-sheet-backdrop {
++    position: absolute;
++    padding: 0;
++  }
++
++  .e-sheet {
++    max-width: 100%;
++    max-height: 72%;
++  }
++}
++
++.e-sheet-head {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 12px;
++  margin-bottom: 2px;
++}
++
++/* 고른 즉시 적용되므로 "확인"할 것이 없다. 이 버튼은 닫기일 뿐이라 제목 줄에 둔다. */
++.e-sheet-close {
++  flex: none;
++  background: var(--e-card-2);
++  border: 1px solid var(--e-line);
++  border-radius: 999px;
++  color: var(--e-text);
++  font-size: calc(15px * var(--e-fs, 1));
++  font-weight: 700;
++  padding: 10px 18px;
++}
++
++.e-sheet-title {
++  font-size: calc(19px * var(--e-fs, 1));
++  font-weight: 800;
++  line-height: 1.3;
++  margin: 0;
++}
++
++.e-sheet-sub {
++  font-size: calc(14px * var(--e-fs, 1));
++  line-height: 1.45;
++  color: var(--e-text-2);
++  margin: 0 0 12px;
++}
++
++.e-opt-group {
++  margin-bottom: 14px;
++}
++
++.e-opt-legend {
++  font-size: calc(15px * var(--e-fs, 1));
++  font-weight: 700;
++  margin-bottom: 8px;
++}
++
++.e-opt-row {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 8px;
++}
++
++.e-opt-row--three {
++  grid-template-columns: repeat(3, 1fr);
++}
++
++.e-opt-row--four {
++  grid-template-columns: repeat(4, 1fr);
++}
++
++.e-opt {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 9px;
++  background: var(--e-card-2);
++  border: 2px solid var(--e-line);
++  border-radius: var(--r);
++  padding: 11px 12px;
++  color: var(--e-text);
++  font-size: calc(16px * var(--e-fs, 1));
++  font-weight: 700;
++}
++
++.e-opt[aria-pressed="true"] {
++  border-color: var(--e-primary);
++}
++
++/* 버튼을 그 바탕 자체로 칠한다 — 색은 컴포넌트가 인라인으로 넣는다 */
++.e-opt--theme {
++  padding: 14px 6px;
++  font-size: calc(15px * var(--e-fs, 1));
++}
++
++.e-opt--theme[aria-pressed="true"] {
++  border-color: var(--opt-ring);
++  box-shadow: 0 0 0 2px var(--opt-ring);
++}
++
++.e-opt-size {
++  font-weight: 800;
+ }
+diff --git a/demo/v1/src/styles/guardian.css b/demo/v1/src/styles/guardian.css
+index 7d47f42..3f6e373 100644
+--- a/demo/v1/src/styles/guardian.css
++++ b/demo/v1/src/styles/guardian.css
+@@ -1,123 +1,667 @@
++/* 보호자 화면
++ *
++ * 어르신 화면과 반대로, 여기는 여러 명의 상태를 한눈에 비교하는 관제판이다.
++ * 좁은 띠 안에 가두면 위험도·추이·영상편지가 세로로 끝없이 밀려 스크롤해야 겨우 비교되므로,
++ * 넓은 화면에서는 왼쪽 사이드바 + 오른쪽 본문으로 펴고 카드를 2단으로 나눈다.
++ *
++ * 폼 화면(가입·어르신 등록·지병 선택)은 예외다. 입력 폼은 넓힐수록 읽기 어려워지므로
++ * 지금처럼 가운데 좁은 카드(.app-card)를 그대로 쓴다.
++ */
++
++/* ===== 대시보드 레이아웃 ===== */
++
++.g-layout {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr);
++  /* 좁은 화면에서 사이드바는 위쪽 띠가 된다. auto를 주지 않으면 100vh를 두 행이
++     나눠 가져서 띠 하나가 화면 절반을 차지한다. */
++  grid-template-rows: auto minmax(0, 1fr);
++  width: 100%;
++  min-height: 100vh;
++}
++
++@media (min-width: 1024px) {
++  .g-layout {
++    grid-template-columns: 232px minmax(0, 1fr);
++    grid-template-rows: minmax(0, 1fr);
++  }
++}
++
++.g-aside {
++  background: #0b0d10;
++  border-bottom: 1px solid var(--line);
++  padding: 16px 18px;
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  flex-wrap: wrap;
++}
++
++@media (min-width: 1024px) {
++  .g-aside {
++    border-bottom: none;
++    border-right: 1px solid var(--line);
++    flex-direction: column;
++    align-items: stretch;
++    padding: 24px 16px;
++    gap: 8px;
++    position: sticky;
++    top: 0;
++    height: 100vh;
++  }
++}
++
++.g-brand {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-size: 17px;
++  font-weight: 800;
++  letter-spacing: -0.01em;
++  color: var(--text);
++  flex: 1;
++}
++
++@media (min-width: 1024px) {
++  .g-brand {
++    flex: none;
++    padding: 0 8px 14px;
++  }
++}
++
++.g-brand::before {
++  content: "";
++  width: 9px;
++  height: 9px;
++  border-radius: 3px;
++  background: var(--primary);
++  flex: none;
++}
++
++.g-aside-actions {
++  display: flex;
++  gap: 8px;
++  flex-wrap: wrap;
++}
++
++@media (min-width: 1024px) {
++  .g-aside-actions {
++    flex-direction: column;
++  }
++}
++
++.g-aside-foot {
++  display: none;
++}
++
++@media (min-width: 1024px) {
++  .g-aside-foot {
++    display: block;
++    margin-top: auto;
++    padding: 0 8px;
++    font-size: 11.5px;
++    line-height: 1.55;
++    color: var(--text-3);
++  }
++}
++
++.g-main {
++  padding: 22px 18px 64px;
++  min-width: 0;
++}
++
++@media (min-width: 1024px) {
++  .g-main {
++    padding: 30px 32px 72px;
++  }
++}
++
++.g-main-inner {
++  max-width: 1080px;
++}
++
++.g-toolbar {
++  display: flex;
++  justify-content: space-between;
++  align-items: flex-start;
++  gap: 16px;
++  flex-wrap: wrap;
++  margin-bottom: 20px;
++}
++
++.g-toolbar .g-button {
++  width: auto;
++  margin-top: 0;
++  flex: none;
++}
++
++/* ===== 글 ===== */
++
+ .g-header {
+-  font-size: 13px;
+-  color: var(--ink3);
++  font-size: 12px;
++  font-weight: 700;
++  letter-spacing: 0.1em;
++  text-transform: uppercase;
++  color: var(--text-3);
+   margin-bottom: 8px;
++  display: flex;
++  align-items: center;
++  gap: 6px;
+ }
+ 
+ .g-title {
+-  font-size: 24px;
+-  font-weight: 700;
+-  margin: 0 0 8px;
++  font-size: 25px;
++  font-weight: 800;
++  letter-spacing: -0.025em;
++  line-height: 1.25;
++  margin: 0 0 6px;
++  text-wrap: balance;
++}
++
++.g-title small {
++  font-size: 14px;
++  font-weight: 600;
++  color: var(--text-3);
++  margin-left: 6px;
+ }
+ 
+ .g-sub {
+   font-size: 14px;
+-  color: var(--ink2);
+-  margin: 0 0 20px;
++  color: var(--text-2);
++  margin: 0 0 18px;
++  line-height: 1.6;
+ }
+ 
+-.g-field {
+-  margin-bottom: 16px;
++.g-error {
++  font-size: 13.5px;
++  color: var(--crit-fg);
++  background: var(--crit-bg);
++  border-radius: var(--r-sm);
++  padding: 10px 12px;
++  margin: 10px 0;
+ }
+ 
+-.g-field label {
+-  display: block;
++.g-legal {
++  font-size: 12px;
++  color: var(--text-3);
++  line-height: 1.65;
++  margin-top: 28px;
++}
++
++.g-link {
+   font-size: 13px;
+-  color: var(--ink2);
+-  margin-bottom: 6px;
++  color: var(--primary-hi);
++  display: inline-block;
+ }
+ 
+-.g-field input,
+-.g-field select {
+-  width: 100%;
+-  padding: 12px 14px;
++.g-link--block {
++  display: block;
++  text-align: center;
++  margin-top: 24px;
++  color: var(--text-3);
++  font-size: 12px;
++}
++
++/* ===== 요약 타일 =====
++ * 숫자만 보고 지나치지 않도록 왼쪽에 등급 색 띠를 세운다. */
++
++.g-stats {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
++  gap: 10px;
++  margin-bottom: 18px;
++}
++
++.g-stat {
++  position: relative;
++  overflow: hidden;
++  background: var(--surface);
+   border: 1px solid var(--line);
+-  border-radius: 10px;
+-  font-size: 15px;
+-  background: var(--paper);
+-  color: var(--ink);
++  border-radius: var(--r-sm);
++  padding: 13px 15px;
+ }
+ 
+-.g-button {
+-  width: 100%;
+-  padding: 14px;
+-  border-radius: 12px;
+-  border: none;
+-  font-size: 15px;
++.g-stat::before {
++  content: "";
++  position: absolute;
++  left: 0;
++  top: 0;
++  bottom: 0;
++  width: 3px;
++  background: var(--stat-color, var(--text-3));
++}
++
++.g-stat-label {
++  font-size: 12px;
+   font-weight: 600;
+-  background: var(--dawn);
+-  color: #fff;
+-  margin-top: 4px;
++  color: var(--text-2);
+ }
+ 
+-.g-button:disabled {
+-  opacity: 0.5;
+-  cursor: not-allowed;
++.g-stat-value {
++  font-size: 26px;
++  font-weight: 800;
++  letter-spacing: -0.03em;
++  font-variant-numeric: tabular-nums;
++  line-height: 1.2;
+ }
+ 
+-.g-button--secondary {
+-  background: var(--paper);
+-  color: var(--ink);
++.g-stat-value small {
++  font-size: 12px;
++  font-weight: 600;
++  color: var(--text-3);
++  margin-left: 3px;
++  letter-spacing: 0;
++}
++
++/* ===== 카드 ===== */
++
++.g-card {
++  background: var(--surface);
+   border: 1px solid var(--line);
++  border-radius: var(--r);
++  padding: 16px 18px;
+ }
+ 
+-.g-chip {
+-  display: inline-flex;
++.g-card + .g-card {
++  margin-top: 14px;
++}
++
++.g-card-title {
++  font-size: 12px;
++  font-weight: 700;
++  letter-spacing: 0.09em;
++  text-transform: uppercase;
++  color: var(--text-3);
++  margin-bottom: 12px;
++  display: flex;
++  justify-content: space-between;
+   align-items: center;
+-  padding: 8px 14px;
+-  border-radius: 999px;
+-  border: 1px solid var(--line);
+-  background: var(--paper);
+-  font-size: 14px;
+-  margin: 0 8px 8px 0;
++  gap: 10px;
+ }
+ 
+-.g-chip--selected {
+-  background: var(--dawn);
+-  color: #fff;
+-  border-color: var(--dawn);
++.g-grid {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr);
++  gap: 14px;
++  align-items: start;
++}
++
++@media (min-width: 900px) {
++  .g-grid {
++    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
++  }
++}
++
++.g-grid > .g-card + .g-card {
++  margin-top: 0;
++}
++
++.g-section {
++  margin-top: 22px;
+ }
+ 
++/* ===== 목록 ===== */
++
+ .g-list-item {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+-  padding: 14px 0;
+-  border-bottom: 1px solid var(--line);
+-  text-align: left;
+   width: 100%;
++  padding: 13px 0;
++  border: none;
++  border-bottom: 1px solid var(--line);
+   background: none;
+-  border-left: none;
+-  border-right: none;
+-  border-top: none;
++  color: inherit;
++  text-align: left;
+ }
+ 
+ .g-list-item:last-child {
+   border-bottom: none;
++  padding-bottom: 2px;
++}
++
++.g-list-body {
++  flex: 1;
++  min-width: 0;
+ }
+ 
+ .g-list-name {
++  font-size: 15px;
+   font-weight: 700;
++  line-height: 1.35;
++}
++
++.g-list-name small {
++  font-size: 12px;
++  font-weight: 600;
++  color: var(--text-3);
++  margin-left: 5px;
+ }
+ 
+ .g-list-meta {
+-  font-size: 13px;
+-  color: var(--ink3);
++  font-size: 12.5px;
++  color: var(--text-3);
++  line-height: 1.5;
+ }
+ 
+-.g-list-status {
+-  font-size: 13px;
+-  margin-top: 2px;
++.g-chev {
++  color: var(--text-3);
++  font-size: 17px;
++  flex: none;
++}
++
++.g-rowaction {
++  font-size: 12.5px;
++  font-weight: 600;
++  color: var(--text-3);
++  padding: 4px 8px;
++  border-radius: 6px;
++  flex: none;
++}
++
++.g-rowaction--danger {
++  color: var(--crit-fg);
++}
++
++/* 위험도 배지 — 색만으로 구분하지 않도록 글자도 함께 넣는다 */
++.g-pill {
++  font-size: 11.5px;
++  font-weight: 800;
++  letter-spacing: 0.02em;
++  padding: 3px 9px;
++  border-radius: 6px;
++  flex: none;
++}
++
++.g-pill--안전 {
++  background: var(--safe-bg);
++  color: var(--safe-fg);
++}
++
++.g-pill--위험 {
++  background: var(--warn-bg);
++  color: var(--warn-fg);
++}
++
++.g-pill--심각 {
++  background: var(--crit-bg);
++  color: var(--crit-fg);
++}
++
++/* ===== 버튼 ===== */
++
++.g-button {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  width: 100%;
++  padding: 13px 16px;
++  border-radius: var(--r-sm);
++  border: 1px solid transparent;
++  font-size: 14.5px;
++  font-weight: 700;
++  background: var(--primary);
++  color: var(--primary-ink);
++  margin-top: 8px;
++  text-decoration: none;
++}
++
++.g-button:disabled {
++  opacity: 0.45;
++}
++
++.g-button--secondary {
++  background: var(--surface-2);
++  color: var(--text);
++  border-color: var(--line);
++}
++
++.g-button--danger {
++  background: transparent;
++  color: var(--crit-fg);
++  border-color: var(--crit-bg);
++}
++
++.g-actions {
++  display: flex;
++  gap: 8px;
++  flex-wrap: wrap;
++}
++
++.g-actions > * {
++  flex: 1 1 140px;
+ }
+ 
+ .g-back {
+   display: inline-flex;
+   align-items: center;
+-  gap: 4px;
++  gap: 5px;
++  background: var(--surface-2);
++  border: 1px solid var(--line);
++  border-radius: 999px;
++  color: var(--text-2);
++  font-size: 13px;
++  font-weight: 600;
++  padding: 7px 14px;
++  margin-bottom: 14px;
++}
++
++.g-chip {
++  display: inline-flex;
++  align-items: center;
++  padding: 9px 14px;
++  border-radius: 999px;
++  border: 1px solid var(--line);
++  background: var(--surface);
++  color: var(--text-2);
++  font-size: 14px;
++  font-weight: 600;
++  margin: 0 8px 8px 0;
++}
++
++.g-chip--selected {
++  background: var(--primary);
++  border-color: var(--primary);
++  color: var(--primary-ink);
++}
++
++/* ===== 입력 ===== */
++
++.g-field {
++  margin-bottom: 16px;
++}
++
++.g-field label {
++  display: block;
++  font-size: 13px;
++  font-weight: 600;
++  color: var(--text-2);
++  margin-bottom: 6px;
++}
++
++.g-field input,
++.g-field select {
++  width: 100%;
++  padding: 12px 14px;
++  border: 1px solid var(--line);
++  border-radius: var(--r-sm);
++  font-family: inherit;
++  font-size: 15px;
++  background: var(--surface-2);
++  color: var(--text);
++}
++
++.g-field input::placeholder {
++  color: var(--text-3);
++}
++
++.g-field input:disabled {
++  opacity: 0.5;
++}
++
++/* 날짜·시각 입력의 기본 아이콘은 밝은 배경 기준이라 어두운 바탕에서 안 보인다 */
++.g-field input[type="date"]::-webkit-calendar-picker-indicator,
++.g-field input[type="time"]::-webkit-calendar-picker-indicator {
++  filter: invert(1);
++  opacity: 0.55;
++}
++
++.g-check {
++  display: flex;
++  align-items: flex-start;
++  gap: 8px;
++  font-size: 13px;
++  color: var(--text-2);
++  line-height: 1.55;
++}
++
++.g-check input {
++  margin-top: 3px;
++  accent-color: var(--primary);
++  flex: none;
++}
++
++/* ===== 동의 항목 ===== */
++
++.g-consent {
++  margin-bottom: 12px;
++}
++
++.g-consent-row {
++  display: flex;
++  align-items: flex-start;
++  gap: 8px;
++}
++
++.g-consent-row .g-check {
++  flex: 1;
++}
++
++.g-consent-toggle {
++  font-size: 12px;
++  color: var(--primary-hi);
+   background: none;
+   border: none;
+-  color: var(--ink2);
+-  font-size: 14px;
+-  padding: 8px 0;
++  padding: 0;
++  text-decoration: underline;
++  white-space: nowrap;
++  flex: none;
++}
++
++.g-consent-detail {
++  font-size: 12px;
++  color: var(--text-2);
++  background: var(--surface-2);
++  border-radius: var(--r-sm);
++  padding: 10px 12px;
++  margin: 6px 0 0 24px;
++  line-height: 1.7;
++}
++
++/* ===== 소견 · 안내 ===== */
++
++.g-note {
++  background: var(--surface-2);
++  border-radius: var(--r-sm);
++  padding: 11px 13px;
++  font-size: 13px;
++  line-height: 1.65;
++  color: var(--text-2);
++  margin-top: 12px;
++}
++
++.g-note b {
++  color: var(--text);
++  font-weight: 700;
++}
++
++.g-note-label {
++  display: block;
++  font-size: 10px;
++  font-weight: 700;
++  letter-spacing: 0.11em;
++  text-transform: uppercase;
++  color: var(--primary-hi);
++  margin-bottom: 4px;
++}
++
++.g-timestamp {
++  font-size: 12.5px;
++  color: var(--text-3);
++  margin-bottom: 6px;
++  font-variant-numeric: tabular-nums;
++}
++
++/* ===== 미디어 ===== */
++
++.g-media {
++  width: 100%;
++  border-radius: var(--r-sm);
++  background: #000;
++  display: block;
++}
++
++.g-media--live {
++  aspect-ratio: 4 / 3;
++}
++
++.g-letter {
++  background: var(--surface-2);
++  border-radius: var(--r-sm);
++  padding: 12px;
++  margin-bottom: 12px;
++}
++
++.g-letter-title {
++  margin-bottom: 8px;
++  font-size: 14.5px;
++  font-weight: 600;
++}
++
++.g-letter .g-media {
+   margin-bottom: 8px;
+ }
++
++/* ===== 추이 차트 ===== */
++
++.g-trend {
++  width: 100%;
++  height: auto;
++  display: block;
++}
++
++.g-questions {
++  margin: 0;
++  padding-left: 20px;
++  font-size: 14px;
++  line-height: 1.7;
++}
++
++/* ===== 약관 본문 ===== */
++
++.g-terms-section {
++  margin-bottom: 22px;
++}
++
++.g-terms-heading {
++  font-size: 15px;
++  font-weight: 700;
++  color: var(--text);
++  margin: 0 0 6px;
++}
++
++.g-terms-section p {
++  font-size: 13.5px;
++  line-height: 1.75;
++  color: var(--text-2);
++  margin: 0 0 8px;
++}
++
++/* 영상편지 안의 삭제는 되돌릴 수 없는 동작이라 눈에 띄어야 하지만, 카드 폭을 다 차지할
++   만큼 중요한 동작은 아니다. 오른쪽에 작게 붙인다. */
++.g-letter .g-button--danger {
++  width: auto;
++  margin-left: auto;
++  padding: 7px 14px;
++  font-size: 13px;
++}
+diff --git a/demo/v1/src/styles/theme.css b/demo/v1/src/styles/theme.css
+index dfc1279..cf95f9a 100644
+--- a/demo/v1/src/styles/theme.css
++++ b/demo/v1/src/styles/theme.css
+@@ -1,16 +1,66 @@
++/* Callog 디자인 토큰
++ *
++ * 색값은 눈대중이 아니라 알라미(Alarmy) UI 스크린샷 5장의 픽셀을 집계해 뽑은 실제 값이다.
++ * 배경 #121416 / 카드 #1E1F25 / 주요 버튼 #404ED7 / 강조 #FC314D 등.
++ *
++ * 이 파일은 "무슨 색인가"만 정하고, "어디에 쓰는가"는 elder.css·guardian.css가 정한다.
++ * 색을 바꿔야 하면 화면 파일이 아니라 항상 여기부터 본다.
++ */
++
+ :root {
+-  --ink: #16262b;
+-  --ink2: #4a5c60;
+-  --ink3: #8b9b9e;
+-  --mist: #e7ebea;
+-  --paper: #ffffff;
+-  --line: #d3dbda;
+-  --dawn: #1f4e5f;
+-  --deep: #123642;
+-  --jade: #2e7d5b;
+-  --gold: #d9911f;
+-  --red: #c0402b;
++  /* 바탕 */
++  --bg: #121416;
++  --surface: #1e1f25;
++  --surface-2: #282b33;
++  --line: #2c2f38;
++
++  /* 글자 */
++  --text: #f4f5f8;
++  --text-2: #9ba1b2;
++  --text-3: #6b7181;
++
++  /* 브랜드 */
++  --primary: #404ed7;
++  --primary-hi: #6865d8;
++  --primary-ink: #ffffff;
++  --accent: #fc314d;
++  --info: #14a8cd;
++
++  /* 위험도 3단계 — RiskLevel("안전"|"위험"|"심각")과 1:1로 맞춘다 */
++  --safe: #2e9e6b;
++  --warn: #e0a020;
++  --crit: #fc314d;
++  --safe-bg: rgba(46, 158, 107, 0.16);
++  --warn-bg: rgba(224, 160, 32, 0.16);
++  --crit-bg: rgba(252, 49, 77, 0.16);
++  --safe-fg: #4fbf8b;
++  --warn-fg: #efb84a;
++  --crit-fg: #ff7488;
++
++  /* 예전 토큰 이름 — 화면 코드 여러 곳이 아직 참조하고 있어 새 값으로 다시 이어둔다.
++     인라인 스타일 정리가 끝나면 이 묶음은 지워도 된다. */
++  --ink: var(--text);
++  --ink2: var(--text-2);
++  --ink3: var(--text-3);
++  --paper: var(--surface);
++  --mist: var(--surface-2);
++  --dawn: var(--primary);
++  --deep: #0f1114;
++  --jade: var(--safe);
++  --gold: var(--warn);
++  --red: var(--crit);
++
++  /* 치수 */
++  --r-sm: 12px;
++  --r: 16px;
++  --r-lg: 22px;
++  --shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.72);
++  --shadow-frame: 0 40px 80px -30px rgba(0, 0, 0, 0.85);
++
++  /* 접근성 — FontSizeToggle이 1 / 1.15 / 1.3으로 바꾼다 */
+   --font-scale: 1;
++
++  --font-ui: "Gothic A1", "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+ }
+ 
+ * {
+@@ -21,11 +71,17 @@ html,
+ body {
+   margin: 0;
+   padding: 0;
+-  background: var(--mist);
+-  color: var(--ink);
+-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
++  background: var(--bg);
++  color: var(--text);
++  font-family: var(--font-ui);
+   font-size: calc(16px * var(--font-scale));
++  line-height: 1.6;
++  /* 한글은 기본값이면 단어 중간에서 끊긴다("전해볼까요" → "전 / 해볼까요").
++     어절 단위로 끊고, 초대 링크처럼 띄어쓰기 없는 긴 문자열만 예외로 강제 줄바꿈한다. */
++  word-break: keep-all;
++  overflow-wrap: break-word;
+   -webkit-text-size-adjust: 100%;
++  -webkit-font-smoothing: antialiased;
+ }
+ 
+ #root {
+@@ -37,41 +93,70 @@ button {
+   cursor: pointer;
+ }
+ 
++button:disabled {
++  cursor: not-allowed;
++}
++
+ a {
+   color: inherit;
+ }
+ 
++/* 키보드 사용자에게 초점 위치가 보여야 한다 */
++:focus-visible {
++  outline: 2px solid var(--primary-hi);
++  outline-offset: 2px;
++}
++
++@media (prefers-reduced-motion: reduce) {
++  * {
++    animation: none !important;
++    transition: none !important;
++  }
++}
++
++/* ===== 앱 셸 =====
++ * 보호자 화면과 어르신 화면은 하는 일이 달라서 넓은 화면에서 다르게 펴진다.
++ *  - 어르신: 폰 비율을 유지한 채 액자에 넣고, 대신 글자와 버튼을 키운다(--e-zoom).
++ *  - 보호자: 모니터 폭을 그대로 쓴다(guardian.css의 .g-shell).
++ */
++
+ .app-shell {
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 24px 16px 64px;
++  background: var(--bg);
+ }
+ 
+ .app-card {
+   width: 100%;
+-  max-width: 480px;
+-  background: var(--paper);
++  max-width: 520px;
++  background: var(--surface);
+   border: 1px solid var(--line);
+-  border-radius: 20px;
++  border-radius: var(--r-lg);
+   padding: 28px 24px;
+ }
+ 
+-.app-card--elder {
+-  background: linear-gradient(160deg, var(--dawn), var(--deep));
+-  color: #fff;
+-  border: none;
++/* 사이드바를 쓰는 보호자 화면(대상자 목록·상세)은 카드 폭 제한을 풀고 셸이 직접 편다 */
++.app-shell--wide {
++  padding: 0;
++  align-items: stretch;
+ }
+ 
+ .env-banner {
+   width: 100%;
+-  max-width: 480px;
++  max-width: 520px;
+   margin-bottom: 16px;
+   padding: 12px 16px;
+-  border-radius: 12px;
+-  background: #fdecea;
+-  color: var(--red);
++  border-radius: var(--r-sm);
++  background: var(--crit-bg);
++  color: var(--crit-fg);
+   font-size: 14px;
+   text-align: center;
+ }
++
++.app-shell--wide .env-banner {
++  max-width: none;
++  border-radius: 0;
++}
+-- 
+2.55.0.windows.2
+
