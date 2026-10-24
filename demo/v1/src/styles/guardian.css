@@ -14,6 +14,7 @@
  * 그대로 쓴다. :root와 명시적으로 함께 써서 특정도를 일반 :root보다 높여 항상 이긴다.
  */
 :root[data-guardian-theme="light"] {
+  color-scheme: light;  /* 한낮 */
   --bg: #f7f8fb;
   --surface: #ffffff;
   --surface-2: #edeff5;
@@ -34,6 +35,7 @@
 }
 
 :root[data-guardian-theme="warm"] {
+  color-scheme: dark;  /* 노을 */
   --bg: #1b1512;
   --surface: #2a211c;
   --surface-2: #382c25;
@@ -48,6 +50,7 @@
 }
 
 :root[data-guardian-theme="maxcontrast"] {
+  color-scheme: dark;  /* 또렷하게 */
   --bg: #000000;
   --surface: #101010;
   --surface-2: #1c1c1c;
@@ -720,11 +723,19 @@ button.g-link {
   opacity: 0.5;
 }
 
-/* 날짜·시각 입력의 기본 아이콘은 밝은 배경 기준이라 어두운 바탕에서 안 보인다 */
+/* 날짜·시각 입력의 달력·시계 아이콘.
+ *
+ * 예전에는 filter: invert(1)로 뒤집었다. 어두운 바탕에서 안 보여서 넣은 것인데,
+ * color-scheme을 선언하지 않은 상태라 브라우저가 OS 설정대로 아이콘을 그렸고,
+ * OS가 다크면 이미 밝게 그려진 아이콘을 다시 뒤집어 어둡게 만들었다 — 결국
+ * 다크 테마에서 아이콘이 배경에 묻혀 날짜·시각을 아예 고를 수 없었다.
+ *
+ * 지금은 테마마다 color-scheme을 선언하므로 브라우저가 알아서 맞는 색으로 그린다.
+ * 뒤집지 않고, 다른 입력 요소와 같은 정도로만 흐리게 둔다. */
 .g-field input[type="date"]::-webkit-calendar-picker-indicator,
 .g-field input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.55;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .g-check {

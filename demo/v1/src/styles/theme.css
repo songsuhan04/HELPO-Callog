@@ -8,6 +8,7 @@
  */
 
 :root {
+  color-scheme: dark;  /* 기본(밤하늘) */
   /* 바탕 */
   --bg: #121416;
   --surface: #1e1f25;

@@ -28,6 +28,7 @@
 }
 
 :root[data-elder-theme="daylight"] {
+  color-scheme: light;  /* 한낮 */
   /* 한낮 — 백내장·수정체 혼탁으로 다크에서 글자가 번져 보이는 경우 */
   --e-bg: #f7f8fb;
   --e-card: #ffffff;
@@ -43,6 +44,7 @@
 }
 
 :root[data-elder-theme="warm"] {
+  color-scheme: dark;  /* 노을 */
   /* 노을 — 청색광이 부담스럽거나 잠들기 전 사용이 잦은 경우 */
   --e-bg: #1b1512;
   --e-card: #2a211c;
@@ -58,6 +60,7 @@
 }
 
 :root[data-elder-theme="maxcontrast"] {
+  color-scheme: dark;  /* 또렷하게 */
   /* 또렷하게 — 저시력용 검정 바탕 + 노란 글자(고대비 표준 조합) */
   --e-bg: #000000;
   --e-card: #101010;
