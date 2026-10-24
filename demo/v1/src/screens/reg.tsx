@@ -24,7 +24,6 @@ export default function Reg() {
   const fromSignup = Boolean((location.state as { fromSignup?: boolean } | null)?.fromSignup);
 
   const [name, setName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
   const [relationship, setRelationship] = useState("");
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
@@ -37,7 +36,7 @@ export default function Reg() {
     if (!isEdit || !supabaseConfigured) return;
     getSupabase()
       .from("elder_profile")
-      .select("name,birth_date,relationship,gender,phone,checkin_time")
+      .select("name,relationship,gender,phone,checkin_time")
       .eq("id", elderId)
       .single()
       .then(({ data, error }) => {
@@ -45,7 +44,6 @@ export default function Reg() {
           setError(getErrorMessage(error, "어르신 정보를 불러오지 못했습니다"));
         } else if (data) {
           setName(data.name ?? "");
-          setBirthDate(data.birth_date ?? "");
           setRelationship(data.relationship ?? "");
           setGender(data.gender ?? "");
           setPhone(data.phone ?? "");
@@ -68,7 +66,6 @@ export default function Reg() {
           .from("elder_profile")
           .update({
             name,
-            birth_date: birthDate,
             relationship,
             gender: gender || null,
             phone: phone || null,
@@ -88,7 +85,6 @@ export default function Reg() {
         .insert({
           family_account_id: userData.user.id,
           name,
-          birth_date: birthDate,
           relationship,
           gender: gender || null,
           phone: phone || null,
@@ -117,10 +113,6 @@ export default function Reg() {
         <div className="g-field">
           <label>성함</label>
           <input value={name} onChange={(e) => setName(e.target.value)} maxLength={10} required />
-        </div>
-        <div className="g-field">
-          <label>생년월일</label>
-          <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required />
         </div>
         <div className="g-field">
           <label>나와의 관계</label>
