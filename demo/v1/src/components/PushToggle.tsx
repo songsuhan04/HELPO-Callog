@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   isSubscribed,
   needsHomeScreenInstall,
@@ -12,6 +13,7 @@ import { getErrorMessage } from "../lib/errors";
 // 보호자가 위험 알림을 받을지 직접 켜고 끈다.
 // 위험도는 계산되고 있었지만 앱을 열어야만 알 수 있었던 문제를 메우는 UI.
 export function PushToggle() {
+  const navigate = useNavigate();
   const [on, setOn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,15 @@ export function PushToggle() {
       {needsHomeScreenInstall() && !on && (
         <p className="g-push-hint">아이폰은 공유 → "홈 화면에 추가" 후에 알림을 켤 수 있어요.</p>
       )}
-      {error && <p className="g-push-hint g-push-hint--error">{error}</p>}
+      {error && (
+        <>
+          <p className="g-push-hint g-push-hint--error">{error}</p>
+          {/* 문구만으로는 어디를 눌러야 하는지 알 수 없다. 기기별 안내로 바로 보낸다. */}
+          <button type="button" className="g-link" onClick={() => navigate("/guide")}>
+            어떻게 하면 되나요?
+          </button>
+        </>
+      )}
     </div>
   );
 }

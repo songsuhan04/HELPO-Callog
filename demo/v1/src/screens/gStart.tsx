@@ -101,6 +101,10 @@ export default function GStart() {
         </form>
       )}
 
+      {/* 처음 들어온 사람은 이게 무슨 서비스인지, 설치와 알림을 어떻게 하는지 모른다 */}
+      <button type="button" className="g-link g-link--block" onClick={() => navigate("/guide")}>
+        사용 안내 — 어떤 서비스인가요? 설치·알림은요?
+      </button>
       <a href="/terms" target="_blank" rel="noreferrer" className="g-link g-link--block">
         이용약관 및 개인정보 처리 안내
       </a>

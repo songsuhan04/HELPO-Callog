@@ -74,6 +74,10 @@ export default function Invite() {
           <button className="g-button" onClick={() => navigate("/guardian")}>
             완료 — 대상자 목록으로
           </button>
+          {/* 링크를 보낸 직후가 "이제 뭘 하지?"가 자연스러운 순간이다 */}
+          <button type="button" className="g-link g-link--block" onClick={() => navigate("/guide")}>
+            알림은 어떻게 받나요? — 사용 안내
+          </button>
         </>
       )}
     </AppShell>
