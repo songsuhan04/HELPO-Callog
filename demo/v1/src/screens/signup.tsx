@@ -4,6 +4,7 @@ import { AppShell } from "../components/AppShell";
 import { BackButton } from "../components/BackButton";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getAuthErrorMessage, isEmailTakenError } from "../lib/errors";
+import { GoogleButton } from "../components/GoogleButton";
 import { ConsentItem } from "../components/ConsentItem";
 import { PasswordField } from "../components/PasswordField";
 
@@ -140,6 +141,8 @@ export default function Signup() {
             </button>
           </div>
         )}
+        <GoogleButton disabled={!consent || !consentOverseas || !supabaseConfigured} label="구글로 가입하기" />
+        <div className="g-or">또는 이메일로</div>
         <button className="g-button" type="submit" disabled={loading || !consent || !consentOverseas || !supabaseConfigured}>
           {loading ? "가입 중..." : "다음 — 어르신 정보"}
         </button>

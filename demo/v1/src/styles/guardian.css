@@ -997,3 +997,55 @@ button.g-link {
   flex: 1 1 180px;
   margin: 0;
 }
+
+/* ===== 구글 로그인 =====
+ * 구글 브랜드 가이드가 흰 바탕 + 테두리 + 원색 G를 요구한다. 다크 테마에서도
+ * 흰 버튼을 그대로 두는 이유다 — 눈에 띄는 게 아니라 '아는 버튼'으로 보여야 한다.
+ */
+.g-button--google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #dadce0;
+}
+.g-button--google:hover:not(:disabled) {
+  background: #f7f8f8;
+}
+.g-button--google:disabled {
+  opacity: 0.45;
+}
+.g-button--google svg {
+  flex: none;
+}
+
+/* 구글 버튼 아래 고지 문구 — 체크박스 동의가 없는 경로(시작 화면)에서 쓴다 */
+.g-consent-note {
+  margin: 8px 0 0;
+  font-size: calc(12.5px * var(--font-scale));
+  line-height: 1.6;
+  color: var(--text-3);
+  text-align: center;
+}
+.g-consent-note a {
+  color: var(--text-2);
+}
+
+/* 구글과 이메일 경로 사이 구분선 */
+.g-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: calc(12.5px * var(--font-scale));
+  color: var(--text-3);
+}
+.g-or::before,
+.g-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
+import { GoogleButton } from "../components/GoogleButton";
 import { PasswordField } from "../components/PasswordField";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getAuthErrorMessage } from "../lib/errors";
@@ -55,11 +56,16 @@ export default function GStart() {
 
       {mode === "choose" && (
         <>
-          <button className="g-button" onClick={() => navigate("/signup")}>
-            처음이에요 — 계정 만들고 어르신 등록하기
+          <GoogleButton />
+          <p className="g-consent-note">
+            계속하면 <a href="/terms" target="_blank" rel="noreferrer">이용약관 및 개인정보 처리 안내</a>에 동의하는 것으로 봅니다.
+          </p>
+          <div className="g-or">또는</div>
+          <button className="g-button g-button--secondary" onClick={() => navigate("/signup")}>
+            이메일로 계정 만들기
           </button>
           <button className="g-button g-button--secondary" onClick={() => setMode("login")}>
-            이미 계정이 있어요
+            이메일로 로그인
           </button>
         </>
       )}
