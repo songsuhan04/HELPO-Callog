@@ -15,6 +15,7 @@
  */
 :root[data-guardian-theme="light"] {
   color-scheme: light;  /* 한낮 */
+  --aside-bg: #ffffff;  /* 한낮 — 밝은 바탕. 아래 테두리로 본문과 구분된다 */
   --bg: #f7f8fb;
   --surface: #ffffff;
   --surface-2: #edeff5;
@@ -36,6 +37,7 @@
 
 :root[data-guardian-theme="warm"] {
   color-scheme: dark;  /* 노을 */
+  --aside-bg: #150f0d;  /* 노을 */
   --bg: #1b1512;
   --surface: #2a211c;
   --surface-2: #382c25;
@@ -51,6 +53,7 @@
 
 :root[data-guardian-theme="maxcontrast"] {
   color-scheme: dark;  /* 또렷하게 */
+  --aside-bg: #000000;  /* 또렷하게 */
   --bg: #000000;
   --surface: #101010;
   --surface-2: #1c1c1c;
@@ -205,7 +208,9 @@
 }
 
 .g-aside {
-  background: #0b0d10;
+  /* 하드코딩된 검정이었다. 라이트 테마에서는 --text가 거의 검정이라 그 위에 올린
+   * 브랜드 글자("Callog(콜록)")가 배경에 묻혀 보이지 않았다. 배경도 테마를 따라가게 한다. */
+  background: var(--aside-bg);
   border-bottom: 1px solid var(--line);
   padding: 16px 18px;
   display: flex;
