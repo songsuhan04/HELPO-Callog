@@ -7,6 +7,7 @@ import Signup from "./screens/signup";
 import Forgot from "./screens/forgot";
 import Reset from "./screens/reset";
 import Terms from "./screens/terms";
+import Guide from "./screens/guide";
 import Reg from "./screens/reg";
 import Cond from "./screens/cond";
 import Invite from "./screens/invite";
@@ -29,6 +30,7 @@ export function AppRoutes() {
       <Route path="/" element={<GStart />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/terms" element={<Terms />} />
+      <Route path="/guide" element={<Guide />} />
       <Route path="/forgot" element={<Forgot />} />
       <Route path="/reset" element={<Reset />} />
       <Route path="/auth/callback" element={<AuthCallback />} />

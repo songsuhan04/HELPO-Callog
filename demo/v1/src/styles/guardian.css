@@ -1054,3 +1054,46 @@ button.g-link {
   height: 1px;
   background: var(--line);
 }
+
+/* ===== 사용 안내(/guide) =====
+ * 보호자가 막히는 지점이 전부 앱 바깥이다 — 인앱 브라우저, 미설치, 알림 권한 거부.
+ * 본인은 뭐가 잘못됐는지 모르므로, 지금 상태에 해당하는 카드만 색으로 구분해 띄운다.
+ */
+.gd-flow { display: grid; gap: 8px; margin: 18px 0 12px; }
+.gd-step {
+  display: flex; gap: 10px; align-items: baseline;
+  background: var(--surface-2); border-radius: var(--r-sm);
+  padding: 11px 14px; font-size: calc(14.5px * var(--font-scale)); color: var(--text);
+}
+.gd-step > span { min-width: 0; }
+.gd-step > b:first-child {
+  flex: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--primary); color: #fff; font-size: 12px;
+  display: grid; place-items: center; align-self: center;
+}
+.gd-note { font-size: calc(13.5px * var(--font-scale)); color: var(--text-2); line-height: 1.7; margin: 0 0 8px; }
+.gd-h2 { font-size: calc(17px * var(--font-scale)); font-weight: 700; margin: 28px 0 10px; }
+
+.gd-card {
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 15px 17px; margin-bottom: 10px; background: var(--surface);
+}
+.gd-card h3 { font-size: calc(15px * var(--font-scale)); margin: 0 0 7px; }
+.gd-card p { font-size: calc(14px * var(--font-scale)); color: var(--text-2); margin: 0 0 7px; line-height: 1.7; }
+.gd-card p:last-child { margin-bottom: 0; }
+.gd-card b { color: var(--text); font-weight: 600; }
+.gd-card ol { margin: 6px 0 0; padding-left: 20px; font-size: calc(14px * var(--font-scale)); color: var(--text-2); line-height: 1.8; }
+
+/* 막힌 상태 / 끝난 상태를 색으로 가른다 */
+/* 글자색은 -fg 변형을 쓴다. 테마마다 바탕 대비에 맞춰 따로 정의돼 있다. */
+.gd-card--stop { border-color: var(--crit); border-left-width: 3px; background: var(--crit-bg); }
+.gd-card--stop h3 { color: var(--crit-fg); }
+.gd-card--ok { border-color: var(--safe); border-left-width: 3px; background: var(--safe-bg); }
+.gd-card--ok h3 { color: var(--safe-fg); }
+
+.gd-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(12.5px * var(--font-scale));
+  background: var(--surface-2); border-radius: 6px; padding: 8px 10px;
+  word-break: break-all; color: var(--text) !important;
+}
