@@ -1,3 +1,5 @@
+import { retryTransient } from "./retry";
+
 // 녹음·촬영 화면에서 던져주는 주제를 AI로 만든다.
 //
 // 어르신께 그대로 보이는 문장이라 생성 결과를 그냥 믿지 않는다. 아래 검증을 통과하지 못하면
@@ -89,21 +91,35 @@ export async function generateTopics(
 ): Promise<GeneratedTopics> {
   if (!geminiKey) return { speechTopic: null, letterTopic: null, source: "fallback", notes: {} };
   try {
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+    // 질문 생성과 같은 이유로 짧게 한 번 더 시도한다 — 새벽 크론이 몰아 호출하면서
+    // 분당 한도에 걸리는 일이 잦았다(lib/dailyQuestions.ts의 설명 참고).
+    const json = await retryTransient(
+      async () => {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: buildTopicPrompt(context) }] }],
+              generationConfig: { responseMimeType: "application/json" },
+            }),
+          }
+        );
+        const body = await resp.json();
+        if (!resp.ok || body?.error) {
+          // 상태 코드를 메시지에 남겨야 isTransient가 429/5xx를 알아본다
+          throw new Error(`gemini ${resp.status}: ${body?.error?.message ?? "request failed"}`);
+        }
+        return body;
+      },
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: buildTopicPrompt(context) }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
+        attempts: 2,
+        baseDelayMs: 600,
+        onRetry: (attempt, err) =>
+          console.error("generateTopics: retrying", attempt, err instanceof Error ? err.message : err),
       }
     );
-    const json = await resp.json();
-    if (!resp.ok || json?.error) {
-      throw new Error(json?.error?.message ?? `gemini request failed (${resp.status})`);
-    }
     const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const unfenced = text.replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/, "$1");
     const parsed = JSON.parse(unfenced) as { speech_topic?: unknown; letter_topic?: unknown };

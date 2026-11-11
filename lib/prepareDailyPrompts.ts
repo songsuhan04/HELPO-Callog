@@ -25,7 +25,18 @@ const PROMPT_RETENTION_DAYS = RETENTION.PROMPT_DAYS;
 // 어르신을 한 명씩 차례로 처리했더니 함수 실행 시간을 넘겨 도중에 끊겼다. 실제로 8/29
 // 새벽 실행은 9명 중 4명만 만들고 멈췄다(어르신당 15~20초 × 9명). 몇 명씩 동시에 처리한다.
 // Gemini 호출이 대부분의 시간이라 동시성이 그대로 시간 단축이 된다.
-const CONCURRENCY = 6;
+//
+// 6에서 3으로 내렸다. 어르신 한 명당 Gemini를 둘씩(질문·주제) 병렬로 부르므로 6이면
+// 순간 12개가 한꺼번에 나간다. 무료 등급 분당 한도를 넘겨서, 측정해보니 생성의 61%가
+// 고정 문항으로 떨어지고 있었다(10/28~11/11). 특히 배치가 통째로 실패하는 날이 있었다
+// — 11/04은 12건 전부, 11/10은 11/12건이 fallback이었다.
+//
+// 맞바꾼 것: 한 번 실행에서 덜 다룬다. 55초 예산에 3명씩이면 2~3묶음이라, 어르신이
+// 많아지면 남는 분이 생긴다. 남은 분은 화면에서 즉석 생성으로 떨어지는데, 그때는
+// 요청이 하나뿐이라 오히려 한도에 걸리지 않는다(화면에도 8초 상한과 안내가 있다).
+// 어르신이 더 늘면 이 수치가 아니라 호출 횟수 자체를 줄여야 한다 — 질문과 주제를
+// 한 번의 호출로 합치는 쪽이 다음 단계다.
+const CONCURRENCY = 3;
 
 // Vercel Hobby 플랜의 함수 실행 상한이 60초라, 그 전에 스스로 멈추고 지금까지 만든 것을
 // 저장한 채 끝낸다. 중간에 강제로 잘리면 무엇까지 했는지 알 수 없다.
@@ -123,8 +134,10 @@ export async function prepareDailyPrompts(
       .flatMap((r) => [r.speech_topic as string | null, r.letter_topic as string | null])
       .filter((t): t is string => Boolean(t));
 
+    // 여기서는 기다리는 사람이 없으므로 한 번 더 시도한다. 어르신 화면에서 부를 때는
+    // 기본값(한 번)이 쓰인다 — lib/dailyQuestions.ts의 설명 참고.
     const [questionResult, topicResult] = await Promise.all([
-      generateQuestions(geminiKey, conditions, recentQuestions),
+      generateQuestions(geminiKey, conditions, recentQuestions, { attempts: 2 }),
       generateTopics(geminiKey, { conditions, recentAnswers, recentTopics }),
     ]);
 
@@ -136,8 +149,20 @@ export async function prepareDailyPrompts(
         // 검증에 걸린 주제는 null로 남긴다 — 화면이 고정 목록으로 떨어진다
         speech_topic: topicResult.speechTopic,
         letter_topic: topicResult.letterTopic,
-        // 왜 버려졌는지 남긴다 — 로그는 한 시간이면 사라진다
-        notes: Object.keys(topicResult.notes).length > 0 ? topicResult.notes : null,
+        // 왜 버려졌는지 남긴다 — 로그는 한 시간이면 사라진다.
+        //
+        // 질문과 주제 중 어느 쪽이 고정값으로 떨어졌는지도 함께 남긴다. 아래 source
+        // 하나로는 실패율이 가려지기 때문이다 — "둘 중 하나라도 성공하면 gemini"라서,
+        // 질문만 고정 문항으로 떨어진 날도 gemini로 찍힌다. 실측 61%(86/140, 10/28~11/11)는
+        // 둘 다 실패한 경우만 센 값이라 질문 실패율은 그보다 높다.
+        // 컬럼을 새로 만들지 않고 여기 담는다 — notes가 이미 "이 행이 왜 이렇게 됐는지"를
+        // 담는 자리이고, 되읽는 코드가 없어 모양을 넓혀도 깨지지 않는다.
+        // 조회: select notes->>'questionSource', count(*) from daily_prompt group by 1;
+        notes: {
+          ...topicResult.notes,
+          questionSource: questionResult.source,
+          topicSource: topicResult.source,
+        },
         source: questionResult.source === "gemini" || topicResult.source === "gemini" ? "gemini" : "fallback",
       },
       { onConflict: "elder_profile_id,date" }

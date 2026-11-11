@@ -1,3 +1,5 @@
+import { retryTransient } from "./retry";
+
 // 오늘의 안부 질문을 만든다 — 지병에 맞춘 Gemini 생성과, 실패 시 쓰는 고정 문항.
 //
 // 원래 api/generate-questions.ts 안에만 있었는데, 새벽 크론에서도 같은 로직으로 미리
@@ -332,38 +334,69 @@ export function normalize(parsed: unknown): GeneratedQuestion[] {
 }
 
 
+// Gemini 호출 한 번. 실패는 던진다 — 재시도 판단은 바깥에서 한다.
+async function requestQuestions(
+  geminiKey: string,
+  conditions: string[],
+  recentQuestions: string[]
+): Promise<GeneratedQuestion[]> {
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: buildPrompt(conditions, recentQuestions) }] }],
+        generationConfig: { responseMimeType: "application/json" },
+      }),
+    }
+  );
+  const json = await resp.json();
+  if (!resp.ok || json?.error) {
+    // 상태 코드를 반드시 메시지에 남긴다 — lib/retry.ts의 isTransient가 429/5xx를 이걸로 알아본다.
+    // 예전에는 Gemini가 준 문장만 넣었는데, 한도 초과 메시지 표현이 바뀌면 재시도 판단이 빗나간다.
+    throw new Error(`gemini ${resp.status}: ${json?.error?.message ?? "request failed"}`);
+  }
+  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  // responseMimeType을 지정해도 가끔 ```json ... ``` 코드블록으로 감싸서 응답하는 경우가 있어 방어적으로 벗겨낸다
+  const unfenced = text.replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/, "$1");
+  const questions = normalize(JSON.parse(unfenced));
+  if (questions.length === 0) throw new Error("empty generation result");
+  return questions;
+}
+
 // Gemini로 질문을 만들고, 실패하거나 결과가 규칙에 맞지 않으면 고정 문항으로 떨어진다.
 // 호출하는 쪽에서 예외를 처리하지 않아도 되도록 여기서 삼킨다 — 질문이 없으면 안부 자체를
 // 물을 수 없으므로, 어떤 경우에도 문항 배열은 나와야 한다.
+//
+// 재시도를 붙인 이유: 실측으로 생성의 61%가 고정 문항으로 떨어지고 있었다(10/28~11/11,
+// daily_prompt 86건/140건). 새벽 크론이 여러 어르신을 한꺼번에 처리하면서 분당 한도에
+// 걸린 것으로 보이는데, 한 번 거절당하면 그대로 포기하고 있었다.
+// 고정 문항은 약·식사·외출 3개를 3일 주기로 돌릴 뿐이라, 어르신께는 "매일 똑같은 질문"이
+// 된다 — 실사용 피드백에 그대로 적힌 말이다.
+// analyze-voice.ts는 같은 이유로 이미 retryTransient를 쓰고 있었다. 여기만 빠져 있었다.
+//
+// attempts를 부르는 쪽이 정하는 이유: 이 함수는 두 곳에서 쓰이는데 사정이 정반대다.
+// 새벽 크론은 기다리는 사람이 없으니 다시 시도하는 게 이득이다. 반대로 어르신이 화면을
+// 열었을 때(api/generate-questions.ts)는 그 앞에서 사람이 기다리고 있고, 화면에 8초
+// 상한이 걸려 있다(screens/eCheck.tsx). 거기서 재시도로 시간을 끌면 상한에 걸려 질문이
+// 1개로 떨어진다 — 고정 문항 3개보다 나쁘다. 그래서 기본값은 "한 번만"이다.
 export async function generateQuestions(
   geminiKey: string | undefined,
   conditions: string[],
-  recentQuestions: string[]
+  recentQuestions: string[],
+  options: { attempts?: number } = {}
 ): Promise<{ questions: GeneratedQuestion[]; source: "gemini" | "fallback" }> {
   if (!geminiKey) {
     return { questions: fallbackQuestions(conditions, recentQuestions), source: "fallback" };
   }
   try {
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: buildPrompt(conditions, recentQuestions) }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      }
-    );
-    const json = await resp.json();
-    if (!resp.ok || json?.error) {
-      throw new Error(json?.error?.message ?? `gemini request failed (${resp.status})`);
-    }
-    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    // responseMimeType을 지정해도 가끔 ```json ... ``` 코드블록으로 감싸서 응답하는 경우가 있어 방어적으로 벗겨낸다
-    const unfenced = text.replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/, "$1");
-    const questions = normalize(JSON.parse(unfenced));
-    if (questions.length === 0) throw new Error("empty generation result");
+    const questions = await retryTransient(() => requestQuestions(geminiKey, conditions, recentQuestions), {
+      attempts: options.attempts ?? 1,
+      baseDelayMs: 600,
+      onRetry: (attempt, err) =>
+        console.error("generateQuestions: retrying", attempt, err instanceof Error ? err.message : err),
+    });
     return { questions, source: "gemini" };
   } catch (err) {
     console.error("generateQuestions: falling back", err instanceof Error ? err.message : err);

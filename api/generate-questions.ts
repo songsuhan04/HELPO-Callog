@@ -41,7 +41,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (elderProfileId && date && supabaseUrl && serviceKey) {
     const admin = createClient(supabaseUrl, serviceKey);
     const { error } = await admin.from("daily_prompt").upsert(
-      { elder_profile_id: elderProfileId, date, questions: result.questions, source: result.source },
+      {
+        elder_profile_id: elderProfileId,
+        date,
+        questions: result.questions,
+        source: result.source,
+        // 크론 경로(lib/prepareDailyPrompts.ts)와 같은 자리에 남겨야 둘을 한 번에 세어볼 수 있다.
+        // 이 경로는 주제를 만들지 않으므로 질문 출처만 적는다.
+        notes: { questionSource: result.source },
+      },
       { onConflict: "elder_profile_id,date" }
     );
     if (error) console.error("generate-questions: daily_prompt upsert failed", error.message);
