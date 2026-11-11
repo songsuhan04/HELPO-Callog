@@ -40,7 +40,14 @@ export default function ECheck() {
   const [answers, setAnswers] = useState<AnsweredQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [slow, setSlow] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // 3초가 지나도 안 뜨면 기다려도 되는 상황임을 알려드린다
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -77,11 +84,18 @@ export default function ECheck() {
         .slice(0, 12);
 
       let generated: GeneratedQuestion[] = [];
+      // 제한시간을 둔다. 예전에는 없어서, AI 응답이 늦으면 어르신이 "준비하고 있어요..."만
+      // 보며 언제까지인지 모른 채 기다리셨다(실사용 신고). catch는 네트워크가 끊겼을 때만
+      // 걸리지 느린 것은 못 잡는다. 8초가 지나면 아래 기본 문항으로 넘어간다.
+      // AbortSignal.timeout은 구형 웹뷰에 없을 수 있어 컨트롤러를 직접 쓴다.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
       try {
         const resp = await fetch("/api/generate-questions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ conditions, recentQuestions, elderProfileId: elderId, date: todaySeoul() }),
+          signal: controller.signal,
         });
         const json = await resp.json();
         generated = json.questions ?? [];
@@ -97,6 +111,8 @@ export default function ECheck() {
             ],
           },
         ];
+      } finally {
+        clearTimeout(timer);
       }
 
       // 여기서 daily_checkin에 행을 만들지 않는다. 예전에는 새로고침 대비로 질문을 미리
@@ -161,7 +177,22 @@ export default function ECheck() {
     navigate("/elder/speech");
   }
 
-  if (loading) return <AppShell variant="elder"><p className="e-lead">오늘의 안부를 준비하고 있어요...</p></AppShell>;
+  // 예전에는 이 화면이 글 한 줄뿐이라, 늦어질 때 어르신 눈에는 그냥 빈 화면이었다(실사용 신고).
+  // 상단 막대를 남겨 "앱은 살아 있다"를 보이게 하고, 늦어지면 기다려도 된다고 알려드린다.
+  if (loading)
+    return (
+      <AppShell variant="elder">
+        <div className="e-topbar">
+          <DisplaySettings />
+          <span className="e-brand">Callog</span>
+        </div>
+        <div className="e-hero">
+          <h1 className="e-question">오늘의 안부를 준비하고 있어요</h1>
+          <p className="e-lead">잠시만 기다려 주세요.</p>
+          {slow && <p className="e-meta">조금 늦어지고 있어요. 곧 시작됩니다.</p>}
+        </div>
+      </AppShell>
+    );
   const question = questions[index];
   if (!question) return <AppShell variant="elder"><p className="e-lead">준비된 질문이 없습니다.</p></AppShell>;
 

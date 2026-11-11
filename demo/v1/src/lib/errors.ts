@@ -12,9 +12,16 @@ export function getErrorMessage(err: unknown, fallback: string): string {
 // create_invite/revoke_elder_access 등 RPC가 raise exception으로 던지는 코드성 메시지를
 // 사용자에게 그대로 보여주면 의미가 안 통해서(예: "not_authorized"), 알려진 코드는 친절한
 // 문구로 바꾸고 나머지는 getErrorMessage() 그대로 노출한다.
+// 초대 관련 코드는 어르신이 직접 보신다. 그래서 "무슨 일이 났는지"가 아니라 "무엇을
+// 하시면 되는지"로 적는다 — 어르신이 혼자 푸실 수 있는 건 어차피 없고, 가족에게
+// 무엇을 부탁하면 되는지만 아시면 된다.
+// 근거: 실사용 — 갤럭시에서 'bound to other device'라는 영어가 그대로 떴다.
 const RPC_ERROR_MESSAGES: Record<string, string> = {
   not_authorized: "이 어르신에 대한 권한이 없습니다. 본인 계정으로 다시 로그인해주세요.",
-  bound_to_other_device: "이미 다른 기기에서 연결된 초대 링크입니다.",
+  bound_to_other_device: "이 링크는 다른 창에서 이미 연결했어요. 가족에게 새 링크를 받아주세요.",
+  invalid_token: "링크가 올바르지 않아요. 가족에게 새 링크를 받아주세요.",
+  expired: "링크가 오래되어 만료됐어요. 가족에게 새 링크를 받아주세요.",
+  revoked: "이 링크는 더 쓸 수 없어요. 가족에게 새 링크를 받아주세요.",
 };
 
 export function getRpcErrorMessage(err: unknown, fallback: string): string {
