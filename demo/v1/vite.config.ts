@@ -13,4 +13,12 @@ export default defineConfig({
   define: {
     __BUILD_ID__: JSON.stringify(buildId),
   },
+  server: {
+    fs: {
+      // 안부 질문 표(저장소 루트의 lib/)를 서버와 화면이 같이 쓴다(src/lib/questions.ts).
+      // 개발 서버는 기본적으로 이 폴더 밖의 파일을 내주지 않으므로 저장소 루트까지 연다.
+      // 빌드에는 영향이 없다.
+      allow: ['../..'],
+    },
+  },
 })

@@ -35,7 +35,7 @@
 | 화면 | Vite · React 19 · TypeScript (`demo/v1/`) |
 | 서버 | Vercel Serverless Functions (`api/`) + Vercel Cron |
 | 저장소 | Supabase — Postgres · Auth · Storage · RLS |
-| AI | Google Gemini — 음성 분석, 안부 질문·주제 생성 |
+| AI | Google Gemini — 음성 분석, 말하기 안부 주제 생성 |
 | 알림 | Web Push (VAPID) |
 
 ## 지켜야 할 것

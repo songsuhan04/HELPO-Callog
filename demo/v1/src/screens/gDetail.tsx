@@ -14,6 +14,7 @@ import { hasAnswers } from "../lib/checkin";
 import { shiftDateString, todaySeoul } from "../lib/date";
 import type { RiskLevel } from "../config/riskConstants";
 import { RETENTION } from "../config/retention";
+import { apiHeaders } from "../lib/api";
 
 const TREND_DAYS = 14;
 
@@ -204,7 +205,7 @@ export default function GDetail() {
     try {
       const resp = await fetch("/api/analyze-voice", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await apiHeaders(),
         body: JSON.stringify({ voiceResponseId: voice.id }),
       });
       const json = await resp.json();

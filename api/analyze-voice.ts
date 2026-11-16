@@ -1,21 +1,31 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { assessRisk } from "../lib/riskScoring";
+import { authenticate, canAccessElder } from "../lib/requestAuth";
 import { geminiAudioMime } from "../lib/audioMime";
 import { retryTransient } from "../lib/retry";
 
-async function assessRiskForVoice(admin: SupabaseClient, voiceResponseId: string): Promise<void> {
+// 이 음성이 어느 어르신의 어느 날 기록인지. 요청에는 음성 ID만 오므로 여기서 거슬러 올라간다.
+async function checkinOfVoice(
+  admin: SupabaseClient,
+  voiceResponseId: string
+): Promise<{ elder_profile_id: string; date: string } | null> {
   const { data: voice } = await admin
     .from("voice_response")
     .select("daily_checkin_id")
     .eq("id", voiceResponseId)
     .maybeSingle();
-  if (!voice?.daily_checkin_id) return;
+  if (!voice?.daily_checkin_id) return null;
   const { data: checkin } = await admin
     .from("daily_checkin")
     .select("elder_profile_id,date")
     .eq("id", voice.daily_checkin_id)
     .maybeSingle();
+  return (checkin as { elder_profile_id: string; date: string } | null) ?? null;
+}
+
+async function assessRiskForVoice(admin: SupabaseClient, voiceResponseId: string): Promise<void> {
+  const checkin = await checkinOfVoice(admin, voiceResponseId);
   if (!checkin) return;
   await assessRisk(admin, checkin.elder_profile_id, checkin.date);
 }
@@ -37,16 +47,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
 
-  if (!supabaseUrl || !serviceKey) {
-    res.status(200).json({ status: "skipped", reason: "supabase not configured" });
+  // 음성 ID만 알면 누구나 분석을 돌릴 수 있었다(Gemini 비용, 그리고 받아쓴 내용과 위험도를
+  // 다시 쓴다). 그 음성의 주인인 어르신 본인이거나 그 보호자일 때만 통과시킨다.
+  // 없는 음성과 남의 음성을 같은 응답으로 막는다 — 어느 쪽인지 알려줄 이유가 없다.
+  const caller = await authenticate(req, res);
+  if (!caller) return;
+  const admin = caller.admin;
+  const owner = typeof voiceResponseId === "string" ? await checkinOfVoice(admin, voiceResponseId) : null;
+  if (!owner || !(await canAccessElder(caller, owner.elder_profile_id))) {
+    res.status(403).json({ error: "forbidden" });
     return;
   }
-
-  const admin = createClient(supabaseUrl, serviceKey);
 
   if (!geminiKey) {
     await admin.from("voice_response").update({ analysis_status: "skipped" }).eq("id", voiceResponseId);

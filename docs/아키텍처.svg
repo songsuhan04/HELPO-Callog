@@ -63,7 +63,7 @@
     <text class="t-xs" x="776" y="223">음성 30일 · 영상 7일 자동 삭제</text>
 
     <text class="t-s"  x="776" y="318">Google Gemini</text>
-    <text class="t-xs" x="776" y="337">음성 분석 · 질문 생성</text>
+    <text class="t-xs" x="776" y="337">음성 분석 · 주제 생성</text>
 
     <text class="t-s"  x="329" y="458">GitHub Actions</text>
     <text class="t-xs" x="329" y="477">매시간 — 무응답 확인</text>

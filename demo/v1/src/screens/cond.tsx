@@ -3,7 +3,13 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { BackButton } from "../components/BackButton";
 import { Chip } from "../components/Chip";
-import { CONDITION_CATEGORIES, CONDITIONS, buildDailyQuestions, getConditionsByCategory } from "../domain/conditions";
+import { CONDITION_CATEGORIES, CONDITIONS, getConditionsByCategory } from "../domain/conditions";
+import {
+  MAX_CONDITION_QUESTIONS,
+  conditionQuestionCount,
+  conditionsWithoutQuestion,
+  previewQuestions,
+} from "../lib/questions";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getErrorMessage } from "../lib/errors";
 import { ConsentItem } from "../components/ConsentItem";
@@ -56,7 +62,13 @@ export default function Cond() {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
-  const preview = buildDailyQuestions(selected);
+  // 미리보기는 실제로 질문을 고르는 코드와 같은 표에서 뽑는다(src/lib/questions.ts).
+  // 예전에는 이 화면만의 목록으로 보여줘서, 여기 적힌 것과 어르신께 나가는 질문이 달랐다.
+  const preview = previewQuestions(selected);
+  const rotatesConditions = conditionQuestionCount(selected) > MAX_CONDITION_QUESTIONS;
+  const uncovered = conditionsWithoutQuestion(selected)
+    .map((id) => CONDITIONS.find((c) => c.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
   const riskNotes = CONDITIONS.filter((c) => selected.includes(c.id) && c.riskNote);
 
   async function handleSubmit() {
@@ -113,13 +125,22 @@ export default function Cond() {
 
       <div className="g-card" style={{ marginBottom: 16 }}>
         <div className="g-card-title">
-          <span>오늘 어르신께 물을 질문 {preview.length}개</span>
+          <span>어르신께 매일 물을 질문 {preview.length}개</span>
         </div>
         <ol className="g-questions">
           {preview.map((q, i) => (
             <li key={i}>{q}</li>
           ))}
         </ol>
+        <div className="g-note">
+          같은 질문을 날마다 다른 말로 여쭙니다. 질문 수는 매일 같습니다.
+          {rotatesConditions && (
+            <div>· 지병 질문은 하루 {MAX_CONDITION_QUESTIONS}개까지 묻고, 날마다 돌아가며 바뀝니다.</div>
+          )}
+          {uncovered.length > 0 && (
+            <div>· 아직 맞춤 질문이 없는 지병: {uncovered.join(", ")}. 공통 질문으로 살핍니다.</div>
+          )}
+        </div>
         {riskNotes.length > 0 && (
           <div className="g-note">
             {riskNotes.map((c) => (

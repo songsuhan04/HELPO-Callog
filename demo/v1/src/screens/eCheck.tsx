@@ -8,35 +8,35 @@ import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { todaySeoul } from "../lib/date";
 import { fetchDailyPrompt } from "../lib/dailyPrompt";
+import { apiHeaders } from "../lib/api";
+import {
+  selectDailyQuestions,
+  usableQuestions,
+  type Category,
+  type DailyQuestion,
+  type QuestionOption,
+  type Severity,
+} from "../lib/questions";
 
 export const SCREEN_ID = "eCheck";
 
-type Category = "medication" | "meal" | "outing" | "mood" | "condition" | "other";
-type Severity = "ok" | "warn" | "danger";
-
-interface GeneratedOption {
-  text: string;
-  severity: Severity;
-}
-
-interface GeneratedQuestion {
-  question: string;
-  category: Category;
-  options: GeneratedOption[];
-}
-
 // lib/riskScoring.ts가 위험도 계산에 쓰는 구조화된 응답 신호. 근거: 기능설계서.md §3, plan "P0"
 interface AnsweredQuestion {
+  /** 질문 표의 항목 id — 표현이 달라도 같은 질문임을 알아볼 수 있게 남긴다 */
+  id?: string;
   question: string;
   category: Category;
   choice: string;
   severity: Severity;
 }
 
+// 지병을 읽는 데 이 시간을 넘기면 공통 질문만으로 시작한다. 서버에 닿지 못해 화면이 직접
+// 고르는 상황이라 이 조회도 느릴 가능성이 높고, 어르신을 더 기다리게 할 이유가 없다.
+const CONDITION_LOOKUP_MS = 3000;
 
 export default function ECheck() {
   const navigate = useNavigate();
-  const [questions, setQuestions] = useState<GeneratedQuestion[]>([]);
+  const [questions, setQuestions] = useState<DailyQuestion[]>([]);
   const [answers, setAnswers] = useState<AnsweredQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -58,69 +58,58 @@ export default function ECheck() {
     const supabase = getSupabase();
 
     async function load() {
-      // 새벽 크론이 미리 만들어둔 것이 있으면 그걸 쓴다 — AI 호출을 기다리지 않는다.
-      // 근거: 실사용 피드백 — "버퍼링이 걸리더라"
-      // 즉석 생성한 질문도 여기에 저장되므로, 새로고침해도 같은 질문이 나온다.
-      const prepared = await fetchDailyPrompt(elderId!, todaySeoul());
-      if (prepared?.questions && prepared.questions.length > 0) {
-        setQuestions(prepared.questions as GeneratedQuestion[]);
-        setLoading(false);
-        return;
+      const date = todaySeoul();
+
+      // 1. 새벽 크론이 미리 넣어둔 질문. 평소에는 여기서 끝난다.
+      const prepared = await fetchDailyPrompt(elderId!, date);
+      let list = usableQuestions(prepared?.questions);
+
+      // 2. 없으면 서버에 고르게 한다(크론 뒤에 등록된 어르신 등). 서버도 AI를 부르지 않고
+      //    질문 표에서 고르므로 곧바로 온다. 그래도 제한시간은 둔다 — 응답이 오지 않을 때
+      //    어르신이 "준비하고 있어요"만 보며 기다리지 않도록.
+      //    AbortSignal.timeout은 구형 웹뷰에 없을 수 있어 컨트롤러를 직접 쓴다.
+      if (!list) {
+        // 헤더(세션 토큰)는 시계를 켜기 전에 준비한다 — 8초는 서버 응답을 기다리는 시간이다
+        const headers = await apiHeaders();
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8000);
+        try {
+          const resp = await fetch("/api/generate-questions", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ elderProfileId: elderId, date }),
+            signal: controller.signal,
+          });
+          // 서버가 거절(401·403)하거나 오류를 내도 본문은 JSON이다. 예전에는 그걸 "질문 0개"로
+          // 받아들여 "준비된 질문이 없습니다"에서 멈췄다.
+          if (resp.ok) list = usableQuestions((await resp.json()).questions);
+        } catch {
+          // 아래에서 화면이 직접 고른다
+        } finally {
+          clearTimeout(timer);
+        }
       }
 
-      const [{ data: conditionRows }, { data: recentRows }] = await Promise.all([
-        supabase.from("elder_condition").select("condition_type").eq("elder_profile_id", elderId),
-        supabase
-          .from("daily_checkin")
-          .select("questions")
+      // 3. 서버에 닿지 못했으면 화면이 같은 질문 표에서 직접 고른다. 날짜와 어르신이 같으면
+      //    서버가 골랐을 것과 같은 질문이 나온다. 예전에는 여기서 "오늘 별일 없으셨어요?"
+      //    한 문항으로 대신했고, 그날 안부가 질문 하나로 끝났다.
+      if (!list) {
+        const lookup = supabase
+          .from("elder_condition")
+          .select("condition_type")
           .eq("elder_profile_id", elderId)
-          .order("date", { ascending: false })
-          .limit(3),
-      ]);
-
-      const conditions = (conditionRows ?? []).map((r) => r.condition_type as string);
-      const recentQuestions = (recentRows ?? [])
-        .flatMap((r) => ((r.questions as GeneratedQuestion[]) ?? []).map((q) => q.question))
-        .slice(0, 12);
-
-      let generated: GeneratedQuestion[] = [];
-      // 제한시간을 둔다. 예전에는 없어서, AI 응답이 늦으면 어르신이 "준비하고 있어요..."만
-      // 보며 언제까지인지 모른 채 기다리셨다(실사용 신고). catch는 네트워크가 끊겼을 때만
-      // 걸리지 느린 것은 못 잡는다. 8초가 지나면 아래 기본 문항으로 넘어간다.
-      // AbortSignal.timeout은 구형 웹뷰에 없을 수 있어 컨트롤러를 직접 쓴다.
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 8000);
-      try {
-        const resp = await fetch("/api/generate-questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conditions, recentQuestions, elderProfileId: elderId, date: todaySeoul() }),
-          signal: controller.signal,
-        });
-        const json = await resp.json();
-        generated = json.questions ?? [];
-      } catch {
-        // 네트워크 실패 시에도 화면이 멈추지 않도록 최소 문항으로 진행
-        generated = [
-          {
-            question: "오늘 별일 없으셨어요?",
-            category: "other",
-            options: [
-              { text: "네, 괜찮아요", severity: "ok" },
-              { text: "조금 힘들었어요", severity: "warn" },
-            ],
-          },
-        ];
-      } finally {
-        clearTimeout(timer);
+          .then(({ data }) => (data ?? []).map((r) => r.condition_type as string));
+        const giveUp = new Promise<string[]>((resolve) => setTimeout(() => resolve([]), CONDITION_LOOKUP_MS));
+        const conditions = await Promise.race([lookup, giveUp]).catch(() => [] as string[]);
+        list = selectDailyQuestions(conditions, date, elderId ?? "");
       }
 
       // 여기서 daily_checkin에 행을 만들지 않는다. 예전에는 새로고침 대비로 질문을 미리
       // 저장했는데, 그러면 어르신이 아무것도 답하지 않았는데 그날 행이 생긴다. 보호자 목록·
       // 위험도 계산·무응답 알림이 모두 "행이 있으면 응답한 것"으로 보기 때문에, 화면만 열고
       // 나간 어르신이 "오늘 완료"로 보이고 무응답 알림까지 막혔다.
-      // 질문은 서버가 daily_prompt에 저장한다(api/generate-questions.ts).
-      setQuestions(generated);
+      // 준비한 질문은 서버가 daily_prompt에 저장한다(api/generate-questions.ts).
+      setQuestions(list);
       setLoading(false);
     }
 
@@ -138,11 +127,17 @@ export default function ECheck() {
     }
   }
 
-  function answer(option: GeneratedOption) {
+  function answer(option: QuestionOption) {
     const question = questions[index];
     const next = [
       ...answers,
-      { question: question.question, category: question.category, choice: option.text, severity: option.severity },
+      {
+        id: question.id,
+        question: question.question,
+        category: question.category,
+        choice: option.text,
+        severity: option.severity,
+      },
     ];
     setAnswers(next);
     if (index + 1 < questions.length) {
@@ -169,11 +164,15 @@ export default function ECheck() {
       return;
     }
     // 위험도 계산은 fire-and-forget — 여기까지 왔으면 하루 기록은 이미 저장되어 있다
-    fetch("/api/assess-risk", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ elderProfileId: elderId, date }),
-    }).catch(() => {});
+    apiHeaders()
+      .then((headers) =>
+        fetch("/api/assess-risk", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ elderProfileId: elderId, date }),
+        })
+      )
+      .catch(() => {});
     navigate("/elder/speech");
   }
 

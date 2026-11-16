@@ -12,6 +12,7 @@ import { RecordingNotice } from "../components/RecordingNotice";
 import { todaySeoul } from "../lib/date";
 import { SPEECH_TOPICS } from "../lib/topics";
 import { useDailyTopic } from "../lib/dailyPrompt";
+import { apiHeaders } from "../lib/api";
 
 export const SCREEN_ID = "eSpeech";
 
@@ -100,11 +101,16 @@ export default function ESpeech() {
         if (existing?.audio_url) await deleteFromBucket("voice", existing.audio_url).catch(() => {});
         // 분석 요청은 fire-and-forget — 실패해도 하루 기록은 그대로 인정된다
         if (voiceRow?.id) {
-          fetch("/api/analyze-voice", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ voiceResponseId: voiceRow.id }),
-          }).catch(() => {});
+          const voiceResponseId = voiceRow.id;
+          apiHeaders()
+            .then((headers) =>
+              fetch("/api/analyze-voice", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ voiceResponseId }),
+              })
+            )
+            .catch(() => {});
         }
       }
     }
