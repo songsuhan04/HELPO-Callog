@@ -8,6 +8,7 @@ import { MedicalDisclaimer } from "../components/MedicalDisclaimer";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getSignedUrl, deleteFromBucket } from "../lib/storage";
 import { VideoDownloadButton } from "../components/VideoDownloadButton";
+import { FEATURES } from "../config/features";
 import { getErrorMessage, getRpcErrorMessage } from "../lib/errors";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers } from "../lib/checkin";
@@ -92,7 +93,7 @@ export default function GDetail() {
       .maybeSingle()
       .then(({ data }) => setRisk((data as RiskRow) ?? null));
     // 어르신이 보낸 영상편지 — 보호자도 확인할 수 있어야 함
-    supabase
+    if (FEATURES.videoLetters) supabase
       .from("video_letter")
       .select("id,title,video_url,sent_at")
       .eq("sender_type", "elder")
@@ -106,7 +107,7 @@ export default function GDetail() {
         setLetters(withUrls);
       });
     // 내가(보호자) 보낸 영상편지 — 잘못 보낸 걸 확인하고 지울 수 있어야 함
-    supabase.auth.getUser().then(async ({ data: userData }) => {
+    if (FEATURES.videoLetters) supabase.auth.getUser().then(async ({ data: userData }) => {
       if (!userData.user) return;
       const { data } = await supabase
         .from("video_letter")
@@ -315,12 +316,14 @@ export default function GDetail() {
         <button className="g-button g-button--secondary" disabled={busy || !risk} onClick={markChecked}>
           확인했어요
         </button>
-        <button
-          className="g-button g-button--secondary"
-          onClick={() => navigate(`/guardian/elders/${elderId}/letter`)}
-        >
-          영상편지 보내기
-        </button>
+        {FEATURES.videoLetters && (
+          <button
+            className="g-button g-button--secondary"
+            onClick={() => navigate(`/guardian/elders/${elderId}/letter`)}
+          >
+            영상편지 보내기
+          </button>
+        )}
         <button
           className="g-button g-button--secondary"
           onClick={() => navigate(`/guardian/elders/${elderId}/conditions`, { state: { mode: "edit" } })}
@@ -334,7 +337,7 @@ export default function GDetail() {
       {error && <p className="g-error">{error}</p>}
 
       {/* 넓은 화면에서는 추이·음성과 영상편지를 2단으로 나눠, 스크롤하지 않고 함께 본다 */}
-      <div className="g-grid g-section">
+      <div className={FEATURES.videoLetters ? "g-grid g-section" : "g-section"}>
         <div>
           {trend.some((p) => p.level) && (
             <div className="g-card">
@@ -412,7 +415,7 @@ export default function GDetail() {
           )}
         </div>
 
-        <div>
+        {FEATURES.videoLetters && <div>
           <div className="g-card">
             <div className="g-card-title">
               <span>{elder.name}님이 보낸 영상편지</span>
@@ -460,7 +463,7 @@ export default function GDetail() {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
 
       <MedicalDisclaimer />

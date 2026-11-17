@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { SpeakButton } from "../components/SpeakButton";
@@ -11,6 +11,10 @@ import { VideoDownloadButton } from "../components/VideoDownloadButton";
 import { todaySeoul } from "../lib/date";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers, isAnswered } from "../lib/checkin";
+import { FEATURES } from "../config/features";
+
+// 만세력 라이브러리가 커서 운세 카드는 안부를 마친 날에만 따로 받는다
+const ElderFortune = lazy(() => import("../features/fortune/ElderFortune"));
 
 interface LetterRow {
   id: string;
@@ -34,6 +38,7 @@ export default function EHome() {
   const [doneToday, setDoneToday] = useState(false);
   const [streak, setStreak] = useState(0);
   const [letter, setLetter] = useState<LetterRow | null>(null);
+  const [birthDate, setBirthDate] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -63,6 +68,13 @@ export default function EHome() {
       .then(({ data }) =>
         setStreak(computeStreak((data ?? []).filter(hasAnswers).map((r) => r.date as string)))
       );
+    supabase
+      .from("elder_profile")
+      .select("birth_date")
+      .eq("id", elderId)
+      .maybeSingle()
+      .then(({ data }) => setBirthDate((data?.birth_date as string | null) ?? null));
+    if (!FEATURES.videoLetters) return;
     // 가장 최근 가족 영상편지를 홈에 바로 띄운다 — 완료 화면만 밋밋하게 두지 않고
     // 어르신이 별도 화면으로 들어가지 않아도 바로 볼 수 있게.
     // 근거: 실사용 피드백 — "가족이 보낸 영상편지가 바로 나오면 어떨까"
@@ -106,7 +118,15 @@ export default function EHome() {
 
       <SpeakButton text={message} />
 
-      {letter?.signedUrl && (
+      {/* 오늘의 운세는 안부를 마친 뒤에 열린다 — 운세를 보러 들어온 김에 안부를 남기게 */}
+      {doneToday && birthDate !== undefined && (
+        <Suspense fallback={null}>
+          <ElderFortune birthDate={birthDate} />
+        </Suspense>
+      )}
+      {!doneToday && <p className="e-meta" style={{ textAlign: "center", marginBottom: 14 }}>🔮 안부를 마치면 오늘의 운세를 볼 수 있어요</p>}
+
+      {FEATURES.videoLetters && letter?.signedUrl && (
         <div className="e-card">
           <div className="e-card-head">
             <div className="e-card-label">가족이 보낸 영상편지</div>
@@ -126,12 +146,16 @@ export default function EHome() {
           안부 시작하기
         </button>
       )}
-      <button className="e-secondary" onClick={() => navigate("/elder/record")}>
-        영상편지 남기기
-      </button>
-      <button className="e-secondary" onClick={() => navigate("/elder/letters")}>
-        가족 영상편지 모아보기
-      </button>
+      {FEATURES.videoLetters && (
+        <>
+          <button className="e-secondary" onClick={() => navigate("/elder/record")}>
+            영상편지 남기기
+          </button>
+          <button className="e-secondary" onClick={() => navigate("/elder/letters")}>
+            가족 영상편지 모아보기
+          </button>
+        </>
+      )}
 
       {/* 위험도와 무관하게 항상 같은 자리에 둔다 — EmergencyCall의 주석 참고 */}
       <EmergencyCall />

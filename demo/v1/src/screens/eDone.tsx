@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { DisplaySettings } from "../components/DisplaySettings";
@@ -8,6 +8,10 @@ import { getSignedUrl } from "../lib/storage";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers } from "../lib/checkin";
+import { FEATURES } from "../config/features";
+
+// 만세력 라이브러리가 커서 운세 카드는 이 화면에서만 따로 받는다
+const ElderFortune = lazy(() => import("../features/fortune/ElderFortune"));
 
 export const SCREEN_ID = "eDone";
 
@@ -22,6 +26,8 @@ export default function EDone() {
   const [streak, setStreak] = useState(0);
   const [letter, setLetter] = useState<LetterRow | null>(null);
   const [letterUrl, setLetterUrl] = useState<string | null>(null);
+  // undefined = 아직 읽는 중, null = 등록된 생일 없음
+  const [birthDate, setBirthDate] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     if (!supabaseConfigured) return;
@@ -41,6 +47,14 @@ export default function EDone() {
       .then(({ data }) =>
         setStreak(computeStreak((data ?? []).filter(hasAnswers).map((r) => r.date as string)))
       );
+    // 오늘의 운세에 쓸 생일 — 보호자가 어르신 정보에 적은 값(양력)
+    supabase
+      .from("elder_profile")
+      .select("birth_date")
+      .eq("id", elderId)
+      .maybeSingle()
+      .then(({ data }) => setBirthDate((data?.birth_date as string | null) ?? null));
+    if (!FEATURES.videoLetters) return;
     supabase
       .from("video_letter")
       .select("id,title,video_url")
@@ -78,7 +92,13 @@ export default function EDone() {
         <p className="e-meta">{streak}일 연속 안부를 남기셨어요</p>
       </div>
 
-      {letter && (
+      {birthDate !== undefined && (
+        <Suspense fallback={null}>
+          <ElderFortune birthDate={birthDate} />
+        </Suspense>
+      )}
+
+      {FEATURES.videoLetters && letter && (
         <div className="e-card">
           <div className="e-card-label">가족이 보냈어요</div>
           <div className="e-card-title">{letter.title}</div>
@@ -87,13 +107,17 @@ export default function EDone() {
       )}
 
       <SpeakButton text="오늘 안부를 가족에게 전했어요. 잘 하셨어요." />
-      <button className="e-primary" onClick={() => navigate("/elder/record")}>
-        영상편지 남기기
-      </button>
-      <button className="e-secondary" onClick={() => navigate("/elder/letters")}>
-        가족 영상편지 모아보기
-      </button>
-      <button className="e-secondary" onClick={() => navigate("/elder/home")}>
+      {FEATURES.videoLetters && (
+        <>
+          <button className="e-primary" onClick={() => navigate("/elder/record")}>
+            영상편지 남기기
+          </button>
+          <button className="e-secondary" onClick={() => navigate("/elder/letters")}>
+            가족 영상편지 모아보기
+          </button>
+        </>
+      )}
+      <button className={FEATURES.videoLetters ? "e-secondary" : "e-primary"} onClick={() => navigate("/elder/home")}>
         처음 화면으로
       </button>
     </AppShell>

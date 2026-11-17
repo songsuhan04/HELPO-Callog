@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { FEATURES } from "./config/features";
 import { GuardianRoute } from "./guards/GuardianRoute";
 import { ElderRoute } from "./guards/ElderRoute";
 
@@ -43,14 +44,18 @@ export function AppRoutes() {
       <Route path="/guardian" element={<GuardianRoute><GList /></GuardianRoute>} />
       <Route path="/admin" element={<GuardianRoute><GAdmin /></GuardianRoute>} />
       <Route path="/guardian/elders/:elderId" element={<GuardianRoute><GDetail /></GuardianRoute>} />
-      <Route path="/guardian/elders/:elderId/letter" element={<GuardianRoute><GLetter /></GuardianRoute>} />
+      {/* 영상편지를 끈 동안에는 옛 주소로 들어와도 영상 화면 대신 처음 화면으로 보낸다 */}
+      <Route
+        path="/guardian/elders/:elderId/letter"
+        element={FEATURES.videoLetters ? <GuardianRoute><GLetter /></GuardianRoute> : <Navigate to="/guardian" replace />}
+      />
 
       <Route path="/elder/home" element={<ElderRoute><EHome /></ElderRoute>} />
       <Route path="/elder/check" element={<ElderRoute><ECheck /></ElderRoute>} />
       <Route path="/elder/speech" element={<ElderRoute><ESpeech /></ElderRoute>} />
       <Route path="/elder/done" element={<ElderRoute><EDone /></ElderRoute>} />
-      <Route path="/elder/record" element={<ElderRoute><ERecord /></ElderRoute>} />
-      <Route path="/elder/letters" element={<ElderRoute><ELetters /></ElderRoute>} />
+      <Route path="/elder/record" element={FEATURES.videoLetters ? <ElderRoute><ERecord /></ElderRoute> : <Navigate to="/elder/home" replace />} />
+      <Route path="/elder/letters" element={FEATURES.videoLetters ? <ElderRoute><ELetters /></ElderRoute> : <Navigate to="/elder/home" replace />} />
     </Routes>
   );
 }

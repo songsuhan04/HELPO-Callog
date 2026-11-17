@@ -262,6 +262,33 @@
   margin-bottom: 8px;
 }
 
+/* 오늘의 운세 카드 (features/fortune/ElderFortune.tsx) */
+.e-fortune-item {
+  padding: 10px 0;
+  border-top: 1px solid var(--e-line);
+}
+
+.e-fortune-head {
+  font-size: calc(15px * var(--e-fs, 1));
+  font-weight: 700;
+  color: var(--e-text-2);
+  margin-bottom: 4px;
+}
+
+.e-fortune-text {
+  font-size: calc(18px * var(--e-fs, 1));
+  line-height: 1.55;
+  color: var(--e-text);
+  margin: 0;
+}
+
+.e-fortune-note {
+  font-size: calc(13px * var(--e-fs, 1));
+  color: var(--e-text-2);
+  margin: 8px 0 0;
+  text-align: center;
+}
+
 .e-badge-new {
   font-size: calc(13px * var(--e-fs, 1));
   font-weight: 800;

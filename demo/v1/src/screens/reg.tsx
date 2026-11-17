@@ -16,6 +16,11 @@ export const SCREEN_ID = "reg";
 // 당뇨는 숫자가 없고 고혈압은 등급 B·이질성 I²=93.2%의 뇌졸중 한정 수치여서, 이것으로
 // 가중치를 나누면 남성 민감도를 낮추게 되어 "애매하면 위험 쪽으로" 원칙과 충돌한다.
 // 근거: Help4/발표 자료/위험도가중치 근거자료.docx §4.1 근거④, §4.2, §7.1
+//
+// 생신은 선택 입력이다. 어르신 화면의 "오늘의 운세"(features/fortune)에만 쓴다.
+// DB에는 양력 날짜 한 칸(birth_date)만 있어서, 음력으로 적으면 저장하기 전에 양력으로 바꾼다.
+// 어르신들은 음력 생신을 쓰시는 경우가 많아 음력 입력을 받는다. 수정 화면에서는 저장된
+// 양력 날짜로 보인다.
 export default function Reg() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,6 +33,11 @@ export default function Reg() {
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
   const [checkinTime, setCheckinTime] = useState("08:00");
+  const [birthCalendar, setBirthCalendar] = useState<"solar" | "lunar">("solar");
+  const [birthLeap, setBirthLeap] = useState(false);
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingElder, setLoadingElder] = useState(isEdit);
@@ -36,7 +46,7 @@ export default function Reg() {
     if (!isEdit || !supabaseConfigured) return;
     getSupabase()
       .from("elder_profile")
-      .select("name,relationship,gender,phone,checkin_time")
+      .select("name,relationship,gender,phone,checkin_time,birth_date")
       .eq("id", elderId)
       .single()
       .then(({ data, error }) => {
@@ -48,6 +58,12 @@ export default function Reg() {
           setGender(data.gender ?? "");
           setPhone(data.phone ?? "");
           setCheckinTime(data.checkin_time?.slice(0, 5) ?? "08:00");
+          const [by, bm, bd] = ((data.birth_date as string | null) ?? "").split("-");
+          if (by && bm && bd) {
+            setBirthYear(by);
+            setBirthMonth(String(Number(bm)));
+            setBirthDay(String(Number(bd)));
+          }
         }
         setLoadingElder(false);
       });
@@ -58,6 +74,7 @@ export default function Reg() {
     setError(null);
     setLoading(true);
     try {
+      const birthDate = await toBirthDate(birthCalendar, birthLeap, birthYear, birthMonth, birthDay);
       const supabase = getSupabase();
       if (isEdit) {
         // .select()가 없으면 RLS로 0건이 되어도 에러가 아니라 성공으로 돌아온다 — 그러면
@@ -70,6 +87,7 @@ export default function Reg() {
             gender: gender || null,
             phone: phone || null,
             checkin_time: checkinTime,
+            birth_date: birthDate,
           })
           .eq("id", elderId)
           .select("id");
@@ -89,6 +107,7 @@ export default function Reg() {
           gender: gender || null,
           phone: phone || null,
           checkin_time: checkinTime,
+          birth_date: birthDate,
         })
         .select("id")
         .single();
@@ -137,6 +156,33 @@ export default function Reg() {
           />
         </div>
         <div className="g-field">
+          <label>생신 (선택 — 어르신 화면의 오늘의 운세에 써요)</label>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <select
+              value={birthCalendar}
+              onChange={(e) => setBirthCalendar(e.target.value as "solar" | "lunar")}
+              aria-label="양력 또는 음력"
+              style={{ width: "auto" }}
+            >
+              <option value="solar">양력</option>
+              <option value="lunar">음력</option>
+            </select>
+            <input inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1950" aria-label="태어난 해" style={{ width: 80 }} />
+            <span>년</span>
+            <input inputMode="numeric" value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} placeholder="3" aria-label="태어난 달" style={{ width: 52 }} />
+            <span>월</span>
+            <input inputMode="numeric" value={birthDay} onChange={(e) => setBirthDay(e.target.value)} placeholder="10" aria-label="태어난 날" style={{ width: 52 }} />
+            <span>일</span>
+          </div>
+          {birthCalendar === "lunar" && (
+            <label style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 8, fontWeight: 400 }}>
+              <input type="checkbox" checked={birthLeap} onChange={(e) => setBirthLeap(e.target.checked)} style={{ width: "auto" }} />
+              윤달이에요
+            </label>
+          )}
+          {birthCalendar === "lunar" && <div className="g-legal" style={{ marginTop: 4 }}>음력은 양력 날짜로 바꿔 저장합니다.</div>}
+        </div>
+        <div className="g-field">
           <label>안부 묻는 시각</label>
           <input type="time" value={checkinTime} onChange={(e) => setCheckinTime(e.target.value)} required />
         </div>
@@ -147,4 +193,36 @@ export default function Reg() {
       </form>
     </AppShell>
   );
+}
+
+// 생신 입력 → DB에 넣을 양력 "YYYY-MM-DD". 비워 두면 null(운세 없음).
+// 없는 날짜면 이유를 담아 던진다 — 화면이 오류 문구로 보여 준다.
+async function toBirthDate(
+  calendar: "solar" | "lunar",
+  leap: boolean,
+  yearText: string,
+  monthText: string,
+  dayText: string
+): Promise<string | null> {
+  if (!yearText.trim() && !monthText.trim() && !dayText.trim()) return null;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const thisYear = new Date().getFullYear();
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day) || year < 1900 || year > thisYear) {
+    throw new Error("생신을 다시 확인해주세요. 년·월·일을 숫자로 적거나, 모두 비워 두세요.");
+  }
+  if (calendar === "lunar") {
+    // 만세력 라이브러리가 커서 음력을 고른 경우에만 불러온다
+    const { lunarToSolarDate } = await import("../features/fortune/saju");
+    const solar = lunarToSolarDate(year, month, day, leap);
+    if (!solar) throw new Error("없는 음력 날짜예요. 달·날짜와 윤달 여부를 다시 확인해주세요.");
+    return solar;
+  }
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    throw new Error("없는 날짜예요. 년·월·일을 다시 확인해주세요.");
+  }
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${year}-${pad(month)}-${pad(day)}`;
 }
