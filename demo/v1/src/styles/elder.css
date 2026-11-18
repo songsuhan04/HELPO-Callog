@@ -262,10 +262,136 @@
   margin-bottom: 8px;
 }
 
-/* 오늘의 운세 카드 (features/fortune/ElderFortune.tsx) */
-.e-fortune-item {
-  padding: 10px 0;
-  border-top: 1px solid var(--e-line);
+/* 오늘의 운세 카드 (features/fortune/ElderFortune.tsx)
+   눈길을 끄는 건 동물과 복주머니 하나뿐이다. 카드 자체는 다른 카드와 같게 두고, 움직임은
+   복주머니를 눌렀을 때의 한 번(흔들림 → 금빛 → 쪽지)에만 쓴다. */
+.e-fortune {
+  text-align: center;
+}
+
+.e-fortune-title {
+  font-size: calc(19px * var(--e-fs, 1));
+  font-weight: 800;
+  line-height: 1.4;
+  margin: 4px 0 6px;
+  color: var(--e-text);
+  text-wrap: balance;
+}
+
+.e-fortune-stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  padding: 6px 0 2px;
+  border: 0;
+  /* 주머니 뒤에 은은한 달빛 — 카드 안에서 이 자리만 밝게 */
+  background: radial-gradient(closest-side, var(--e-glow), transparent) no-repeat center 60% / 220px 180px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 브라우저가 눌 수 없는 버튼의 글자색을 흐리게 하는데, 이모지 동물까지 흐려진다 */
+.e-fortune-stage,
+.e-fortune-stage:disabled {
+  color: var(--e-text);
+}
+
+.e-fortune-stage:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.e-fortune-stage:focus-visible {
+  outline: 3px solid var(--e-primary);
+  outline-offset: 4px;
+  border-radius: var(--r-lg);
+}
+
+.e-fortune-animal {
+  font-size: calc(84px * var(--e-fs, 1));
+  line-height: 1;
+  margin-right: -30px;
+  margin-bottom: 18px;
+  z-index: 1;
+  animation: e-fortune-bob 2.6s ease-in-out infinite;
+}
+
+.e-fortune-pouch {
+  width: calc(150px * var(--e-fs, 1));
+  height: auto;
+  transform-origin: 50% 20%;
+  filter: drop-shadow(0 6px 10px rgba(120, 20, 30, 0.25));
+}
+
+/* 아직 안 연 주머니는 살짝 흔들려 "눌러 보세요"를 말한다 */
+.e-fortune-stage:not(:disabled) .e-fortune-pouch {
+  animation: e-fortune-nudge 3.2s ease-in-out infinite;
+}
+
+.e-fortune-stage:disabled .e-fortune-pouch {
+  filter: grayscale(0.35) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
+  opacity: 0.85;
+}
+
+.e-fortune-stage.is-opening .e-fortune-pouch {
+  animation: e-fortune-shake 0.65s ease-in-out;
+}
+
+.e-fortune-sparkle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 214, 102, 0.95) 0%, rgba(255, 214, 102, 0) 70%);
+}
+
+.e-fortune-stage.is-opening .e-fortune-sparkle {
+  animation: e-fortune-glow 0.65s ease-out 0.25s forwards;
+}
+
+.e-fortune-hint {
+  font-size: calc(16px * var(--e-fs, 1));
+  font-weight: 700;
+  color: var(--e-text-2);
+  margin: 2px 0 4px;
+}
+
+/* 연 뒤 */
+.e-fortune--open {
+  text-align: left;
+}
+
+.e-fortune-opened {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.e-fortune-opened .e-fortune-title {
+  margin: 0 0 2px;
+}
+
+.e-fortune-animal--small {
+  font-size: calc(44px * var(--e-fs, 1));
+  margin: 0;
+  animation: none;
+}
+
+.e-fortune-slip {
+  padding: 12px 14px;
+  margin: 10px 0 0;
+  border-radius: var(--r-md, 12px);
+  background: var(--e-card-2);
+  border-left: 4px solid #e2b13c;
+  animation: e-fortune-unfold 0.45s ease-out both;
 }
 
 .e-fortune-head {
@@ -287,6 +413,46 @@
   color: var(--e-text-2);
   margin: 8px 0 0;
   text-align: center;
+}
+
+@keyframes e-fortune-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes e-fortune-nudge {
+  0%, 82%, 100% { transform: rotate(0); }
+  86% { transform: rotate(-6deg); }
+  90% { transform: rotate(5deg); }
+  94% { transform: rotate(-3deg); }
+}
+
+@keyframes e-fortune-shake {
+  0% { transform: rotate(0) scale(1); }
+  20% { transform: rotate(-12deg) scale(1.04); }
+  40% { transform: rotate(10deg) scale(1.06); }
+  60% { transform: rotate(-8deg) scale(1.08); }
+  80% { transform: rotate(4deg) scale(1.1); }
+  100% { transform: rotate(0) scale(0.9); opacity: 0.4; }
+}
+
+@keyframes e-fortune-glow {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: scale(5); }
+}
+
+@keyframes e-fortune-unfold {
+  from { opacity: 0; transform: translateY(-8px) scaleY(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .e-fortune-animal,
+  .e-fortune-stage .e-fortune-pouch,
+  .e-fortune-slip {
+    animation: none !important;
+  }
 }
 
 .e-badge-new {

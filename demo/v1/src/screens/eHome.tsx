@@ -12,6 +12,7 @@ import { todaySeoul } from "../lib/date";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers, isAnswered } from "../lib/checkin";
 import { FEATURES } from "../config/features";
+import { dayAnimal, withSubject } from "../features/fortune/animal";
 
 // 만세력 라이브러리가 커서 운세 카드는 안부를 마친 날에만 따로 받는다
 const ElderFortune = lazy(() => import("../features/fortune/ElderFortune"));
@@ -104,6 +105,8 @@ export default function EHome() {
   if (loading) return <AppShell variant="elder"><p className="e-lead">불러오는 중...</p></AppShell>;
 
   const message = doneToday ? "오늘 안부는 이미 전했어요" : "오늘 안부를 전해볼까요?";
+  // 오늘의 동물은 날짜 계산만으로 구한다 — 만세력 라이브러리를 처음 화면에 싣지 않는다
+  const animal = dayAnimal(todaySeoul());
 
   return (
     <AppShell variant="elder">
@@ -124,7 +127,11 @@ export default function EHome() {
           <ElderFortune birthDate={birthDate} />
         </Suspense>
       )}
-      {!doneToday && <p className="e-meta" style={{ textAlign: "center", marginBottom: 14 }}>🔮 안부를 마치면 오늘의 운세를 볼 수 있어요</p>}
+      {!doneToday && animal && (
+        <p className="e-meta" style={{ textAlign: "center", marginBottom: 14 }}>
+          {animal.emoji} 오늘은 {withSubject(animal.name)} 복주머니를 들고 왔어요. 안부를 마치면 열 수 있어요
+        </p>
+      )}
 
       {FEATURES.videoLetters && letter?.signedUrl && (
         <div className="e-card">
