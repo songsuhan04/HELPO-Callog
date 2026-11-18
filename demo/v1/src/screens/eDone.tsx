@@ -9,6 +9,9 @@ import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers } from "../lib/checkin";
 import { FEATURES } from "../config/features";
+import { StampCard } from "../features/attendance/StampCard";
+import { summarizeStamps } from "../features/attendance/stamps";
+import { todaySeoul } from "../lib/date";
 
 // 만세력 라이브러리가 커서 운세 카드는 이 화면에서만 따로 받는다
 const ElderFortune = lazy(() => import("../features/fortune/ElderFortune"));
@@ -24,6 +27,8 @@ interface LetterRow {
 export default function EDone() {
   const navigate = useNavigate();
   const [streak, setStreak] = useState(0);
+  // 안부를 실제로 답한 날들 — 연속 일수와 출석도장을 같이 센다. null = 아직 읽는 중
+  const [answeredDates, setAnsweredDates] = useState<string[] | null>(null);
   const [letter, setLetter] = useState<LetterRow | null>(null);
   const [letterUrl, setLetterUrl] = useState<string | null>(null);
   // undefined = 아직 읽는 중, null = 등록된 생일 없음
@@ -44,9 +49,11 @@ export default function EDone() {
       .eq("skipped", false)
       .order("date", { ascending: false })
       .limit(400)
-      .then(({ data }) =>
-        setStreak(computeStreak((data ?? []).filter(hasAnswers).map((r) => r.date as string)))
-      );
+      .then(({ data }) => {
+        const dates = (data ?? []).filter(hasAnswers).map((r) => r.date as string);
+        setStreak(computeStreak(dates));
+        setAnsweredDates(dates);
+      });
     // 오늘의 운세에 쓸 생일 — 보호자가 어르신 정보에 적은 값(양력)
     supabase
       .from("elder_profile")
@@ -72,7 +79,7 @@ export default function EDone() {
       });
   }, []);
 
-  const dots = Array.from({ length: 7 }, (_, i) => i < streak % 7 || streak >= 7);
+  const today = todaySeoul();
 
   return (
     <AppShell variant="elder">
@@ -84,13 +91,12 @@ export default function EDone() {
         <div className="e-hero-mark">✓</div>
         <h1 className="e-question">잘 하셨어요</h1>
         <p className="e-lead">오늘 안부를 가족에게 전했어요.</p>
-        <div className="e-streak">
-          {dots.map((filled, i) => (
-            <span key={i} className={filled ? "e-streak-dot e-streak-dot--filled" : "e-streak-dot"} />
-          ))}
-        </div>
-        <p className="e-meta">{streak}일 연속 안부를 남기셨어요</p>
       </div>
+
+      {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
+      {answeredDates && (
+        <StampCard summary={summarizeStamps(answeredDates, today)} today={today} streak={streak} celebrate />
+      )}
 
       {birthDate !== undefined && (
         <Suspense fallback={null}>

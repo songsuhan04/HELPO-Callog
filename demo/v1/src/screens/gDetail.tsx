@@ -11,6 +11,7 @@ import { VideoDownloadButton } from "../components/VideoDownloadButton";
 import { FEATURES } from "../config/features";
 import { getErrorMessage, getRpcErrorMessage } from "../lib/errors";
 import { computeStreak } from "../lib/streak";
+import { CARD_SIZE } from "../features/attendance/stamps";
 import { hasAnswers } from "../lib/checkin";
 import { shiftDateString, todaySeoul } from "../lib/date";
 import type { RiskLevel } from "../config/riskConstants";
@@ -69,6 +70,7 @@ export default function GDetail() {
   const [reanalyzing, setReanalyzing] = useState(false);
   const [trend, setTrend] = useState<TrendPoint[]>([]);
   const [streak, setStreak] = useState(0);
+  const [stampTotal, setStampTotal] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -193,9 +195,12 @@ export default function GDetail() {
       .eq("skipped", false)
       .order("date", { ascending: false })
       .limit(400)
-      .then(({ data }) =>
-        setStreak(computeStreak((data ?? []).filter(hasAnswers).map((r) => r.date as string)))
-      );
+      .then(({ data }) => {
+        const dates = (data ?? []).filter(hasAnswers).map((r) => r.date as string);
+        setStreak(computeStreak(dates));
+        // 출석도장 — 어르신 화면과 같은 기준(안부를 실제로 답한 날 수)
+        setStampTotal(new Set(dates).size);
+      });
   }, [elderId]);
 
   // 분석은 일시적인 이유로도 실패한다(잠깐 몰렸거나 응답이 늦거나). 그때 보호자가 할 수 있는
@@ -298,6 +303,9 @@ export default function GDetail() {
           </h1>
           <p className="g-sub">
             {streak > 0 && `${streak}일 연속 안부를 남기고 있어요. `}
+            {stampTotal > 0 &&
+              `출석도장 ${stampTotal}개` +
+                (stampTotal >= CARD_SIZE ? `(도장판 ${Math.floor(stampTotal / CARD_SIZE)}장 완성). ` : ". ")}
             {risk ? risk.reason : "특별한 위험 신호가 없습니다."}
           </p>
         </div>

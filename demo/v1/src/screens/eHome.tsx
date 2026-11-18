@@ -12,6 +12,8 @@ import { todaySeoul } from "../lib/date";
 import { computeStreak } from "../lib/streak";
 import { hasAnswers, isAnswered } from "../lib/checkin";
 import { FEATURES } from "../config/features";
+import { StampCard } from "../features/attendance/StampCard";
+import { summarizeStamps } from "../features/attendance/stamps";
 import { dayAnimal, withSubject } from "../features/fortune/animal";
 
 // 만세력 라이브러리가 커서 운세 카드는 안부를 마친 날에만 따로 받는다
@@ -38,6 +40,7 @@ export default function EHome() {
   const [loading, setLoading] = useState(true);
   const [doneToday, setDoneToday] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [answeredDates, setAnsweredDates] = useState<string[] | null>(null);
   const [letter, setLetter] = useState<LetterRow | null>(null);
   const [birthDate, setBirthDate] = useState<string | null | undefined>(undefined);
 
@@ -66,9 +69,11 @@ export default function EHome() {
       .eq("skipped", false)
       .order("date", { ascending: false })
       .limit(400)
-      .then(({ data }) =>
-        setStreak(computeStreak((data ?? []).filter(hasAnswers).map((r) => r.date as string)))
-      );
+      .then(({ data }) => {
+        const dates = (data ?? []).filter(hasAnswers).map((r) => r.date as string);
+        setStreak(computeStreak(dates));
+        setAnsweredDates(dates);
+      });
     supabase
       .from("elder_profile")
       .select("birth_date")
@@ -116,7 +121,6 @@ export default function EHome() {
       </div>
       <div className="e-hero">
         <h1 className="e-question">{message}</h1>
-        {streak > 0 && <p className="e-meta">{streak}일 연속 참여 중이에요</p>}
       </div>
 
       <SpeakButton text={message} />
@@ -153,6 +157,9 @@ export default function EHome() {
           안부 시작하기
         </button>
       )}
+
+      {/* 출석도장 — 오늘 칸이 비어 있으면 "안부를 마치면 도장을 찍어 드려요" */}
+      {answeredDates && <StampCard summary={summarizeStamps(answeredDates, todaySeoul())} today={todaySeoul()} streak={streak} />}
       {FEATURES.videoLetters && (
         <>
           <button className="e-secondary" onClick={() => navigate("/elder/record")}>

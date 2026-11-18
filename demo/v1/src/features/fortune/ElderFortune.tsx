@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SpeakButton } from "../../components/SpeakButton";
 import { todaySeoul } from "../../lib/date";
 import { dayAnimal, withSubject } from "./animal";
+import { Pouch } from "./Pouch";
 import { birthFromSolarDate, getFortune } from "./saju";
 
 // 어르신 화면의 "오늘의 운세" 카드. 안부를 마친 뒤에 보여 준다(완료 화면, 이미 마친 날의 처음 화면).
@@ -116,37 +117,12 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
         <span className="e-fortune-animal" aria-hidden="true">
           {animal.emoji}
         </span>
-        <Pouch />
+        <Pouch className="e-fortune-pouch" />
         <span className="e-fortune-sparkle" aria-hidden="true" />
       </button>
       <p className="e-fortune-hint">
         {fortune ? "복주머니를 눌러 오늘의 운세를 열어 보세요" : "가족이 생신을 등록하면 복주머니를 열 수 있어요"}
       </p>
     </section>
-  );
-}
-
-// 복주머니 — 붉은 비단 주머니, 금빛 매듭과 福 자. 색은 고정(밝은·어두운 화면 모두에서 같은 주머니).
-function Pouch() {
-  return (
-    <svg className="e-fortune-pouch" viewBox="0 0 120 132" aria-hidden="true">
-      {/* 오므린 윗부분 */}
-      <path d="M30 22 Q60 40 90 22 L82 56 Q60 63 38 56 Z" fill="#9E1F2B" />
-      <path d="M30 22 Q44 30 52 26 L48 55 Q42 55 38 56 Z" fill="#B8323C" opacity="0.7" />
-      {/* 몸통 */}
-      <path d="M36 58 C10 84 18 126 60 126 C102 126 110 84 84 58 Z" fill="#C0303A" />
-      <path d="M40 64 C24 84 28 110 46 118 C36 104 36 84 48 66 Z" fill="#D9545C" opacity="0.55" />
-      {/* 매듭 끈 */}
-      <rect x="34" y="52" width="52" height="9" rx="4.5" fill="#E2B13C" />
-      <path d="M58 60 C50 74 44 80 40 92" stroke="#E2B13C" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <path d="M62 60 C70 74 76 80 80 92" stroke="#E2B13C" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <circle cx="40" cy="94" r="3.5" fill="#E2B13C" />
-      <circle cx="80" cy="94" r="3.5" fill="#E2B13C" />
-      {/* 福 */}
-      <circle cx="60" cy="98" r="15" fill="#E2B13C" />
-      <text x="60" y="104" textAnchor="middle" fontSize="17" fontWeight="800" fill="#9E1F2B">
-        福
-      </text>
-    </svg>
   );
 }
