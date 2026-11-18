@@ -98,12 +98,44 @@ export async function subscribeToPush(): Promise<void> {
   if (error) throw error;
 }
 
-/** 구독을 해지하고 DB에서도 지운다 */
-export async function unsubscribeFromPush(): Promise<void> {
-  const reg = await navigator.serviceWorker.getRegistration("/sw.js");
+/**
+ * 이 계정에 알림이 등록된 기기가 몇 대인지(이 기기 포함).
+ *
+ * 알림은 계정에 등록된 모든 기기로 간다(lib/sendPush.ts). 그런데 예전 버튼은 지금 보고 있는
+ * 기기만 보고 "꺼짐"이라고 했다. 아이폰은 사파리 탭과 홈 화면 앱이 서로 다른 기기로 잡혀서,
+ * 사파리에서는 꺼짐인데 홈 화면 앱으로 알림이 계속 오는 일이 실제로 있었다(2026-11-18).
+ * 그래서 버튼은 계정 전체를 기준으로 보여 준다.
+ */
+export async function countAccountDevices(): Promise<number> {
+  const supabase = getSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return 0;
+  const { count, error } = await supabase
+    .from("push_subscription")
+    .select("id", { count: "exact", head: true })
+    .eq("family_account_id", userData.user.id);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/**
+ * 이 계정의 모든 기기에서 알림을 끈다.
+ *
+ * 예전에는 이 기기의 구독만 지웠고, 이 기기에 구독이 없으면 아무것도 하지 않고 끝났다.
+ * 그래서 다른 기기(또는 같은 폰의 홈 화면 앱)로 알림이 계속 갔다.
+ * 다른 기기의 브라우저 구독은 여기서 지울 수 없지만, DB에서 지우면 서버가 보내지 않는다.
+ */
+export async function turnOffEverywhere(): Promise<void> {
+  const reg = pushSupported() ? await navigator.serviceWorker.getRegistration("/sw.js") : undefined;
   const sub = reg ? await reg.pushManager.getSubscription() : null;
-  if (!sub) return;
-  const endpoint = sub.endpoint;
-  await sub.unsubscribe();
-  await getSupabase().from("push_subscription").delete().eq("endpoint", endpoint);
+  if (sub) await sub.unsubscribe().catch(() => false);
+
+  const supabase = getSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) throw new Error("로그인이 필요합니다");
+  const { error } = await supabase.from("push_subscription").delete().eq("family_account_id", userData.user.id);
+  if (error) throw error;
+  // 지워졌는지 직접 확인한다 — 권한 문제로 0건이 지워져도 에러 없이 성공으로 돌아오기 때문
+  const left = await countAccountDevices();
+  if (left > 0) throw new Error("알림을 끄지 못했습니다. 다시 시도해주세요");
 }
