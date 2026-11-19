@@ -13,7 +13,8 @@ export interface DayAnimal {
   emoji: string;
 }
 
-const ANIMALS: DayAnimal[] = [
+// 순서는 지지 순서(子丑寅卯…)와 같다 — 띠 계산(saju.ts birthAnimal)이 위치 번호를 그대로 쓴다
+export const ANIMALS: DayAnimal[] = [
   { name: "쥐", emoji: "🐭" },
   { name: "소", emoji: "🐮" },
   { name: "호랑이", emoji: "🐯" },

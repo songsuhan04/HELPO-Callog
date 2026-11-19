@@ -17,6 +17,8 @@ declare module "lunar-javascript" {
     getSolar(): Solar;
     getDayGan(): string;
     getDayInGanZhi(): string;
+    getYearZhi(): string; // 설날 기준 해의 지지(띠)
+    getYearZhiByLiChun(): string; // 입춘 기준 해의 지지
     getEightChar(): EightChar;
   }
   export class EightChar {

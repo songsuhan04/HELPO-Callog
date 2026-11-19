@@ -447,6 +447,113 @@
   to { opacity: 1; transform: none; }
 }
 
+/* 학이 복주머니를 물어 오고, 어르신 띠 동물이 연다 (운세 이펙트 업데이트안 v2)
+   시간표: 학 비행 0~1.6초 → 주머니 내려놓음 1.6초 → 학 퇴장 1.9~2.4초 → 띠 동물 깡충 2.0~2.6초.
+   ElderFortune.tsx의 ARRIVAL_MS(2.7초)와 맞춘다. */
+.e-fortune-stage--crane {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(200px * var(--e-fs, 1));
+  padding-top: calc(36px * var(--e-fs, 1));
+}
+
+.e-crane {
+  position: absolute;
+  top: 0;
+  left: calc(50% + 8px);
+  /* 무대 안에서 날아야 잘리지 않는다 — 글씨를 키워도 무대 폭의 44%를 넘지 않게 */
+  width: calc(132px * var(--e-fs, 1));
+  max-width: 44%;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  animation:
+    e-crane-fly 1.6s cubic-bezier(0.3, 0.7, 0.4, 1) both,
+    e-crane-leave 0.5s ease-in 1.9s forwards;
+}
+
+.e-crane-wing {
+  transform-box: fill-box;
+  transform-origin: 30% 95%;
+}
+
+.e-fortune-stage.is-arriving .e-crane-wing--l {
+  animation: e-flap-l 0.3s ease-in-out infinite alternate;
+}
+
+.e-fortune-stage.is-arriving .e-crane-wing--r {
+  animation: e-flap-r 0.3s ease-in-out infinite alternate;
+}
+
+/* 학이 내려놓는 순간 부리의 작은 주머니는 사라지고 무대의 주머니가 떨어진다 */
+.e-fortune-stage.is-arriving .e-crane-cargo {
+  animation: e-cargo-release 0.01s linear 1.6s forwards;
+}
+
+.e-fortune-stage.is-arriving .e-fortune-pouch {
+  animation: e-pouch-drop 0.45s ease-out 1.6s both;
+}
+
+.e-fortune-stage.is-arriving .e-helper {
+  animation: e-helper-hop 0.6s ease-out 2s both;
+}
+
+/* 여는 순간: 띠 동물이 끈을 당기고(0.4초) → 주머니가 흔들리며 금빛 */
+.e-fortune-stage.is-opening.has-helper .e-helper {
+  animation: e-helper-pull 0.4s ease-in-out both;
+}
+
+.e-fortune-stage.is-opening.has-helper .e-fortune-pouch {
+  animation: e-fortune-shake 0.5s ease-in-out 0.4s both;
+}
+
+.e-fortune-stage.is-opening.has-helper .e-fortune-sparkle {
+  animation: e-fortune-glow 0.5s ease-out 0.55s forwards;
+}
+
+@keyframes e-crane-fly {
+  0% { transform: translate(110px, -46px) scale(0.75); opacity: 0; }
+  15% { opacity: 1; }
+  55% { transform: translate(58px, -28px) scale(0.88); }
+  85% { transform: translate(14px, -6px) scale(0.97); }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes e-crane-leave {
+  to { transform: translate(-90px, -170px) scale(0.8); opacity: 0; }
+}
+
+@keyframes e-flap-l {
+  to { transform: rotate(-26deg); }
+}
+
+@keyframes e-flap-r {
+  to { transform: rotate(24deg); }
+}
+
+@keyframes e-cargo-release {
+  to { opacity: 0; }
+}
+
+@keyframes e-pouch-drop {
+  0% { transform: translateY(-46px); opacity: 0; }
+  20% { opacity: 1; }
+  70% { transform: translateY(5px); }
+  100% { transform: none; opacity: 1; }
+}
+
+@keyframes e-helper-hop {
+  0% { transform: translate(-150px, 0); opacity: 0; }
+  25% { transform: translate(-105px, -28px); opacity: 1; }
+  50% { transform: translate(-62px, 0); }
+  75% { transform: translate(-26px, -22px); }
+  100% { transform: none; opacity: 1; }
+}
+
+@keyframes e-helper-pull {
+  50% { transform: translateX(14px) rotate(12deg); }
+}
+
 /* 출석도장 (features/attendance/StampCard.tsx)
    종이 도장판에 인주 도장을 찍는 모양. 칸은 4개씩 두 줄로 크게 — 7개를 한 줄에 넣으면 휴대폰에서
    도장이 너무 작아진다. 마지막 칸은 달토끼가 기다리는 목표 칸이다. */
@@ -623,7 +730,11 @@
   .e-fortune-slip,
   .e-stamp--fresh,
   .e-wish-moon,
-  .e-wish-text {
+  .e-wish-text,
+  .e-crane,
+  .e-crane-wing--l,
+  .e-crane-wing--r,
+  .e-helper {
     animation: none !important;
   }
 }

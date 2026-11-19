@@ -9,6 +9,7 @@
 //  - 오늘 날짜를 기기 시계(new Date) 대신 서울 기준 "YYYY-MM-DD"로 받는다. 안부 기록과 같은
 //    날짜를 쓰기 위해서다.
 import { Lunar, Solar } from "lunar-javascript";
+import { ANIMALS, type DayAnimal } from "./animal";
 import { FORTUNE_TEXTS, type FortuneCategory, type TenGodGroup } from "./fortune-texts";
 
 export type BirthInfo = {
@@ -155,4 +156,19 @@ export function lunarToSolarDate(year: number, month: number, day: number, leap:
   if (!s) return null;
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${s.getYear()}-${pad(s.getMonth())}-${pad(s.getDay())}`;
+}
+
+/**
+ * 태어난 해의 띠 동물 — 운세 복주머니를 열어 주는 "내 동물".
+ * 기본은 설날 기준이다. 어르신들이 "나는 무슨 띠"라고 알고 계신 기준이 대개 설날이라,
+ * 입춘 기준으로 다른 띠를 보여 주면 "틀렸네" 하고 믿음을 잃는다(1~2월 초 출생만 차이 남).
+ * 근거: 운세 이펙트 업데이트안 v2(2026-11-19) 2장.
+ */
+export function birthAnimal(b: BirthInfo, basis: "seollal" | "ipchun" = "seollal"): DayAnimal | null {
+  const s = toSolar(b);
+  if (!s) return null;
+  const l = s.getLunar();
+  const zhi = basis === "ipchun" ? l.getYearZhiByLiChun() : l.getYearZhi();
+  const i = ZHI.indexOf(zhi);
+  return i < 0 ? null : ANIMALS[i];
 }
