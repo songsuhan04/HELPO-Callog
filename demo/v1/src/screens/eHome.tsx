@@ -42,6 +42,7 @@ export default function EHome() {
   const [answeredDates, setAnsweredDates] = useState<string[] | null>(null);
   const [letter, setLetter] = useState<LetterRow | null>(null);
   const [birthDate, setBirthDate] = useState<string | null | undefined>(undefined);
+  const [birthInfo, setBirthInfo] = useState<{ time: string | null; name: string | null }>({ time: null, name: null });
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -75,10 +76,15 @@ export default function EHome() {
       });
     supabase
       .from("elder_profile")
-      .select("birth_date")
+      // 태어난 시각 칸은 DB에 있을 때만 읽는다(config/features.ts birthTime)
+      .select(FEATURES.birthTime ? "birth_date,birth_time,name" : "birth_date,name")
       .eq("id", elderId)
       .maybeSingle()
-      .then(({ data }) => setBirthDate((data?.birth_date as string | null) ?? null));
+      .then(({ data }) => {
+        const row = (data ?? {}) as { birth_date?: string | null; birth_time?: string | null; name?: string | null };
+        setBirthInfo({ time: row.birth_time ?? null, name: row.name ?? null });
+        setBirthDate(row.birth_date ?? null);
+      });
     if (!FEATURES.videoLetters) return;
     // 가장 최근 가족 영상편지를 홈에 바로 띄운다 — 완료 화면만 밋밋하게 두지 않고
     // 어르신이 별도 화면으로 들어가지 않아도 바로 볼 수 있게.
@@ -125,13 +131,13 @@ export default function EHome() {
       {/* 오늘의 운세는 안부를 마친 뒤에 열린다 — 운세를 보러 들어온 김에 안부를 남기게 */}
       {doneToday && birthDate !== undefined && (
         <Suspense fallback={null}>
-          <ElderFortune birthDate={birthDate} />
+          <ElderFortune birthDate={birthDate} birthTime={birthInfo.time} name={birthInfo.name} />
         </Suspense>
       )}
       {/* 처음 화면은 만세력 라이브러리를 싣지 않으므로 띠 동물 대신 학만 말한다 */}
       {!doneToday && (
         <p className="e-meta" style={{ textAlign: "center", marginBottom: 14 }}>
-          🕊 안부를 마치면 학이 오늘의 복주머니를 가져와요
+          안부를 마치면 학이 오늘의 복주머니를 가져와요
         </p>
       )}
 

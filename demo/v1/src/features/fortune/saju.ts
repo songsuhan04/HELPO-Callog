@@ -190,11 +190,24 @@ export function getFortune(b: BirthInfo, date: string) {
   return { saju, tenGod: tg.name, group: tg.group, todayGanZhi: toKorean(Solar.fromYmd(y, m, d).getLunar().getDayInGanZhi()), texts };
 }
 
-/** "YYYY-MM-DD"(양력, DB의 birth_date) → BirthInfo. 태어난 시간은 받지 않는다. */
-export function birthFromSolarDate(value: string | null | undefined): BirthInfo | null {
+/**
+ * "YYYY-MM-DD"(양력, DB의 birth_date) + 선택 "HH:MM[:SS]"(birth_time) → BirthInfo.
+ * 시각이 없거나 깨졌으면 hour=null — 시주 없이 세 기둥으로 센다.
+ */
+export function birthFromSolarDate(value: string | null | undefined, time?: string | null): BirthInfo | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
   if (!m) return null;
-  return { calendar: "solar", leap: false, year: Number(m[1]), month: Number(m[2]), day: Number(m[3]), hour: null };
+  const t = /^(\d{2}):(\d{2})/.exec(time ?? "");
+  const hour = t && Number(t[1]) < 24 && Number(t[2]) < 60 ? Number(t[1]) : null;
+  return {
+    calendar: "solar",
+    leap: false,
+    year: Number(m[1]),
+    month: Number(m[2]),
+    day: Number(m[3]),
+    hour,
+    minute: hour === null ? undefined : Number(t![2]),
+  };
 }
 
 /** 음력 생일 → 양력 "YYYY-MM-DD". 없는 날짜면 null. 보호자 화면에서 저장하기 전에 쓴다. */

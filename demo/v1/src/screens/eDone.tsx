@@ -33,6 +33,7 @@ export default function EDone() {
   const [letterUrl, setLetterUrl] = useState<string | null>(null);
   // undefined = 아직 읽는 중, null = 등록된 생일 없음
   const [birthDate, setBirthDate] = useState<string | null | undefined>(undefined);
+  const [birthInfo, setBirthInfo] = useState<{ time: string | null; name: string | null }>({ time: null, name: null });
 
   useEffect(() => {
     if (!supabaseConfigured) return;
@@ -57,10 +58,15 @@ export default function EDone() {
     // 오늘의 운세에 쓸 생일 — 보호자가 어르신 정보에 적은 값(양력)
     supabase
       .from("elder_profile")
-      .select("birth_date")
+      // 태어난 시각 칸은 DB에 있을 때만 읽는다(config/features.ts birthTime)
+      .select(FEATURES.birthTime ? "birth_date,birth_time,name" : "birth_date,name")
       .eq("id", elderId)
       .maybeSingle()
-      .then(({ data }) => setBirthDate((data?.birth_date as string | null) ?? null));
+      .then(({ data }) => {
+        const row = (data ?? {}) as { birth_date?: string | null; birth_time?: string | null; name?: string | null };
+        setBirthInfo({ time: row.birth_time ?? null, name: row.name ?? null });
+        setBirthDate(row.birth_date ?? null);
+      });
     if (!FEATURES.videoLetters) return;
     supabase
       .from("video_letter")
@@ -100,7 +106,7 @@ export default function EDone() {
 
       {birthDate !== undefined && (
         <Suspense fallback={null}>
-          <ElderFortune birthDate={birthDate} />
+          <ElderFortune birthDate={birthDate} birthTime={birthInfo.time} name={birthInfo.name} />
         </Suspense>
       )}
 

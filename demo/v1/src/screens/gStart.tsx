@@ -43,13 +43,8 @@ export default function GStart() {
 
   return (
     <AppShell>
-      <img
-        src="/callog-icon.png"
-        alt="Callog(콜록)"
-        width={64}
-        height={64}
-        style={{ borderRadius: 16, marginBottom: 16, display: "block" }}
-      />
+      {/* 그라데이션 앱 아이콘 이미지는 화면에서 뺐다 — AI로 만든 이미지처럼 보인다는 지적
+          (3회차 기술 멘토링, 2026-11-19). 홈 화면 아이콘(PWA)으로만 쓴다. */}
       <div className="g-header">Callog(콜록)</div>
       <h1 className="g-title">보호자로 시작하기</h1>
       <p className="g-sub">어르신을 등록하고 초대하면, 어르신은 링크만 한 번 누르면 됩니다.</p>

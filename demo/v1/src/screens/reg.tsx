@@ -6,6 +6,25 @@ import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getErrorMessage } from "../lib/errors";
 import { assertWritten } from "../lib/write";
 import { formatPhone } from "../lib/phone";
+import { FEATURES } from "../config/features";
+
+// 태어난 시각 칸은 DB에 있을 때만 읽는다(config/features.ts birthTime)
+const REG_COLUMNS: string = FEATURES.birthTime
+  ? "name,relationship,gender,phone,checkin_time,birth_date,birth_time"
+  : "name,relationship,gender,phone,checkin_time,birth_date";
+
+interface RegRow {
+  name: string | null;
+  relationship: string | null;
+  gender: string | null;
+  phone: string | null;
+  checkin_time: string | null;
+  birth_date: string | null;
+  birth_time?: string | null;
+}
+
+const HOURS = Array.from({ length: 24 }, (_, h) => h);
+const MINUTES = Array.from({ length: 60 }, (_, m) => m);
 
 export const SCREEN_ID = "reg";
 
@@ -38,6 +57,9 @@ export default function Reg() {
   const [birthYear, setBirthYear] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
+  // 태어난 시각(선택). "" = 모름. 운세의 시주 계산에만 쓴다(config/features.ts birthTime)
+  const [birthHour, setBirthHour] = useState("");
+  const [birthMinute, setBirthMinute] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingElder, setLoadingElder] = useState(isEdit);
@@ -46,10 +68,11 @@ export default function Reg() {
     if (!isEdit || !supabaseConfigured) return;
     getSupabase()
       .from("elder_profile")
-      .select("name,relationship,gender,phone,checkin_time,birth_date")
+      .select(REG_COLUMNS)
       .eq("id", elderId)
       .single()
-      .then(({ data, error }) => {
+      .then(({ data: raw, error }) => {
+        const data = raw as unknown as RegRow | null;
         if (error) {
           setError(getErrorMessage(error, "어르신 정보를 불러오지 못했습니다"));
         } else if (data) {
@@ -58,6 +81,11 @@ export default function Reg() {
           setGender(data.gender ?? "");
           setPhone(data.phone ?? "");
           setCheckinTime(data.checkin_time?.slice(0, 5) ?? "08:00");
+          const [bh, bmi] = (data.birth_time ?? "").split(":");
+          if (bh && bmi) {
+            setBirthHour(String(Number(bh)));
+            setBirthMinute(String(Number(bmi)));
+          }
           const [by, bm, bd] = ((data.birth_date as string | null) ?? "").split("-");
           if (by && bm && bd) {
             setBirthYear(by);
@@ -75,6 +103,11 @@ export default function Reg() {
     setLoading(true);
     try {
       const birthDate = await toBirthDate(birthCalendar, birthLeap, birthYear, birthMonth, birthDay);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      // 시만 고르고 분을 비우면 0분으로 본다. 생신이 없으면 시각도 저장하지 않는다
+      const birthTime =
+        birthDate && birthHour !== "" ? `${pad(Number(birthHour))}:${pad(Number(birthMinute || "0"))}` : null;
+      const timeField = FEATURES.birthTime ? { birth_time: birthTime } : {};
       const supabase = getSupabase();
       if (isEdit) {
         // .select()가 없으면 RLS로 0건이 되어도 에러가 아니라 성공으로 돌아온다 — 그러면
@@ -88,6 +121,7 @@ export default function Reg() {
             phone: phone || null,
             checkin_time: checkinTime,
             birth_date: birthDate,
+            ...timeField,
           })
           .eq("id", elderId)
           .select("id");
@@ -108,6 +142,7 @@ export default function Reg() {
           phone: phone || null,
           checkin_time: checkinTime,
           birth_date: birthDate,
+          ...timeField,
         })
         .select("id")
         .single();
@@ -182,6 +217,40 @@ export default function Reg() {
           )}
           {birthCalendar === "lunar" && <div className="g-legal" style={{ marginTop: 4 }}>음력은 양력 날짜로 바꿔 저장합니다.</div>}
         </div>
+        {FEATURES.birthTime && (
+          <div className="g-field">
+            <label htmlFor="birth-hour">태어난 시각 (선택 — 모르면 비워 두세요)</label>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <select id="birth-hour" value={birthHour} onChange={(e) => setBirthHour(e.target.value)} aria-label="태어난 시" style={{ width: "auto" }}>
+                <option value="">모름</option>
+                {HOURS.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+              <span>시</span>
+              <select
+                value={birthMinute}
+                onChange={(e) => setBirthMinute(e.target.value)}
+                aria-label="태어난 분"
+                disabled={birthHour === ""}
+                style={{ width: "auto" }}
+              >
+                <option value="">0</option>
+                {MINUTES.slice(1).map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+              <span>분</span>
+            </div>
+            <div className="g-legal" style={{ marginTop: 4 }}>
+              오늘의 운세에서 시주(태어난 시각의 기둥)를 볼 때만 써요. 시주는 2시간 단위로 바뀌어서 분까지 넣으면 더 정확해요.
+            </div>
+          </div>
+        )}
         <div className="g-field">
           <label>안부 묻는 시각</label>
           <input type="time" value={checkinTime} onChange={(e) => setCheckinTime(e.target.value)} required />

@@ -27,10 +27,11 @@ import { birthAnimal, birthFromSolarDate, getFortune } from "./saju";
 //
 // 만세력 라이브러리(lunar-javascript)가 커서 이 파일은 화면에서 React.lazy로 불러온다.
 
+// 제목 앞 장식 이모지(해·하트·풀잎)는 뺐다 — "AI로 만든 화면" 같다는 지적(3회차 기술 멘토링)
 const SECTIONS = [
-  { key: "general", icon: "☀️", title: "오늘의 운세" },
-  { key: "love", icon: "💞", title: "가족·친구운" },
-  { key: "health", icon: "🌿", title: "건강운" },
+  { key: "general", title: "오늘의 운세" },
+  { key: "love", title: "가족·친구운" },
+  { key: "health", title: "건강운" },
 ] as const;
 
 type Stage = "ask" | "arriving" | "waiting" | "opening" | "open";
@@ -62,9 +63,19 @@ function prefersReducedMotion(): boolean {
 const ARRIVAL_MS = 2700;
 const OPENING_MS = 900;
 
-export default function ElderFortune({ birthDate }: { birthDate: string | null }) {
+export default function ElderFortune({
+  birthDate,
+  birthTime = null,
+  name = null,
+}: {
+  birthDate: string | null;
+  /** "HH:MM" — 보호자가 적은 태어난 시각(선택). 없으면 시주 없이 센다 */
+  birthTime?: string | null;
+  /** 어르신 성함 — "○○님의 사주" */
+  name?: string | null;
+}) {
   const today = todaySeoul();
-  const birth = birthFromSolarDate(birthDate);
+  const birth = birthFromSolarDate(birthDate, birthTime);
   const fortune = birth ? getFortune(birth, today) : null;
   const helper = birth ? birthAnimal(birth) : null;
 
@@ -121,30 +132,51 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
 
   // ── open: 운세 쪽지 ─────────────────────────────────────────
   if (stage === "open" && fortune) {
-    const opener = helper ? `${helper.emoji} ${withSubject(helper.name)} 복주머니를 열어 드렸어요` : "복주머니가 열렸어요";
-    const spoken = [opener.replace(/^\S+\s/, ""), ...SECTIONS.map((s) => `${s.title}. ${fortune.texts[s.key]}`)].join(" ");
+    const opener = helper ? `${withSubject(helper.name)} 복주머니를 열어 드렸어요` : "복주머니가 열렸어요";
+    const spoken = [opener, ...SECTIONS.map((s) => `${s.title}. ${fortune.texts[s.key]}`)].join(" ");
+    // 명식은 전통 순서대로 오른쪽이 년주 — 왼쪽부터 시·일·월·년
+    const pillars = [...fortune.saju.pillars].reverse();
     return (
       <section className="e-card e-fortune e-fortune--open" aria-live="polite">
         <h2 className="e-fortune-title">{opener}</h2>
         {/* 나의 타고난 기운 — 일간 설명과 오행(팀 자료 2026-11-19). 태어난 시각은 받지 않아서
             오행은 년·월·일 세 기둥(여섯 글자)으로 센다. */}
         <div className="e-fortune-saju">
-          <div className="e-fortune-head">
-            🌱 나의 타고난 기운: {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})
-          </div>
-          <p className="e-fortune-saju-text">{fortune.saju.dayMasterText}</p>
-          <p className="e-meta">
-            {fortune.saju.elements.map((e) => `${e.label} ${e.count}`).join(", ")}. {fortune.saju.elementText}
+          <div className="e-fortune-head">{name ? `${name}님의 사주` : "나의 사주"}</div>
+          <ol className="e-pillars" aria-label="사주 명식">
+            {pillars.map((p) => (
+              <li key={p.label} className={p.label === "일주" ? "e-pillar e-pillar--me" : "e-pillar"}>
+                <span className="e-pillar-chars" aria-hidden="true">
+                  <span>{p.value[0]}</span>
+                  <span>{p.value[1]}</span>
+                </span>
+                <span className="e-pillar-label">{p.label}</span>
+                <span className="sr-only">{p.value}</span>
+              </li>
+            ))}
+          </ol>
+          {fortune.saju.pillars.length < 4 && (
+            <p className="e-meta" style={{ marginBottom: 12 }}>태어난 시각을 등록하면 시주까지 볼 수 있어요.</p>
+          )}
+          <p className="e-fortune-saju-text">
+            타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})이에요. {fortune.saju.dayMasterText}
           </p>
+          <ul className="e-elements" aria-label="오행 개수">
+            {fortune.saju.elements.map((e) => (
+              <li key={e.label} className={e.count === 0 ? "e-element e-element--none" : "e-element"}>
+                <span>{e.label}</span>
+                <b>{e.count}</b>
+              </li>
+            ))}
+          </ul>
+          <p className="e-meta">{fortune.saju.elementText}</p>
         </div>
         <p className="e-meta" style={{ marginTop: 10 }}>
           오늘은 {fortune.todayGanZhi}일이에요.
         </p>
         {SECTIONS.map((s, i) => (
           <div key={s.key} className="e-fortune-slip" style={{ animationDelay: `${i * 140}ms` }}>
-            <div className="e-fortune-head">
-              {s.icon} {s.title}
-            </div>
+            <div className="e-fortune-head">{s.title}</div>
             <p className="e-fortune-text">{fortune.texts[s.key]}</p>
           </div>
         ))}
@@ -160,7 +192,7 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
       <section className="e-card e-fortune">
         <h2 className="e-fortune-title">오늘의 운세를 볼까요?</h2>
         <p className="e-meta" style={{ marginBottom: 12 }}>
-          🕊 학이 오늘의 복주머니를 가져다 드려요
+          학이 오늘의 복주머니를 가져다 드려요
         </p>
         <button type="button" className="e-primary" onClick={startArrival}>
           네, 볼게요
@@ -218,7 +250,7 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
           : !fortune
             ? "가족이 생신을 등록하면 띠 동물이 열어 드려요"
             : helper
-              ? `${helper.emoji} ${withSubject(helper.name)} 열어 드릴게요`
+              ? `${withSubject(helper.name)} 열어 드릴게요`
               : "눌러서 열어 보세요"}
       </p>
     </section>

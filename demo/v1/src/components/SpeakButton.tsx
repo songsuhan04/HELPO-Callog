@@ -31,7 +31,7 @@ export function SpeakButton({ text }: { text: string }) {
   return (
     <>
       <button type="button" className="e-speak" onClick={handleClick}>
-        {speaking ? "■ 그만 듣기" : "🔈 읽어주기"}
+        {speaking ? "그만 듣기" : "읽어주기"}
       </button>
       {/* 인앱 브라우저에는 speechSynthesis 자체가 없다. "지원하지 않아요"라는 빨간 글씨만
           남기면 어르신이 하실 수 있는 게 없으므로, 나가는 길을 바로 보여준다. */}
