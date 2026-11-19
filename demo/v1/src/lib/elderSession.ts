@@ -42,11 +42,24 @@ export function clearStoredElderProfileId(): void {
 // 그래서 보호자가 어르신을 삭제해도(elder_device가 CASCADE로 사라져도) 어르신 기기에서는
 // 예전 링크로 계속 설문이 됐다. 초대 해제도 같은 이유로 실제로 막히지 않았다.
 // 반환값을 반드시 확인한다.
-export async function touchElderDevice(): Promise<boolean> {
-  const supabase = getSupabase();
-  const { data: session } = await supabase.auth.getSession();
-  if (!session.session) return false;
-  const { data, error } = await supabase.rpc("touch_elder_device");
-  if (error) return false;
-  return data === true;
+//
+// 결과는 셋으로 나눈다(2026-11-19). 예전에는 통신 오류도 false(연결 끊김)로 돌려줘서, 잠깐
+// 신호가 약한 순간에 화면을 넘기면 어르신 기기의 연결 정보가 지워지고 초대 링크를 다시
+// 받아야 했다. 끊김(revoked)과 일시 오류(error)는 다르게 다룬다.
+//  - ok: 연결돼 있음
+//  - revoked: 세션이 없거나 보호자가 연결을 끊음 → 처음 화면으로
+//  - error: 통신 오류 → 막지 않는다. 데이터는 어차피 서버 권한(RLS·API 확인)이 지킨다
+export type ElderDeviceStatus = "ok" | "revoked" | "error";
+
+export async function touchElderDevice(): Promise<ElderDeviceStatus> {
+  try {
+    const supabase = getSupabase();
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) return "revoked";
+    const { data, error } = await supabase.rpc("touch_elder_device");
+    if (error) return "error";
+    return data === true ? "ok" : "revoked";
+  } catch {
+    return "error";
+  }
 }
