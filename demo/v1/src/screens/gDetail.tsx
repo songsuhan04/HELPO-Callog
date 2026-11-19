@@ -389,9 +389,25 @@ export default function GDetail() {
                   음성 파일은 보관 기간({RETENTION.VOICE_AUDIO_DAYS}일)이 지나 삭제되었습니다. 아래 기록만 남아 있어요.
                 </p>
               )}
-              {voice.analysis_status === "failed" && (
+              {/* 분석 요청은 녹음 직후 어르신 폰에서 보낸다. 어르신이 바로 앱을 닫으면 요청이
+                  끊겨 "대기 중"에 영영 머문다. 예전에는 이 상태를 아무 안내 없이 비워 둬서
+                  보호자 눈에는 받아쓰기 기능이 사라진 것처럼 보였다(2026-11-19 실사용 신고).
+                  분석은 실측 20초 안팎이고 서버 상한이 60초라, 2분이 지나면 멈춘 것으로 본다. */}
+              {voice.analysis_status === "pending" &&
+                Date.now() - new Date(voice.created_at).getTime() < 2 * 60_000 && (
+                  <p className="g-sub" style={{ margin: "8px 0 0" }}>
+                    AI가 받아쓰는 중이에요. 잠시 뒤 새로고침하면 내용이 보여요.
+                  </p>
+                )}
+              {(voice.analysis_status === "failed" ||
+                (voice.analysis_status === "pending" &&
+                  Date.now() - new Date(voice.created_at).getTime() >= 2 * 60_000)) && (
                 <>
-                  <p className="g-error">음성 분석에 실패했습니다. 직접 들어보고 확인해주세요.</p>
+                  <p className="g-error">
+                    {voice.analysis_status === "failed"
+                      ? "음성 분석에 실패했습니다. 직접 들어보고 확인해주세요."
+                      : "받아쓰기가 끝나지 않았어요. 아래 버튼을 눌러 다시 받아써 주세요."}
+                  </p>
                   {/* 대개 일시적인 문제라 다시 누르면 된다 — 실제로 같은 파일이 재시도에서 정상 인식됐다 */}
                   <button className="g-button g-button--secondary" onClick={reanalyze} disabled={reanalyzing}>
                     {reanalyzing ? "다시 분석하는 중..." : "다시 분석하기"}

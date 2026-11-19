@@ -107,6 +107,9 @@ export default function ESpeech() {
               fetch("/api/analyze-voice", {
                 method: "POST",
                 headers,
+                // 말하기를 마치자마자 어르신이 앱을 닫아도 요청이 끝까지 가게 한다.
+                // 없으면 요청이 끊겨 받아쓰기가 "대기 중"에 멈춘다(2026-11-19 실제 사례).
+                keepalive: true,
                 body: JSON.stringify({ voiceResponseId }),
               })
             )
