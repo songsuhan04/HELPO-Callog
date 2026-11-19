@@ -457,13 +457,23 @@
   padding-top: calc(36px * var(--e-fs, 1));
 }
 
+/* 주머니 상자: 학·금빛의 기준점. 주머니 SVG 크기와 같다 */
+.e-fortune-pouchwrap {
+  position: relative;
+  display: block;
+  line-height: 0;
+}
+
+/* 학은 주머니 상자 기준으로 선다 — 부리에 매단 작은 주머니가 큰 주머니 목 바로 위에 오게.
+   학 SVG(150×110)에서 작은 주머니 가운데는 x=9(폭의 6%), 몸통 위 y=56, 아래 끝 y=76이다.
+   - 학은 112px로 고정한다(글씨를 키워도 그대로). 글씨 배율을 따라 키우면 1.3배에서 꼬리가 무대 밖으로 잘린다.
+   - 부리는 주머니 가운데가 아니라 목의 40% 지점에 둔다. 몸통이 오른쪽으로 길어 그래야 360px 폭 휴대폰에서도 안 잘린다.
+   - 큰 주머니 목은 SVG 위에서 27.5px × 배율. 작은 주머니 아래 끝(56.7px)이 거기 닿게 top을 잡는다. */
 .e-crane {
   position: absolute;
-  top: 0;
-  left: calc(50% + 8px);
-  /* 무대 안에서 날아야 잘리지 않는다 — 글씨를 키워도 무대 폭의 44%를 넘지 않게 */
-  width: calc(132px * var(--e-fs, 1));
-  max-width: 44%;
+  top: calc(27.5px * var(--e-fs, 1) - 57px);
+  left: calc(40% - 7px);
+  width: 112px;
   height: auto;
   z-index: 2;
   pointer-events: none;
@@ -485,13 +495,20 @@
   animation: e-flap-r 0.3s ease-in-out infinite alternate;
 }
 
-/* 학이 내려놓는 순간 부리의 작은 주머니는 사라지고 무대의 주머니가 떨어진다 */
+/* 바꿔치기: 작은 주머니가 0.08초 동안 흐려지는 사이, 큰 주머니가 같은 자리·비슷한 크기(12%)에서
+   나타나 아래로 떨어지며 커진다. 그래서 순간이동처럼 보이지 않는다 */
 .e-fortune-stage.is-arriving .e-crane-cargo {
-  animation: e-cargo-release 0.01s linear 1.6s forwards;
+  animation: e-cargo-release 0.08s linear 1.6s forwards;
 }
 
 .e-fortune-stage.is-arriving .e-fortune-pouch {
-  animation: e-pouch-drop 0.45s ease-out 1.6s both;
+  transform-origin: 40% 0;
+  animation: e-pouch-drop 0.5s cubic-bezier(0.3, 0.6, 0.4, 1) 1.6s both;
+}
+
+/* 금빛은 주머니 입구(위에서 42%)에서 번진다 */
+.e-fortune-pouchwrap .e-fortune-sparkle {
+  top: 42%;
 }
 
 .e-fortune-stage.is-arriving .e-helper {
@@ -536,9 +553,9 @@
 }
 
 @keyframes e-pouch-drop {
-  0% { transform: translateY(-46px); opacity: 0; }
-  20% { opacity: 1; }
-  70% { transform: translateY(5px); }
+  0% { transform: translateY(calc(24px * var(--e-fs, 1) - 15px)) scale(0.12); opacity: 0; }
+  16% { opacity: 1; }
+  75% { transform: translateY(calc(4px * var(--e-fs, 1))) scale(1.03); }
   100% { transform: none; opacity: 1; }
 }
 

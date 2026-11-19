@@ -188,14 +188,18 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
         disabled={!arriving && !canOpen && stage !== "opening"}
         aria-label={label}
       >
-        {arriving && <Crane className="e-crane" />}
         {helper && (
           <span className="e-fortune-animal e-helper" aria-hidden="true">
             {helper.emoji}
           </span>
         )}
-        <Pouch className="e-fortune-pouch" />
-        <span className="e-fortune-sparkle" aria-hidden="true" />
+        {/* 학과 금빛을 주머니 상자 안에 둔다 — 띠 동물이 옆에 서서 주머니가 밀려나도
+            학의 부리와 금빛이 주머니를 따라간다 */}
+        <span className="e-fortune-pouchwrap">
+          {arriving && <Crane className="e-crane" />}
+          <Pouch className="e-fortune-pouch" />
+          <span className="e-fortune-sparkle" aria-hidden="true" />
+        </span>
       </button>
       <p className="e-fortune-hint">
         {arriving
