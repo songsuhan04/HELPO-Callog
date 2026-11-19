@@ -394,6 +394,21 @@
   animation: e-fortune-unfold 0.45s ease-out both;
 }
 
+/* 나의 타고난 기운 — 쪽지와 구분되게 테두리만 둔 상자 */
+.e-fortune-saju {
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--r-md, 12px);
+  border: 1px solid var(--e-line);
+}
+
+.e-fortune-saju-text {
+  font-size: calc(16px * var(--e-fs, 1));
+  line-height: 1.6;
+  color: var(--e-text);
+  margin: 0 0 6px;
+}
+
 .e-fortune-head {
   font-size: calc(15px * var(--e-fs, 1));
   font-weight: 700;

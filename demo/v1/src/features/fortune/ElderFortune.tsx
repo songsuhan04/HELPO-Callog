@@ -126,8 +126,19 @@ export default function ElderFortune({ birthDate }: { birthDate: string | null }
     return (
       <section className="e-card e-fortune e-fortune--open" aria-live="polite">
         <h2 className="e-fortune-title">{opener}</h2>
-        <p className="e-meta">
-          타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain}), 오늘은 {fortune.todayGanZhi}일
+        {/* 나의 타고난 기운 — 일간 설명과 오행(팀 자료 2026-11-19). 태어난 시각은 받지 않아서
+            오행은 년·월·일 세 기둥(여섯 글자)으로 센다. */}
+        <div className="e-fortune-saju">
+          <div className="e-fortune-head">
+            🌱 나의 타고난 기운: {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})
+          </div>
+          <p className="e-fortune-saju-text">{fortune.saju.dayMasterText}</p>
+          <p className="e-meta">
+            {fortune.saju.elements.map((e) => `${e.label} ${e.count}`).join(", ")}. {fortune.saju.elementText}
+          </p>
+        </div>
+        <p className="e-meta" style={{ marginTop: 10 }}>
+          오늘은 {fortune.todayGanZhi}일이에요.
         </p>
         {SECTIONS.map((s, i) => (
           <div key={s.key} className="e-fortune-slip" style={{ animationDelay: `${i * 140}ms` }}>

@@ -19,6 +19,7 @@ export type BirthInfo = {
   month: number;
   day: number;
   hour: number | null; // 0~23, 모르면 null
+  minute?: number; // 0~59. 시주는 2시간 단위라 분이 결과를 가를 수 있다(12:59 임오, 13:00 계미)
 };
 
 const GAN = "甲乙丙丁戊己庚辛壬癸";
@@ -86,28 +87,74 @@ export function tenGod(me: string, other: string) {
   return { group, name: samePolarity ? yangName : yinName, member: samePolarity ? 0 : 1 };
 }
 
+// 일간(태어난 날의 천간)별 성품 설명. 순서는 갑을병정무기경신임계. 팀 자료(2026-11-19)에서 옮겼다.
+const DAY_MASTER_TEXT = [
+  "갑목은 곧게 자라는 큰 나무예요. 한번 정한 일은 끝까지 밀고 나가는 힘이 있어요. 앞에 서서 사람들을 이끄는 일이 잘 맞아요.",
+  "을목은 풀과 꽃처럼 부드럽게 뻗는 나무예요. 어디서든 사람들과 잘 어울리고 끈기가 있어요. 힘든 일이 와도 휘어질 뿐 쉽게 꺾이지 않아요.",
+  "병화는 하늘에 뜬 해와 같아요. 밝고 시원시원해서 주변 사람에게 힘을 줘요. 마음에 담아 두기보다 바로 말하는 편이에요.",
+  "정화는 촛불이나 등불 같은 불이에요. 겉으로는 조용해도 속이 따뜻하고 꼼꼼해요. 가까운 사람을 살뜰히 챙기는 편이에요.",
+  "무토는 넓고 단단한 산과 들판이에요. 믿음직해서 주변 사람들이 많이 기대요. 쉽게 흔들리지 않지만 고집이 셀 때도 있어요.",
+  "기토는 곡식을 키우는 논밭의 흙이에요. 차분하고 알뜰하게 살림을 꾸려요. 남을 돌보는 일에서 보람을 느끼는 편이에요.",
+  "경금은 바위나 쇠처럼 단단한 기운이에요. 옳고 그름이 분명하고 의리가 있어요. 말이 곧은 만큼 가끔은 부드럽게 말하면 더 좋아요.",
+  "신금은 잘 다듬은 보석 같은 기운이에요. 깔끔하고 꼼꼼해서 작은 것도 잘 챙겨요. 남의 말에 마음을 쉽게 다치기도 해요.",
+  "임수는 큰 강이나 바다 같은 물이에요. 마음이 넓고 생각이 깊어요. 새로운 것을 보고 배우기를 좋아해요.",
+  "계수는 비나 이슬처럼 맑은 물이에요. 눈치가 빠르고 남의 마음을 잘 알아줘요. 조용히 뒤에서 돕는 일을 잘해요.",
+];
+
+// 지지 오행: 자수 축토 인목 묘목 진토 사화 오화 미토 신금 유금 술토 해수 (0 목, 1 화, 2 토, 3 금, 4 수)
+const ZHI_ELEMENT = [4, 2, 0, 0, 2, 1, 1, 2, 3, 3, 2, 4];
+
+function elementOf(ch: string) {
+  const g = GAN.indexOf(ch);
+  return g >= 0 ? Math.floor(g / 2) : ZHI_ELEMENT[ZHI.indexOf(ch)];
+}
+
+// 오행 개수를 세고 한두 문장으로 풀어 준다.
+function describeElements(ganZhis: string[]) {
+  const counts = [0, 0, 0, 0, 0];
+  for (const ch of ganZhis.join("")) counts[elementOf(ch)]++;
+  const max = Math.max(...counts);
+  const most = ELEMENT_PLAIN.filter((_, i) => counts[i] === max).join(", ");
+  const missing = ELEMENT_PLAIN.filter((_, i) => counts[i] === 0);
+  const text =
+    `${most} 기운이 가장 많아요.` +
+    (missing.length ? ` ${missing.join(", ")} 기운은 사주에 없어서 생활 속에서 채워 주면 좋아요.` : " 다섯 기운이 모두 들어 있어요.");
+  return { counts: ELEMENT_PLAIN.map((label, i) => ({ label, count: counts[i] })), text };
+}
+
 export type Saju = {
   pillars: { label: string; value: string }[];
   dayMaster: string; // 예: 경금
   dayMasterPlain: string; // 예: 쇠
+  dayMasterText: string; // 일간 성품 설명 3문장
+  elements: { label: string; count: number }[]; // 나무·불·흙·쇠·물 개수 (시각이 없으면 세 기둥 기준)
+  elementText: string; // 많은 기운, 없는 기운 설명
   dayGan: string; // 한자, 계산용
 };
 
 export function getSaju(b: BirthInfo): Saju | null {
   const s = toSolar(b);
   if (!s) return null;
-  const ec = Solar.fromYmdHms(s.getYear(), s.getMonth(), s.getDay(), b.hour ?? 12, 0, 0).getLunar().getEightChar();
+  const ec = Solar.fromYmdHms(s.getYear(), s.getMonth(), s.getDay(), b.hour ?? 12, b.minute ?? 0, 0).getLunar().getEightChar();
   const g = GAN.indexOf(ec.getDayGan());
   const pillars = [
     { label: "년주", value: toKorean(ec.getYear()) },
     { label: "월주", value: toKorean(ec.getMonth()) },
     { label: "일주", value: toKorean(ec.getDay()) },
   ];
-  if (b.hour !== null) pillars.push({ label: "시주", value: toKorean(ec.getTime()) });
+  const raw = [ec.getYear(), ec.getMonth(), ec.getDay()];
+  if (b.hour !== null) {
+    pillars.push({ label: "시주", value: toKorean(ec.getTime()) });
+    raw.push(ec.getTime());
+  }
+  const el = describeElements(raw);
   return {
     pillars,
     dayMaster: GAN_KO[g] + ELEMENT_KO[Math.floor(g / 2)],
     dayMasterPlain: ELEMENT_PLAIN[Math.floor(g / 2)],
+    dayMasterText: DAY_MASTER_TEXT[g],
+    elements: el.counts,
+    elementText: el.text,
     dayGan: ec.getDayGan(),
   };
 }
