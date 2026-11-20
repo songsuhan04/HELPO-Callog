@@ -99,7 +99,7 @@
   font-size: calc(17px * var(--e-fs, 1));
   border: none;
   border-radius: 0;
-  padding: 24px 22px 56px;
+  padding: 24px 24px 64px;
   display: flex;
   flex-direction: column;
   /* 화면 설정 시트(.e-sheet-backdrop)가 넓은 화면에서 이 카드를 기준으로 앉는다 */
@@ -113,7 +113,7 @@
    - 줄 길이가 너무 길어지지 않게 읽기 좋은 폭(600px)에서 멈추고, 글자를 한 단계 키운다. */
 @media (min-width: 768px) {
   .app-shell--elder {
-    padding: 56px 24px 96px;
+    padding: 64px 24px 64px;
   }
 
   .app-card--elder {
@@ -133,7 +133,7 @@
   gap: 12px;
   font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   flex: none;
 }
 
@@ -147,15 +147,15 @@
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--e-card);
   border: 1px solid var(--e-line);
   border-radius: 999px;
   color: var(--e-text);
   font-size: calc(15px * var(--e-fs, 1));
   font-weight: 700;
-  padding: 10px 18px;
-  margin-bottom: 20px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
   flex: none;
 }
 
@@ -166,7 +166,7 @@
   /* .app-card--elder가 세로 flex라 그냥 두면 알약이 가로로 늘어난다 */
   align-self: flex-start;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   /* 터치 타깃 44px 이상 — 손이 떨리는 분도 한 번에 누를 수 있어야 한다 */
   padding: 12px 16px;
   border-radius: 999px;
@@ -187,7 +187,7 @@
   line-height: 1.34;
   letter-spacing: -0.02em;
   text-wrap: balance;
-  margin: 18px 0 22px;
+  margin: 16px 0 24px;
   color: var(--e-text);
 }
 
@@ -195,7 +195,7 @@
   font-size: calc(17px * var(--e-fs, 1));
   line-height: 1.62;
   color: var(--e-text-2);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .e-meta {
@@ -213,7 +213,7 @@
 
 .e-hero {
   text-align: center;
-  padding: 40px 0 24px;
+  padding: 48px 0 24px;
   flex: none;
 }
 
@@ -224,7 +224,7 @@
 .e-hero-mark {
   font-size: calc(42px * var(--e-fs, 1));
   line-height: 1;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 /* ===== 카드 ===== */
@@ -232,7 +232,7 @@
 /* 큰 버튼 바로 뒤에 오는 카드(처음 화면의 출석도장 등)는 버튼과 붙어 보이지 않게 띄운다 */
 .e-primary + .e-card,
 .e-secondary + .e-card {
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
 /* 카드는 테두리 없이 바탕색만으로 묶고, 카드 사이를 넉넉히 띄운다.
@@ -240,8 +240,8 @@
 .e-card {
   background: var(--e-card);
   border-radius: var(--r-lg);
-  padding: 24px 22px;
-  margin-bottom: 28px;
+  padding: 24px 24px;
+  margin-bottom: 32px;
   flex: none;
 }
 
@@ -255,14 +255,14 @@
 .e-card-title {
   font-size: calc(19px * var(--e-fs, 1));
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .e-card-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 8px;
 }
 
@@ -277,7 +277,7 @@
   font-size: calc(22px * var(--e-fs, 1));
   font-weight: 700;
   line-height: 1.4;
-  margin: 4px 0 6px;
+  margin: 4px 0 8px;
   color: var(--e-text);
   text-wrap: balance;
 }
@@ -288,7 +288,7 @@
   align-items: flex-end;
   justify-content: center;
   width: 100%;
-  padding: 6px 0 2px;
+  padding: 8px 0 2px;
   border: 0;
   background: none;
   cursor: pointer;
@@ -316,7 +316,7 @@
   font-size: calc(84px * var(--e-fs, 1));
   line-height: 1;
   margin-right: -30px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   z-index: 1;
   animation: e-fortune-bob 2.6s ease-in-out infinite;
 }
@@ -374,7 +374,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .e-fortune-opened .e-fortune-title {
@@ -388,8 +388,8 @@
 }
 
 .e-fortune-slip {
-  padding: 12px 14px;
-  margin: 10px 0 0;
+  padding: 12px 16px;
+  margin: 12px 0 0;
   border-radius: var(--r-md, 12px);
   background: var(--e-card-2);
   border-left: 4px solid #e2b13c;
@@ -403,7 +403,7 @@
   padding: 0;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .e-pillar {
@@ -412,7 +412,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .e-pillar-chars {
@@ -420,7 +420,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 10px 0;
+  padding: 12px 0;
   border-radius: var(--r-md, 12px);
   background: var(--e-card-2);
   font-size: calc(22px * var(--e-fs, 1));
@@ -442,11 +442,11 @@
 /* 오행 개수 — 쉼표로 이은 문장 대신 다섯 칸 */
 .e-elements {
   list-style: none;
-  margin: 14px 0 10px;
+  margin: 16px 0 12px;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 
 .e-element {
@@ -472,8 +472,8 @@
 
 /* 나의 타고난 기운 — 쪽지와 구분되게 테두리만 둔 상자 */
 .e-fortune-saju {
-  margin: 10px 0 0;
-  padding: 12px 14px;
+  margin: 12px 0 0;
+  padding: 12px 16px;
   border-radius: var(--r-md, 12px);
   border: 1px solid var(--e-line);
 }
@@ -484,7 +484,7 @@
   width: 100%;
   min-height: 48px;
   margin: 8px 0 0;
-  padding: 10px 0 2px;
+  padding: 12px 0 2px;
   border: none;
   border-top: 1px solid var(--e-line);
   background: none;
@@ -501,7 +501,7 @@
   font-size: calc(17px * var(--e-fs, 1));
   line-height: 1.6;
   color: var(--e-text);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .e-fortune-head {
@@ -564,7 +564,7 @@
   position: relative;
   overflow: hidden;
   min-height: calc(200px * var(--e-fs, 1));
-  padding-top: calc(36px * var(--e-fs, 1));
+  padding-top: calc(32px * var(--e-fs, 1));
 }
 
 /* 주머니 상자: 학·금빛의 기준점. 주머니 SVG 크기와 같다 */
@@ -688,7 +688,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .e-stamps-title {
@@ -711,7 +711,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px 8px;
+  gap: 12px 8px;
   justify-items: center;
 }
 
@@ -786,14 +786,14 @@
   line-height: 1.5;
   text-align: center;
   color: var(--e-text);
-  margin: 14px 0 4px;
+  margin: 16px 0 4px;
   text-wrap: balance;
 }
 
 /* 도장판을 다 채운 날 — 달토끼의 소원 복주머니 */
 .e-wish {
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--e-line);
   text-align: center;
 }
@@ -814,7 +814,7 @@
   font-size: calc(74px * var(--e-fs, 1));
   line-height: 1;
   margin-right: -22px;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
   z-index: 1;
 }
 
@@ -837,8 +837,8 @@
   font-weight: 700;
   line-height: 1.55;
   color: var(--e-text);
-  margin: 6px 0 8px;
-  padding: 14px 16px;
+  margin: 8px 0 8px;
+  padding: 16px 16px;
   border-radius: var(--r-md, 12px);
   background: var(--e-card-2);
   border: 1px solid rgba(226, 177, 60, 0.6);
@@ -872,7 +872,7 @@
   color: var(--e-primary-ink);
   background: var(--e-accent);
   border-radius: 999px;
-  padding: 3px 10px;
+  padding: 3px 12px;
   flex: none;
 }
 
@@ -904,8 +904,10 @@
   font-size: calc(19px * var(--e-fs, 1));
   font-weight: 700;
   letter-spacing: -0.01em;
-  padding: calc(19px * var(--e-fs, 1)) 16px;
-  margin-top: 14px;
+  padding: calc(16px * var(--e-fs, 1)) 16px;
+  /* 여백을 4px 단위로 줄이면서(19→16px) 버튼이 낮아지지 않게 높이를 따로 지킨다 (DESIGN.md 4장) */
+  min-height: calc(60px * var(--e-fs, 1));
+  margin-top: 16px;
   flex: none;
 }
 
@@ -926,7 +928,7 @@
   font-size: calc(17px * var(--e-fs, 1));
   font-weight: 700;
   padding: calc(16px * var(--e-fs, 1)) 16px;
-  margin-top: 10px;
+  margin-top: 12px;
   flex: none;
 }
 
@@ -938,8 +940,8 @@
   display: block;
   width: 100%;
   text-align: left;
-  padding: calc(17px * var(--e-fs, 1)) 18px;
-  margin-top: 11px;
+  padding: calc(16px * var(--e-fs, 1)) 16px;
+  margin-top: 12px;
   border-radius: var(--r-lg);
   border: 1px solid var(--e-line);
   background: var(--e-card);
@@ -959,7 +961,7 @@
 
 .e-progress {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   margin: 12px 0 4px;
   flex: none;
 }
@@ -986,9 +988,9 @@
 
 .e-streak {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   justify-content: center;
-  margin: 18px 0;
+  margin: 16px 0;
 }
 
 .e-streak-dot {
@@ -1011,7 +1013,7 @@
   background: var(--e-card-2);
   border: 1px solid var(--e-line);
   border-radius: var(--r-sm);
-  padding: 11px 13px;
+  padding: 12px 12px;
   margin: 0 0 12px;
   flex: none;
 }
@@ -1032,7 +1034,7 @@
   align-items: flex-end;
   justify-content: center;
   z-index: 50;
-  padding: 10px;
+  padding: 12px;
 }
 
 .e-sheet {
@@ -1045,7 +1047,7 @@
   color: var(--e-text);
   border: 1px solid var(--e-line);
   border-radius: 26px;
-  padding: 16px 18px 20px;
+  padding: 16px 16px 24px;
   box-shadow: 0 -12px 44px rgba(0, 0, 0, 0.45);
 }
 
@@ -1080,7 +1082,7 @@
   color: var(--e-text);
   font-size: calc(15px * var(--e-fs, 1));
   font-weight: 700;
-  padding: 10px 18px;
+  padding: 12px 16px;
 }
 
 .e-sheet-title {
@@ -1098,7 +1100,7 @@
 }
 
 .e-opt-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .e-opt-legend {
@@ -1134,11 +1136,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 8px;
   background: var(--e-card-2);
   border: 2px solid var(--e-line);
   border-radius: var(--r);
-  padding: 11px 12px;
+  padding: 12px 12px;
   color: var(--e-text);
   font-size: calc(17px * var(--e-fs, 1));
   font-weight: 700;
@@ -1150,7 +1152,7 @@
 
 /* 버튼을 그 바탕 자체로 칠한다 — 색은 컴포넌트가 인라인으로 넣는다 */
 .e-opt--theme {
-  padding: 14px 6px;
+  padding: 16px 8px;
   font-size: calc(15px * var(--e-fs, 1));
 }
 
@@ -1165,10 +1167,10 @@
 
 /* 119 직접 전화 안내 — 자주 누르는 버튼과 확실히 구분되도록 위쪽에 여백과 구분선을 둔다.
    오발신을 막기 위해 주요 동작 버튼과 붙여놓지 않는다. */
+/* 119 묶음은 가로줄 대신 빈칸으로 나눈다 (DESIGN.md 3장 "묶음은 빈칸으로") */
 .e-emergency {
-  margin-top: 28px;
-  padding-top: 18px;
-  border-top: 1px solid var(--e-line);
+  margin-top: 32px;
+  padding-top: 32px;
   flex: none;
 }
 
@@ -1208,7 +1210,7 @@
      --e-primary로 테두리를 두른다 — 눈에는 띄되 "고장"으로 보이지 않게. */
   border: 2px solid var(--e-primary);
   border-radius: var(--r-lg);
-  padding: 16px 14px 14px;
+  padding: 16px 16px 16px;
   margin: 12px 0;
   flex: none;
 }
@@ -1218,14 +1220,14 @@
   font-weight: 700;
   line-height: 1.5;
   color: var(--e-text);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .e-escape-sub {
   font-size: calc(15px * var(--e-fs, 1));
   line-height: 1.6;
   color: var(--e-text-2);
-  margin: 10px 0 0;
+  margin: 12px 0 0;
 }
 
 /* 카드 안에서는 버튼의 바깥 여백을 카드가 대신한다 */
@@ -1242,5 +1244,5 @@
 }
 
 .e-escape-steps li + li {
-  margin-top: 6px;
+  margin-top: 8px;
 }

@@ -74,14 +74,14 @@
   z-index: 50;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text);
   font-size: calc(13px * var(--font-scale));
   font-weight: 700;
-  padding: 8px 14px;
+  padding: 8px 16px;
   box-shadow: var(--shadow);
 }
 
@@ -93,7 +93,7 @@
   align-items: flex-end;
   justify-content: center;
   z-index: 60;
-  padding: 10px;
+  padding: 12px;
 }
 
 .g-sheet {
@@ -105,7 +105,7 @@
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  padding: 16px 18px 20px;
+  padding: 16px 16px 24px;
   box-shadow: 0 -12px 44px rgba(0, 0, 0, 0.45);
 }
 
@@ -147,7 +147,7 @@
 }
 
 .g-opt-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .g-opt-legend {
@@ -184,7 +184,7 @@
   background: var(--surface-2);
   border: 2px solid var(--line);
   border-radius: var(--r);
-  padding: 10px 6px;
+  padding: 12px 8px;
   color: var(--text);
   font-size: calc(15px * var(--font-scale));
   font-weight: 700;
@@ -219,7 +219,7 @@
    * 브랜드 글자("Callog(콜록)")가 배경에 묻혀 보이지 않았다. 배경도 테마를 따라가게 한다. */
   background: var(--aside-bg);
   border-bottom: 1px solid var(--line);
-  padding: 16px 18px;
+  padding: 16px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -254,7 +254,7 @@
 @media (min-width: 1024px) {
   .g-brand {
     flex: none;
-    padding: 0 8px 14px;
+    padding: 0 8px 16px;
   }
 }
 
@@ -295,13 +295,13 @@
 }
 
 .g-main {
-  padding: 22px 18px 64px;
+  padding: 24px 16px 64px;
   min-width: 0;
 }
 
 @media (min-width: 1024px) {
   .g-main {
-    padding: 30px 32px 72px;
+    padding: 32px 32px 64px;
   }
 }
 
@@ -315,7 +315,7 @@
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .g-toolbar .g-button {
@@ -334,7 +334,7 @@
   margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .g-title {
@@ -342,7 +342,7 @@
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.25;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   text-wrap: balance;
 }
 
@@ -350,13 +350,13 @@
   font-size: calc(15px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
-  margin-left: 6px;
+  margin-left: 8px;
 }
 
 .g-sub {
   font-size: calc(15px * var(--font-scale));
   color: var(--text-2);
-  margin: 0 0 18px;
+  margin: 0 0 16px;
   line-height: 1.6;
 }
 
@@ -365,15 +365,15 @@
   color: var(--crit-fg);
   background: var(--crit-bg);
   border-radius: var(--r-sm);
-  padding: 10px 12px;
-  margin: 10px 0;
+  padding: 12px 12px;
+  margin: 12px 0;
 }
 
 .g-legal {
   font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
   line-height: 1.65;
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
 .g-link {
@@ -421,7 +421,7 @@ button.g-link {
   display: block;
   width: 100%;
   text-align: center;
-  margin: 2px 0 14px;
+  margin: 2px 0 16px;
 }
 
 /* ===== 요약 타일 =====
@@ -430,8 +430,8 @@ button.g-link {
 .g-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .g-stat {
@@ -440,7 +440,7 @@ button.g-link {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
-  padding: 13px 15px;
+  padding: 12px 16px;
 }
 
 .g-stat::before {
@@ -481,11 +481,11 @@ button.g-link {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r);
-  padding: 16px 18px;
+  padding: 16px 16px;
 }
 
 .g-card + .g-card {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .g-card-title {
@@ -497,13 +497,13 @@ button.g-link {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .g-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  gap: 16px;
   align-items: start;
 }
 
@@ -518,7 +518,7 @@ button.g-link {
 }
 
 .g-section {
-  margin-top: 22px;
+  margin-top: 24px;
 }
 
 /* ===== 목록 ===== */
@@ -528,7 +528,7 @@ button.g-link {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 13px 0;
+  padding: 12px 0;
   border: none;
   border-bottom: 1px solid var(--line);
   background: none;
@@ -556,7 +556,7 @@ button.g-link {
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
-  margin-left: 5px;
+  margin-left: 4px;
 }
 
 .g-list-meta {
@@ -565,7 +565,7 @@ button.g-link {
   line-height: 1.5;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* 오늘 안부 상태 — 클릭해서 상세로 들어가지 않아도 목록에서 바로 보이게 */
@@ -615,7 +615,7 @@ button.g-link {
   font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   letter-spacing: 0.02em;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: 6px;
   flex: none;
 }
@@ -642,7 +642,7 @@ button.g-link {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 13px 16px;
+  padding: 12px 16px;
   border-radius: var(--r-sm);
   border: 1px solid transparent;
   font-size: calc(15px * var(--font-scale));
@@ -682,21 +682,21 @@ button.g-link {
 .g-back {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text-2);
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
-  padding: 7px 14px;
-  margin-bottom: 14px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
 }
 
 .g-chip {
   display: inline-flex;
   align-items: center;
-  padding: 9px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--surface);
@@ -723,13 +723,13 @@ button.g-link {
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-2);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .g-field input,
 .g-field select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   font-family: inherit;
@@ -810,8 +810,8 @@ button.g-link {
   color: var(--text-2);
   background: var(--surface-2);
   border-radius: var(--r-sm);
-  padding: 10px 12px;
-  margin: 6px 0 0 24px;
+  padding: 12px 12px;
+  margin: 8px 0 0 24px;
   line-height: 1.7;
 }
 
@@ -820,7 +820,7 @@ button.g-link {
 .g-note {
   background: var(--surface-2);
   border-radius: var(--r-sm);
-  padding: 11px 13px;
+  padding: 12px 12px;
   font-size: calc(15px * var(--font-scale));
   line-height: 1.65;
   color: var(--text-2);
@@ -844,7 +844,7 @@ button.g-link {
 .g-timestamp {
   font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -888,7 +888,7 @@ button.g-link {
 
 .g-questions {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 24px;
   font-size: calc(15px * var(--font-scale));
   line-height: 1.7;
 }
@@ -896,14 +896,14 @@ button.g-link {
 /* ===== 약관 본문 ===== */
 
 .g-terms-section {
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .g-terms-heading {
   font-size: calc(15px * var(--font-scale));
   font-weight: 700;
   color: var(--text);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .g-terms-section p {
@@ -918,7 +918,7 @@ button.g-link {
 .g-letter .g-button--danger {
   width: auto;
   margin-left: auto;
-  padding: 7px 14px;
+  padding: 8px 16px;
   font-size: calc(13px * var(--font-scale));
 }
 
@@ -942,7 +942,7 @@ button.g-link {
 
 /* 상세 화면 본문 상단의 "목록으로" — 사이드바에만 두면 눈에 잘 안 띈다 */
 .g-back--inline {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 /* 브랜드를 목록으로 돌아가는 링크로 쓴다 — button 기본 스타일을 지우고 g-brand 모양을 유지 */
@@ -957,13 +957,13 @@ button.g-link {
 
 @media (min-width: 1024px) {
   .g-brand--link {
-    padding: 0 8px 14px;
+    padding: 0 8px 16px;
   }
 }
 
 /* 지금 보고 있는 화면이 어느 빌드인지 — 캐시된 예전 코드 구분용 */
 .g-build {
-  margin-top: 6px;
+  margin-top: 8px;
   opacity: 0.55;
   font-variant-numeric: tabular-nums;
 }
@@ -994,7 +994,7 @@ button.g-link {
 
 .g-password input {
   /* 토글 버튼 자리를 비워둔다 */
-  padding-right: 72px;
+  padding-right: 64px;
 }
 
 .g-password-toggle {
@@ -1006,7 +1006,7 @@ button.g-link {
   color: var(--text-2);
   font-size: calc(13px * var(--font-scale));
   font-weight: 700;
-  padding: 6px 10px;
+  padding: 8px 12px;
 }
 
 /* 에러 아래에 붙는 "다음에 할 일" 버튼 묶음 — 좁은 화면에서는 위아래로 쌓인다 */
@@ -1030,7 +1030,7 @@ button.g-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   background: #ffffff;
   color: #1f1f1f;
   border: 1px solid #dadce0;
@@ -1062,7 +1062,7 @@ button.g-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 18px 0;
+  margin: 16px 0;
   font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
 }
@@ -1078,11 +1078,11 @@ button.g-link {
  * 보호자가 막히는 지점이 전부 앱 바깥이다 — 인앱 브라우저, 미설치, 알림 권한 거부.
  * 본인은 뭐가 잘못됐는지 모르므로, 지금 상태에 해당하는 카드만 색으로 구분해 띄운다.
  */
-.gd-flow { display: grid; gap: 8px; margin: 18px 0 12px; }
+.gd-flow { display: grid; gap: 8px; margin: 16px 0 12px; }
 .gd-step {
-  display: flex; gap: 10px; align-items: baseline;
+  display: flex; gap: 12px; align-items: baseline;
   background: var(--surface-2); border-radius: var(--r-sm);
-  padding: 11px 14px; font-size: calc(15px * var(--font-scale)); color: var(--text);
+  padding: 12px 16px; font-size: calc(15px * var(--font-scale)); color: var(--text);
 }
 .gd-step > span { min-width: 0; }
 .gd-step > b:first-child {
@@ -1091,17 +1091,17 @@ button.g-link {
   display: grid; place-items: center; align-self: center;
 }
 .gd-note { font-size: calc(15px * var(--font-scale)); color: var(--text-2); line-height: 1.7; margin: 0 0 8px; }
-.gd-h2 { font-size: calc(20px * var(--font-scale)); font-weight: 700; margin: 28px 0 10px; }
+.gd-h2 { font-size: calc(20px * var(--font-scale)); font-weight: 700; margin: 32px 0 12px; }
 
 .gd-card {
   border: 1px solid var(--line); border-radius: var(--r-sm);
-  padding: 15px 17px; margin-bottom: 10px; background: var(--surface);
+  padding: 16px 16px; margin-bottom: 12px; background: var(--surface);
 }
-.gd-card h3 { font-size: calc(17px * var(--font-scale)); margin: 0 0 7px; }
-.gd-card p { font-size: calc(15px * var(--font-scale)); color: var(--text-2); margin: 0 0 7px; line-height: 1.7; }
+.gd-card h3 { font-size: calc(17px * var(--font-scale)); margin: 0 0 8px; }
+.gd-card p { font-size: calc(15px * var(--font-scale)); color: var(--text-2); margin: 0 0 8px; line-height: 1.7; }
 .gd-card p:last-child { margin-bottom: 0; }
 .gd-card b { color: var(--text); font-weight: 600; }
-.gd-card ol { margin: 6px 0 0; padding-left: 20px; font-size: calc(15px * var(--font-scale)); color: var(--text-2); line-height: 1.8; }
+.gd-card ol { margin: 8px 0 0; padding-left: 24px; font-size: calc(15px * var(--font-scale)); color: var(--text-2); line-height: 1.8; }
 
 /* 막힌 상태 / 끝난 상태를 색으로 가른다 */
 /* 글자색은 -fg 변형을 쓴다. 테마마다 바탕 대비에 맞춰 따로 정의돼 있다. */
@@ -1114,6 +1114,6 @@ button.g-link {
   /* 글씨체는 화면 전체에서 하나(Gothic A1)로 맞춘다 */
   font-family: inherit;
   font-size: calc(13px * var(--font-scale));
-  background: var(--surface-2); border-radius: 6px; padding: 8px 10px;
+  background: var(--surface-2); border-radius: 6px; padding: 8px 12px;
   word-break: break-all; color: var(--text) !important;
 }

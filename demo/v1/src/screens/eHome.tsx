@@ -136,7 +136,7 @@ export default function EHome() {
       )}
       {/* 처음 화면은 만세력 라이브러리를 싣지 않으므로 띠 동물 대신 학만 말한다 */}
       {!doneToday && (
-        <p className="e-meta" style={{ textAlign: "center", marginBottom: 14 }}>
+        <p className="e-meta" style={{ textAlign: "center", marginBottom: 16 }}>
           안부를 마치면 학이 오늘의 복주머니를 가져와요
         </p>
       )}

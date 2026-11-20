@@ -88,7 +88,7 @@ export default function Signup() {
           disabled={!supabaseConfigured}
           autoComplete="new-password"
         />
-        <a href="/terms" target="_blank" rel="noreferrer" className="g-link" style={{ marginBottom: 10 }}>
+        <a href="/terms" target="_blank" rel="noreferrer" className="g-link" style={{ marginBottom: 12 }}>
           이용약관 및 개인정보 처리 안내 보기
         </a>
         {/* 개인정보보호법 §23·§28-8 대응 — 일반 개인정보 동의와 국외이전(Google Gemini) 동의를

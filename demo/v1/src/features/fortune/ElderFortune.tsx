@@ -190,7 +190,7 @@ export default function ElderFortune({
             {sajuMore ? "접기" : "사주 더보기"}
           </button>
         </div>
-        <p className="e-meta" style={{ marginTop: 10 }}>
+        <p className="e-meta" style={{ marginTop: 12 }}>
           오늘은 {fortune.todayGanZhi}일이에요.
         </p>
         {SECTIONS.map((s, i) => (

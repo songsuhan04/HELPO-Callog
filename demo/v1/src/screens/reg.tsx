@@ -210,7 +210,7 @@ export default function Reg() {
             <span>일</span>
           </div>
           {birthCalendar === "lunar" && (
-            <label style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 8, fontWeight: 400 }}>
+            <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, fontWeight: 400 }}>
               <input type="checkbox" checked={birthLeap} onChange={(e) => setBirthLeap(e.target.checked)} style={{ width: "auto" }} />
               윤달이에요
             </label>
