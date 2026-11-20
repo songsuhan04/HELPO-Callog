@@ -13,7 +13,7 @@
 /* ===== 바탕 4종 ===== */
 
 :root {
-  /* 밤하늘 — 기본값 */
+  /* 밤하늘 — 색 토큰의 바탕값. 처음 쓰는 분의 기본 바탕은 "한낮"이다(lib/elderDisplay.ts, 2026-11-20) */
   --e-bg: #121416;
   --e-card: #1e1f25;
   --e-card-2: #282b33;
@@ -25,6 +25,11 @@
   --e-line: rgba(255, 255, 255, 0.1);
   --e-glow: rgba(64, 78, 215, 0.22);
   --e-bezel: #2a2c34;
+}
+
+/* 어르신 화면에서는 페이지 바깥(아이폰에서 당겨 튕길 때 보이는 곳)도 고른 바탕색으로 */
+:root[data-elder-theme] body {
+  background: var(--e-bg);
 }
 
 :root[data-elder-theme="daylight"] {

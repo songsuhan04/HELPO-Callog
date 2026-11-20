@@ -8,7 +8,7 @@
     <!-- Android "홈 화면에 추가"/설치 아이콘 -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#404ED7" />
+    <meta name="theme-color" content="#F7F8FB" />
     <meta name="color-scheme" content="dark" />
     <!-- 홈 화면에 추가한 뒤 열었을 때 사파리 주소창 없이 전체화면 앱처럼 보이게 함.
          상태바 스타일은 "black"(반투명 아님)으로 — 반투명은 콘텐츠가 상태바 아래까지
@@ -38,7 +38,12 @@
           var path = location.pathname;
           var elder = path.indexOf("/elder") === 0 || path.indexOf("/e/") === 0;
           var scales = [1, 1.15, 1.3];
-          var theme = localStorage.getItem(elder ? "callog.elderTheme" : "callog.guardianTheme");
+          // 기본은 밝은 바탕(어르신 "한낮", 보호자 "라이트"). 예전 키에 직접 고른 값(밤하늘·다크가 아닌 것)이 있으면 이어 쓴다
+          var theme = localStorage.getItem(elder ? "callog.elderTheme2" : "callog.guardianTheme2");
+          if (!theme) {
+            var old = localStorage.getItem(elder ? "callog.elderTheme" : "callog.guardianTheme");
+            theme = old && old !== (elder ? "night" : "dark") ? old : elder ? "daylight" : "light";
+          }
           var themes = elder ? ["daylight", "warm", "maxcontrast"] : ["light", "warm", "maxcontrast"];
           if (themes.indexOf(theme) >= 0) root.setAttribute(elder ? "data-elder-theme" : "data-guardian-theme", theme);
           var i = Number(localStorage.getItem(elder ? "callog.fontScale" : "callog.guardianFontScale") || "0");
