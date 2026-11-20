@@ -258,15 +258,6 @@
   }
 }
 
-.g-brand::before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  background: var(--primary);
-  flex: none;
-}
-
 .g-aside-actions {
   display: flex;
   gap: 8px;
@@ -443,23 +434,15 @@ button.g-link {
   padding: 12px 16px;
 }
 
-.g-stat::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--stat-color, var(--text-3));
-}
-
 .g-stat-label {
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-2);
 }
 
+/* 상태 색은 왼쪽 색 줄 대신 숫자 색으로 보인다 (DESIGN.md 8장 "카드 왼쪽 색 줄 금지") */
 .g-stat-value {
+  color: var(--stat-color, var(--text));
   font-size: calc(26px * var(--font-scale));
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -1105,9 +1088,9 @@ button.g-link {
 
 /* 막힌 상태 / 끝난 상태를 색으로 가른다 */
 /* 글자색은 -fg 변형을 쓴다. 테마마다 바탕 대비에 맞춰 따로 정의돼 있다. */
-.gd-card--stop { border-color: var(--crit); border-left-width: 3px; background: var(--crit-bg); }
+.gd-card--stop { border-color: var(--crit); background: var(--crit-bg); }
 .gd-card--stop h3 { color: var(--crit-fg); }
-.gd-card--ok { border-color: var(--safe); border-left-width: 3px; background: var(--safe-bg); }
+.gd-card--ok { border-color: var(--safe); background: var(--safe-bg); }
 .gd-card--ok h3 { color: var(--safe-fg); }
 
 .gd-url {

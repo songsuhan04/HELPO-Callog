@@ -72,7 +72,7 @@ export function PushToggle() {
   return (
     <div className="g-push">
       <button className="g-back" onClick={() => run(on ? turnOffEverywhere : subscribeToPush)} disabled={busy}>
-        {busy ? "설정 중..." : on ? "🔔 위험 알림 켜짐" : "🔕 위험 알림 받기"}
+        {busy ? "설정 중..." : on ? "위험 알림 켜짐" : "위험 알림 받기"}
       </button>
       {on && (
         <p className="g-push-hint">
