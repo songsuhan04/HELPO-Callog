@@ -443,7 +443,7 @@
   margin: 14px 0 10px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -708,7 +708,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px 8px;
   justify-items: center;
 }
@@ -1105,18 +1105,27 @@
   margin-bottom: 8px;
 }
 
+/* 칸은 minmax(0, 1fr)로 둔다. 그냥 1fr은 글자 폭보다 좁아지지 않아서, 좁은 휴대폰에 글씨를
+   "아주 크게"로 두면 "또렷하게" 같은 단추가 화면 밖으로 밀리고 시트가 좌우로 움직였다(2026-11-20). */
 .e-opt-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
 .e-opt-row--three {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .e-opt-row--four {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* 바탕 네 가지는 좁은 화면에서 두 줄로 — 한 줄에 넷이면 글자가 잘린다 */
+@media (max-width: 400px) {
+  .e-opt-row--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .e-opt {

@@ -162,12 +162,19 @@
   gap: 8px;
 }
 
+/* elder.css의 .e-opt-row와 같은 이유로 minmax(0, 1fr), 좁은 화면에서는 두 줄 */
 .g-opt-row--four {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .g-opt-row--three {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 400px) {
+  .g-opt-row--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .g-opt {
@@ -726,7 +733,9 @@ button.g-link {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   font-family: inherit;
-  font-size: calc(15px * var(--font-scale));
+  /* 16px 아래면 아이폰 사파리가 입력칸을 누를 때 화면을 확대하고, 확대된 채로 좌우로
+     밀린다(2026-11-20 모바일 신고). 그래서 글씨 크기 설정과 관계없이 16px은 지킨다. */
+  font-size: max(16px, calc(15px * var(--font-scale)));
   background: var(--surface-2);
   color: var(--text);
 }

@@ -85,6 +85,9 @@ body {
   overflow-wrap: break-word;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
+  /* 안전망: 무엇이 화면 폭을 넘더라도 페이지 전체가 좌우로 밀리지 않게 자른다. clip은 hidden과
+     달리 스크롤 상자를 만들지 않아 보호자 화면의 sticky 사이드바가 그대로 동작한다. */
+  overflow-x: clip;
 }
 
 #root {

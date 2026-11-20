@@ -220,7 +220,7 @@ export default function Reg() {
         {FEATURES.birthTime && (
           <div className="g-field">
             <label htmlFor="birth-hour">태어난 시각 (선택 — 모르면 비워 두세요)</label>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <select id="birth-hour" value={birthHour} onChange={(e) => setBirthHour(e.target.value)} aria-label="태어난 시" style={{ width: "auto" }}>
                 <option value="">모름</option>
                 {HOURS.map((h) => (
