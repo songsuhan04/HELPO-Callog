@@ -187,12 +187,12 @@ export default function ECheck() {
         <div className="e-hero">
           <h1 className="e-question">오늘의 안부를 준비하고 있어요</h1>
           <p className="e-lead">잠시만 기다려 주세요.</p>
-          {slow && <p className="e-meta">조금 늦어지고 있어요. 곧 시작됩니다.</p>}
+          {slow && <p className="e-meta">조금 늦어지고 있어요. 곧 시작해요.</p>}
         </div>
       </AppShell>
     );
   const question = questions[index];
-  if (!question) return <AppShell variant="elder"><p className="e-lead">준비된 질문이 없습니다.</p></AppShell>;
+  if (!question) return <AppShell variant="elder"><p className="e-lead">오늘 드릴 질문을 아직 준비하지 못했어요. 잠시 뒤 다시 열어 주세요.</p></AppShell>;
 
   return (
     <AppShell variant="elder">

@@ -94,7 +94,7 @@ export default function GLetter() {
       if (error) throw error;
       navigate(`/guardian/elders/${elderId}`);
     } catch (err) {
-      setError(getErrorMessage(err, "전송에 실패했습니다"));
+      setError(getErrorMessage(err, "보내지 못했어요"));
     } finally {
       setSending(false);
     }
@@ -108,10 +108,10 @@ export default function GLetter() {
 
       {stage === "record" && (
         <>
-          <p className="g-sub">어르신이 오늘 안부를 남기면 완료 화면에서 이 편지가 열립니다.</p>
+          <p className="g-sub">어르신이 오늘 안부를 남기면 완료 화면에서 이 편지가 열려요.</p>
           {/* 통신비밀보호법/민법(타인 초상권·음성권) 대응 — 근거: Help4/법적문제 피해가기 공략.pdf §5, 체크리스트 4번 */}
           <p className="g-note" style={{ marginTop: 0, marginBottom: 12 }}>
-            본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있습니다.
+            본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있어요.
           </p>
 
           <video key="live" ref={liveRef} autoPlay muted className="g-media g-media--live" />
@@ -138,7 +138,7 @@ export default function GLetter() {
 
       {stage === "preview" && (
         <>
-          <p className="g-sub">찍은 영상을 확인하고 보내세요. 마음에 안 들면 다시 찍을 수 있습니다.</p>
+          <p className="g-sub">찍은 영상을 보고 보내 주세요. 마음에 안 들면 다시 찍을 수 있어요.</p>
 
           {previewUrl && <video key="preview" src={previewUrl} controls autoPlay className="g-media g-media--live" />}
 

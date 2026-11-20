@@ -30,7 +30,7 @@ export function EmergencyCall() {
       <p className="e-emergency-lead">119에 전화를 거시겠어요?</p>
       {/* 실제 통화는 기기의 전화 앱이 한다 — 서비스는 연결에 관여하지 않는다 */}
       <a className="e-emergency-btn" href="tel:119">
-        예, 지금 겁니다
+        예, 지금 걸게요
       </a>
       <button type="button" className="e-secondary" onClick={() => setConfirming(false)}>
         아니요

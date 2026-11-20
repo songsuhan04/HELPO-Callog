@@ -30,7 +30,7 @@ export default function Forgot() {
       // 그래서 안내 문구도 "가입된 이메일이라면"으로 적는다.
       setSent(true);
     } catch (err) {
-      setError(getAuthErrorMessage(err, "메일 발송에 실패했습니다"));
+      setError(getAuthErrorMessage(err, "메일을 보내지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -41,10 +41,10 @@ export default function Forgot() {
       <AppShell>
         <BackButton to="/" />
         <div className="g-header">비밀번호 재설정</div>
-        <h1 className="g-title">메일을 보냈습니다</h1>
+        <h1 className="g-title">메일을 보냈어요</h1>
         <p className="g-sub">
-          가입된 이메일이라면 <strong>{email}</strong> 으로 재설정 링크가 갑니다. 메일함(스팸함도 함께)을 확인해
-          링크를 눌러주세요. 링크는 일정 시간이 지나면 만료됩니다.
+          가입된 이메일이라면 <strong>{email}</strong> 으로 재설정 링크가 가요. 메일함(스팸함도 함께)을 확인해
+          링크를 눌러 주세요. 링크는 시간이 지나면 쓸 수 없어요.
         </p>
         <button className="g-button g-button--secondary" onClick={() => setSent(false)}>
           다른 이메일로 다시 보내기
@@ -58,7 +58,7 @@ export default function Forgot() {
       <BackButton to="/" />
       <div className="g-header">비밀번호 재설정</div>
       <h1 className="g-title">가입하신 이메일을 알려주세요</h1>
-      <p className="g-sub">그 주소로 비밀번호를 새로 정할 수 있는 링크를 보내드립니다.</p>
+      <p className="g-sub">그 주소로 비밀번호를 새로 정하는 링크를 보내 드려요.</p>
       <form onSubmit={handleSubmit}>
         <div className="g-field">
           <label>이메일</label>

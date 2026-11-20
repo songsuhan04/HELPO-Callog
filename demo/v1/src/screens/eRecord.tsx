@@ -101,7 +101,7 @@ export default function ERecord() {
         <h1 className="e-question">{topic}</h1>
         <SpeakButton text={topic} />
         {/* 주제는 어디까지나 권유다 — 다른 말을 하고 싶은 분을 막아서는 안 된다 */}
-        <p className="e-lead">다른 하고 싶은 말씀이 있으면 그것을 하셔도 됩니다</p>
+        <p className="e-lead">다른 하고 싶은 말씀을 하셔도 돼요</p>
         <RecordingNotice />
 
         <video key="live" ref={liveRef} autoPlay muted className="e-media e-media--live" />

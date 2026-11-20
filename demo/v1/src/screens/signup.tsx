@@ -31,7 +31,7 @@ export default function Signup() {
     setError(null);
     setEmailTaken(false);
     if (password !== passwordConfirm) {
-      setError("비밀번호가 서로 다릅니다");
+      setError("비밀번호가 서로 달라요");
       return;
     }
     setLoading(true);
@@ -43,21 +43,21 @@ export default function Signup() {
       // identities가 빈 사용자를 돌려준다. 예전에는 이 경우 아무 말 없이 로그인 화면으로
       // 보내서 "가입이 안 된다"로만 보였다. 근거: 실사용 피드백
       if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-        setError("이미 가입된 이메일입니다.");
+        setError("이미 가입된 이메일이에요.");
         setEmailTaken(true);
         return;
       }
 
       if (!data.session) {
         // "Confirm email"이 켜져 있는 환경이라면 세션이 바로 생기지 않는다
-        setError("가입 확인이 필요합니다. 로그인 화면에서 로그인해주세요.");
+        setError("가입 확인이 필요해요. 로그인 화면에서 로그인해 주세요.");
         return;
       }
       navigate("/guardian/elders/new", { state: { fromSignup: true } });
     } catch (err) {
       // 실제로 오는 경로는 422 에러다(인증 로그로 확인). 위의 identities 검사만으로는 안 잡힌다.
       if (isEmailTakenError(err)) setEmailTaken(true);
-      setError(getAuthErrorMessage(err, "가입에 실패했습니다"));
+      setError(getAuthErrorMessage(err, "가입하지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -144,7 +144,7 @@ export default function Signup() {
         <GoogleButton disabled={!consent || !consentOverseas || !supabaseConfigured} label="구글로 가입하기" />
         <div className="g-or">또는 이메일로</div>
         <button className="g-button" type="submit" disabled={loading || !consent || !consentOverseas || !supabaseConfigured}>
-          {loading ? "가입 중..." : "다음 — 어르신 정보"}
+          {loading ? "가입 중..." : "어르신 정보 입력하기"}
         </button>
       </form>
     </AppShell>

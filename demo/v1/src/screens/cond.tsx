@@ -48,7 +48,7 @@ export default function Cond() {
       .eq("elder_profile_id", elderId)
       .then(({ data, error }) => {
         if (error) {
-          setError(getErrorMessage(error, "지병 정보를 불러오지 못했습니다"));
+          setError(getErrorMessage(error, "지병 정보를 불러오지 못했어요"));
         } else {
           const rows = data ?? [];
           setSelected(rows.filter((r) => r.condition_type !== "custom").map((r) => r.condition_type as string));
@@ -94,7 +94,7 @@ export default function Cond() {
 
       navigate(isEdit ? `/guardian/elders/${elderId}` : `/guardian/elders/${elderId}/invite`);
     } catch (err) {
-      setError(getErrorMessage(err, "지병 저장에 실패했습니다"));
+      setError(getErrorMessage(err, "지병을 저장하지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,7 @@ export default function Cond() {
       <BackButton />
       <div className="g-header">{isEdit ? "지병 수정" : fromSignup ? "가족 · 계정 · 4 / 4" : "지병 선택"}</div>
       <h1 className="g-title">앓고 계신 병을 골라주세요</h1>
-      <p className="g-sub">고른 병에 따라 질문이 달라지고, 같은 대답의 무게도 달라집니다.</p>
+      <p className="g-sub">고른 병에 맞춰 질문이 바뀌어요.</p>
 
       {CONDITION_CATEGORIES.map((category) => (
         <div key={category} style={{ marginBottom: 16 }}>
@@ -133,12 +133,12 @@ export default function Cond() {
           ))}
         </ol>
         <div className="g-note">
-          같은 질문을 날마다 다른 말로 여쭙니다. 질문 수는 매일 같습니다.
+          같은 질문을 날마다 다른 말로 여쭤요. 질문 수는 매일 같아요.
           {rotatesConditions && (
-            <div>· 지병 질문은 하루 {MAX_CONDITION_QUESTIONS}개까지 묻고, 날마다 돌아가며 바뀝니다.</div>
+            <div>· 지병 질문은 하루 {MAX_CONDITION_QUESTIONS}개까지 묻고, 날마다 돌아가며 바뀌어요.</div>
           )}
           {uncovered.length > 0 && (
-            <div>· 아직 맞춤 질문이 없는 지병: {uncovered.join(", ")}. 공통 질문으로 살핍니다.</div>
+            <div>· 아직 맞춤 질문이 없는 지병: {uncovered.join(", ")}. 공통 질문으로 살펴요.</div>
           )}
         </div>
         {riskNotes.length > 0 && (
@@ -180,7 +180,7 @@ export default function Cond() {
         onClick={handleSubmit}
         disabled={loading || (!isEdit && !consentHealth) || !supabaseConfigured}
       >
-        {loading ? "저장 중..." : isEdit ? "수정 완료" : "저장하고 초대하기"}
+        {loading ? "저장 중..." : isEdit ? "고친 내용 저장하기" : "저장하고 초대하기"}
       </button>
     </AppShell>
   );

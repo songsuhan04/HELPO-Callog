@@ -32,7 +32,7 @@ export function GoogleButton({ disabled, label = "구글로 계속하기" }: Goo
       await signInWithGoogle();
       // 성공하면 구글로 이동하므로 여기로 돌아오지 않는다.
     } catch (err) {
-      setError(getErrorMessage(err, "구글 로그인을 시작하지 못했습니다"));
+      setError(getErrorMessage(err, "구글 로그인을 시작하지 못했어요"));
       setBusy(false);
     }
   }

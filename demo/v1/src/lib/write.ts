@@ -10,5 +10,5 @@
 // 막는다. 0건은 네트워크나 입력 문제가 아니라 권한 문제이므로 그렇게 안내한다.
 export function assertWritten<T>(rows: T[] | null, what: string): T[] {
   if (rows && rows.length > 0) return rows;
-  throw new Error(`${what} 권한이 없습니다. 어르신을 등록한 본인 계정으로 로그인했는지 확인해주세요.`);
+  throw new Error(`${what} 권한이 없어요. 어르신을 등록한 본인 계정으로 로그인했는지 확인해 주세요.`);
 }

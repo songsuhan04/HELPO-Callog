@@ -19,7 +19,7 @@ let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
   if (!supabaseConfigured) {
-    throw new Error("Supabase 환경변수가 설정되지 않았습니다 (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)");
+    throw new Error("Supabase 환경변수가 설정되지 않았어요 (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)");
   }
   if (!client) {
     const autoLogin = window.localStorage.getItem("callog.autoLogin") !== "false";

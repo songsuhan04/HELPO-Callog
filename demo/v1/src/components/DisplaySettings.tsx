@@ -66,7 +66,7 @@ export function DisplaySettings() {
                 닫기
               </button>
             </div>
-            <p className="e-sheet-sub">눌러보시고 제일 잘 보이는 것으로 고르세요. 고르면 바로 바뀝니다.</p>
+            <p className="e-sheet-sub">제일 잘 보이는 것으로 골라 주세요.</p>
 
             <div className="e-opt-group">
               <div className="e-opt-legend">바탕</div>

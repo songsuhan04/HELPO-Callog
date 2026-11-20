@@ -129,7 +129,7 @@ export default function ESpeech() {
       <ElderTopBar onBack={() => navigate(-1)} />
       <h1 className="e-question">{topic}</h1>
       <SpeakButton text={topic} />
-      <p className="e-lead">천천히 말씀하시면 됩니다</p>
+      <p className="e-lead">천천히 말씀하시면 돼요</p>
       <RecordingNotice />
       {error && <p className="e-error">{error}</p>}
 

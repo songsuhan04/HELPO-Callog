@@ -29,7 +29,7 @@ export function AppShell({ variant = "guardian", aside, children }: AppShellProp
   }, [variant]);
 
   const banner = !supabaseConfigured ? (
-    <div className="env-banner">Supabase 환경변수가 설정되지 않았습니다</div>
+    <div className="env-banner">Supabase 환경변수가 설정되지 않았어요</div>
   ) : null;
 
   if (variant === "elder") {

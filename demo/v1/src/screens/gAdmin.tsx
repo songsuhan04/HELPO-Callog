@@ -70,13 +70,13 @@ export default function GAdmin() {
           setRiskByElder(latestRisk);
           setElders((eldersRes.data ?? []) as unknown as ElderRow[]);
         })
-        .catch((err) => setError(getErrorMessage(err, "데이터를 불러오지 못했습니다")))
+        .catch((err) => setError(getErrorMessage(err, "데이터를 불러오지 못했어요")))
         .finally(() => setLoading(false));
     });
   }, []);
 
   if (access === "checking") return null;
-  if (access === "denied") return <AppShell><p style={{ color: "var(--red)" }}>관리자 권한이 없습니다.</p></AppShell>;
+  if (access === "denied") return <AppShell><p style={{ color: "var(--red)" }}>관리자 권한이 없어요.</p></AppShell>;
 
   const sorted = [...elders].sort((a, b) => {
     const levelDiff = SEVERITY[a.priority_status] - SEVERITY[b.priority_status];
@@ -98,7 +98,7 @@ export default function GAdmin() {
             <BackButton to="/guardian" />
           </div>
           <div className="g-aside-foot">
-            전체 가족의 데이터를 읽기 전용으로 봅니다. 수정·삭제는 각 보호자만 할 수 있습니다.
+            전체 가족의 데이터를 읽기만 해요. 고치고 지우는 건 각 보호자만 할 수 있어요.
             <div className="g-build">빌드 {__BUILD_ID__}</div>
           </div>
         </>
@@ -108,7 +108,7 @@ export default function GAdmin() {
         <div>
           <div className="g-header">관리자 대시보드</div>
           <h1 className="g-title">전체 현황</h1>
-          <p className="g-sub">전체 가족의 데이터를 읽기 전용으로 모니터링합니다.</p>
+          <p className="g-sub">전체 가족의 데이터를 읽기 전용으로 봐요.</p>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function GAdmin() {
 
       {error && <p className="g-error">{error}</p>}
       {loading && <p className="g-sub">불러오는 중...</p>}
-      {!loading && sorted.length === 0 && !error && <p className="g-sub">등록된 어르신이 없습니다.</p>}
+      {!loading && sorted.length === 0 && !error && <p className="g-sub">등록된 어르신이 없어요.</p>}
 
       {sorted.length > 0 && (
         <div className="g-card">

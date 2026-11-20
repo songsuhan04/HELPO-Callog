@@ -74,7 +74,7 @@ export default function Reg() {
       .then(({ data: raw, error }) => {
         const data = raw as unknown as RegRow | null;
         if (error) {
-          setError(getErrorMessage(error, "어르신 정보를 불러오지 못했습니다"));
+          setError(getErrorMessage(error, "어르신 정보를 불러오지 못했어요"));
         } else if (data) {
           setName(data.name ?? "");
           setRelationship(data.relationship ?? "");
@@ -131,7 +131,7 @@ export default function Reg() {
         return;
       }
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error("로그인이 필요합니다");
+      if (!userData.user) throw new Error("로그인이 필요해요");
       const { data, error } = await supabase
         .from("elder_profile")
         .insert({
@@ -149,7 +149,7 @@ export default function Reg() {
       if (error) throw error;
       navigate(`/guardian/elders/${data.id}/conditions`, { state: { fromSignup } });
     } catch (err) {
-      setError(getErrorMessage(err, isEdit ? "수정에 실패했습니다" : "어르신 등록에 실패했습니다"));
+      setError(getErrorMessage(err, isEdit ? "고친 내용을 저장하지 못했어요" : "어르신을 등록하지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -162,7 +162,7 @@ export default function Reg() {
       <BackButton />
       <div className="g-header">{isEdit ? "어르신 정보 수정" : fromSignup ? "가족 · 계정 · 3 / 4" : "어르신 등록"}</div>
       <h1 className="g-title">어르신 정보</h1>
-      <p className="g-sub">어르신이 직접 입력하지 않습니다.</p>
+      <p className="g-sub">어르신이 직접 입력하지 않아요.</p>
       <form onSubmit={handleSubmit}>
         <div className="g-field">
           <label>성함</label>
@@ -215,7 +215,7 @@ export default function Reg() {
               윤달이에요
             </label>
           )}
-          {birthCalendar === "lunar" && <div className="g-legal" style={{ marginTop: 4 }}>음력은 양력 날짜로 바꿔 저장합니다.</div>}
+          {birthCalendar === "lunar" && <div className="g-legal" style={{ marginTop: 4 }}>음력은 양력 날짜로 바꿔 저장해요.</div>}
         </div>
         {FEATURES.birthTime && (
           <div className="g-field">
@@ -257,7 +257,7 @@ export default function Reg() {
         </div>
         {error && <p className="g-error">{error}</p>}
         <button className="g-button" type="submit" disabled={loading || !supabaseConfigured}>
-          {loading ? "저장 중..." : isEdit ? "수정 완료" : "다음 — 지병 확인"}
+          {loading ? "저장 중..." : isEdit ? "고친 내용 저장하기" : "지병 고르기"}
         </button>
       </form>
     </AppShell>

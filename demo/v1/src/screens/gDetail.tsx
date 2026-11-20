@@ -215,7 +215,7 @@ export default function GDetail() {
         body: JSON.stringify({ voiceResponseId: voice.id }),
       });
       const json = await resp.json();
-      if (json.status !== "ok") throw new Error(json.error ?? "분석에 실패했습니다");
+      if (json.status !== "ok") throw new Error(json.error ?? "분석하지 못했어요");
       // 갱신된 결과를 다시 읽어 화면에 반영한다
       const { data } = await getSupabase()
         .from("voice_response")
@@ -231,7 +231,7 @@ export default function GDetail() {
         });
       }
     } catch (err) {
-      setError(getErrorMessage(err, "다시 분석하지 못했습니다"));
+      setError(getErrorMessage(err, "다시 분석하지 못했어요"));
     } finally {
       setReanalyzing(false);
     }
@@ -268,14 +268,14 @@ export default function GDetail() {
     const { error } = await getSupabase().rpc("revoke_elder_access", { p_elder: elderId });
     setBusy(false);
     if (error) {
-      setError(getRpcErrorMessage(error, "재초대에 실패했습니다"));
+      setError(getRpcErrorMessage(error, "다시 초대하지 못했어요"));
       return;
     }
     navigate(`/guardian/elders/${elderId}/invite`);
   }
 
   async function deleteLetter(letter: LetterRow, from: "elder" | "family") {
-    if (!window.confirm("이 영상편지를 삭제할까요? 되돌릴 수 없습니다.")) return;
+    if (!window.confirm("이 영상편지를 지울까요? 되돌릴 수 없어요.")) return;
     await deleteFromBucket("letters", letter.video_url).catch(() => {});
     await getSupabase().from("video_letter").delete().eq("id", letter.id);
     const setter = from === "elder" ? setLetters : setMyLetters;
@@ -294,7 +294,7 @@ export default function GDetail() {
               (BrandLink 자체가 목록으로 가는 링크이기도 하다) */}
           <BrandLink />
           <div className="g-aside-foot">
-            본 서비스는 의료기기가 아니며, 표시되는 위험도는 참고용 신호입니다.
+            위험도는 진단이 아니라 참고용 신호예요.
             <div className="g-build">빌드 {__BUILD_ID__}</div>
           </div>
         </>
@@ -320,7 +320,7 @@ export default function GDetail() {
             {stampTotal > 0 &&
               `출석도장 ${stampTotal}개` +
                 (stampTotal >= CARD_SIZE ? `(도장판 ${Math.floor(stampTotal / CARD_SIZE)}장 완성). ` : ". ")}
-            {risk ? risk.reason : "특별한 위험 신호가 없습니다."}
+            {risk ? risk.reason : "특별한 위험 신호가 없어요."}
           </p>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function GDetail() {
             전화하기
           </a>
         ) : (
-          <button className="g-button" disabled title="등록된 전화번호가 없습니다">
+          <button className="g-button" disabled title="등록된 전화번호가 없어요">
             전화하기
           </button>
         )}
@@ -377,7 +377,7 @@ export default function GDetail() {
               </div>
               {/* 건너뛴 날에도 "왜 아무것도 없지?" 하고 헤매지 않도록 없다는 사실을 명시.
                   근거: 실사용 피드백 — "말하기 안부를 건너뛴 날에는 없습니다라고 뜨면 좋겠다" */}
-              <p className="g-sub" style={{ margin: 0 }}>말하기 안부가 없습니다. 어르신이 오늘 말하기를 건너뛰셨어요.</p>
+              <p className="g-sub" style={{ margin: 0 }}>오늘은 어르신이 말하기를 건너뛰셨어요.</p>
             </div>
           )}
 
@@ -390,7 +390,7 @@ export default function GDetail() {
                   보호자가 오늘 것으로 오해한다. 근거: 실사용 피드백 */}
               {voice.checkinDate !== todaySeoul() && (
                 <p className="g-sub" style={{ margin: "0 0 8px" }}>
-                  오늘은 말하기 안부가 없어요. 아래는 가장 최근 기록입니다.
+                  오늘은 말하기 안부가 없어요. 아래는 가장 최근 기록이에요.
                 </p>
               )}
               <div className="g-timestamp">{new Date(voice.created_at).toLocaleString("ko-KR")}</div>
@@ -400,7 +400,7 @@ export default function GDetail() {
                 // 파일은 보관 기간이 지나 지워졌지만 아래 받아쓴 내용은 남아 있다.
                 // 아무 설명 없이 재생기만 사라지면 고장으로 보인다.
                 <p className="g-sub" style={{ margin: "0 0 8px" }}>
-                  음성 파일은 보관 기간({RETENTION.VOICE_AUDIO_DAYS}일)이 지나 삭제되었습니다. 아래 기록만 남아 있어요.
+                  음성 파일은 보관 기간({RETENTION.VOICE_AUDIO_DAYS}일)이 지나 지워졌어요. 아래 기록만 남아 있어요.
                 </p>
               )}
               {/* 분석 요청은 녹음 직후 어르신 폰에서 보낸다. 어르신이 바로 앱을 닫으면 요청이
@@ -419,7 +419,7 @@ export default function GDetail() {
                 <>
                   <p className="g-error">
                     {voice.analysis_status === "failed"
-                      ? "음성 분석에 실패했습니다. 직접 들어보고 확인해주세요."
+                      ? "음성 분석이 안 됐어요. 녹음을 직접 들어 보세요."
                       : "받아쓰기가 끝나지 않았어요. 아래 버튼을 눌러 다시 받아써 주세요."}
                   </p>
                   {/* 대개 일시적인 문제라 다시 누르면 된다 — 실제로 같은 파일이 재시도에서 정상 인식됐다 */}
@@ -458,7 +458,7 @@ export default function GDetail() {
             <div className="g-card-title">
               <span>{elder.name}님이 보낸 영상편지</span>
             </div>
-            {letters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 받은 영상편지가 없습니다.</p>}
+            {letters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 받은 영상편지가 없어요.</p>}
             {letters.map((letter) => (
               <div key={letter.id} className="g-letter">
                 <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
@@ -482,7 +482,7 @@ export default function GDetail() {
             <div className="g-card-title">
               <span>내가 보낸 영상편지</span>
             </div>
-            {myLetters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 보낸 영상편지가 없습니다.</p>}
+            {myLetters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 보낸 영상편지가 없어요.</p>}
             {myLetters.map((letter) => (
               <div key={letter.id} className="g-letter">
                 <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>

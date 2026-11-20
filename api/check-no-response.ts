@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         elder_profile_id: elder.id,
         date: today,
         level: "위험",
-        reason: `안부 시각(${elder.checkin_time.slice(0, 5)})으로부터 ${NO_RESPONSE_ALERT_HOURS}시간 넘게 응답이 없어요. 확인이 필요합니다`,
+        reason: `안부 시각(${elder.checkin_time.slice(0, 5)})으로부터 ${NO_RESPONSE_ALERT_HOURS}시간 넘게 응답이 없어요. 전화로 안부를 확인해 보세요`,
         triggered_by: { no_response_hours: NO_RESPONSE_ALERT_HOURS },
       },
       { onConflict: "elder_profile_id,date" }
@@ -90,8 +90,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 무응답은 앱을 열지 않았다는 뜻이므로, 알림이 없으면 보호자가 알 방법이 사실상 없다
     await sendPushForElder(admin, elder.id as string, {
-      title: `${(elder.name as string) ?? "어르신"}님 — 응답이 없습니다`,
-      body: `안부 시각(${(elder.checkin_time as string).slice(0, 5)})으로부터 ${NO_RESPONSE_ALERT_HOURS}시간 넘게 응답이 없어요. 확인이 필요합니다`,
+      title: `${(elder.name as string) ?? "어르신"}님이 아직 안부를 남기지 않으셨어요`,
+      body: `안부 시각(${(elder.checkin_time as string).slice(0, 5)})으로부터 ${NO_RESPONSE_ALERT_HOURS}시간 넘게 응답이 없어요. 전화로 안부를 확인해 보세요`,
       url: `/guardian/elders/${elder.id}`,
       tag: `noresp-${elder.id}-${today}`,
     });

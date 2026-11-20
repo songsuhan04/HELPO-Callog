@@ -68,7 +68,7 @@ export default function EInvited() {
         setLoading(false);
       })
       .catch((err) => {
-        setError(getRpcErrorMessage(err, "연결에 실패했습니다"));
+        setError(getRpcErrorMessage(err, "연결하지 못했어요"));
         setLoading(false);
       });
   }, [token, inApp, navigate]);

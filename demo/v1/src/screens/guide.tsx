@@ -37,19 +37,19 @@ export default function Guide() {
     <AppShell aside={<BrandLink />}>
       <h1 className="g-title">Callog 사용 안내</h1>
       <p className="g-sub">
-        혼자 계신 어르신께 하루 한 번 안부를 여쭙고, 평소와 다른 신호가 보이면 가족에게 알려드립니다.
+        하루 한 번 안부를 여쭙고, 이상하면 가족에게 알려요.
       </p>
 
       <div className="gd-flow">
         {/* 글은 반드시 span 하나로 감싼다 — 안쪽 <b>가 flex 항목이 되면 줄이 칸으로 쪼개진다 */}
-        <div className="gd-step"><b>1</b><span>가족이 어르신을 등록합니다</span></div>
-        <div className="gd-step"><b>2</b><span>어르신께 링크를 보냅니다 — 어르신은 한 번만 누르시면 됩니다</span></div>
-        <div className="gd-step"><b>3</b><span>어르신이 매일 짧은 질문에 답하십니다</span></div>
-        <div className="gd-step"><b>4</b><span>이상 신호가 보이면 <b>가족에게 알림</b>이 갑니다</span></div>
+        <div className="gd-step"><b>1</b><span>가족이 어르신을 등록해요</span></div>
+        <div className="gd-step"><b>2</b><span>어르신께 링크를 보내요 — 어르신은 한 번만 누르시면 돼요</span></div>
+        <div className="gd-step"><b>3</b><span>어르신이 매일 짧은 질문에 답하세요</span></div>
+        <div className="gd-step"><b>4</b><span>이상 신호가 보이면 <b>가족에게 알림</b>이 가요</span></div>
       </div>
       <p className="gd-note">
-        어르신은 계정도 비밀번호도 만들지 않습니다. 의료기기가 아니며, 표시되는 위험도는 진단이 아니라
-        "확인해보세요"라는 신호입니다.
+        어르신은 계정도 비밀번호도 만들지 않아요. 의료기기가 아니며, 위험도는 진단이 아니라
+        "확인해 보세요"라는 신호예요.
       </p>
 
       {env && (
@@ -58,9 +58,9 @@ export default function Guide() {
 
           {env.inApp && (
             <div className="gd-card gd-card--stop">
-              <h3>카카오톡 안에서 열려 있습니다</h3>
+              <h3>카카오톡 안에서 열려 있어요</h3>
               <p>
-                여기서는 <b>설치도 알림도 되지 않습니다.</b> 먼저 밖으로 꺼내주세요.
+                여기서는 <b>설치도 알림도 안 돼요.</b> 먼저 밖으로 꺼내 주세요.
               </p>
               <p>
                 화면 구석의 <b>⋯</b> 버튼 → <b>"다른 브라우저로 열기"</b>
@@ -72,13 +72,13 @@ export default function Guide() {
 
           {!env.inApp && (
             <div className={"gd-card " + (env.standalone ? "gd-card--ok" : "")}>
-              <h3>{env.standalone ? "설치되어 있습니다" : "아직 설치하지 않으셨습니다"}</h3>
+              <h3>{env.standalone ? "설치되어 있어요" : "아직 설치하지 않으셨어요"}</h3>
               {env.standalone ? (
-                <p>홈 화면 아이콘으로 열고 계십니다. 매번 주소를 찾지 않으셔도 됩니다.</p>
+                <p>홈 화면 아이콘으로 열고 계세요. 매번 주소를 찾지 않으셔도 돼요.</p>
               ) : env.isIOS ? (
                 <>
                   <p>
-                    <b>아이폰은 설치해야만 알림이 옵니다.</b> 설치하지 않으면 위험 신호가 와도 모르십니다.
+                    <b>아이폰은 설치해야만 알림이 와요.</b> 설치하지 않으면 위험 신호가 와도 모르세요.
                   </p>
                   <ol>
                     <li>화면 <b>아래 가운데 공유 버튼</b>(네모에 화살표 ↑)</li>
@@ -88,9 +88,9 @@ export default function Guide() {
                 </>
               ) : (
                 <>
-                  <p>설치하지 않아도 알림은 옵니다. 설치하면 매번 주소를 찾지 않으셔도 됩니다.</p>
+                  <p>설치하지 않아도 알림은 와요. 설치하면 매번 주소를 찾지 않으셔도 돼요.</p>
                   <ol>
-                    <li>주소창에 <b>설치 아이콘</b>이 보이면 누릅니다</li>
+                    <li>주소창에 <b>설치 아이콘</b>이 보이면 눌러요</li>
                     <li>안 보이면 <b>오른쪽 위 ⋮ → "앱 설치"</b> 또는 <b>"홈 화면에 추가"</b></li>
                   </ol>
                 </>
@@ -107,21 +107,21 @@ export default function Guide() {
             >
               <h3>
                 {env.perm === "granted"
-                  ? "알림이 켜져 있습니다"
+                  ? "알림이 켜져 있어요"
                   : env.perm === "denied"
-                    ? "알림이 차단되어 있습니다"
+                    ? "알림이 차단되어 있어요"
                     : env.perm === "unsupported"
-                      ? "이 브라우저는 알림을 지원하지 않습니다"
-                      : "알림을 아직 켜지 않으셨습니다"}
+                      ? "이 브라우저는 알림을 지원하지 않아요"
+                      : "알림을 아직 켜지 않으셨어요"}
               </h3>
 
               {env.perm === "granted" && (
-                <p>위험 신호가 보이면 이 기기로 알려드립니다. 더 하실 것은 없습니다.</p>
+                <p>위험 신호가 보이면 이 기기로 알려 드려요. 더 하실 건 없어요.</p>
               )}
 
               {env.perm === "default" && (
                 <p>
-                  로그인한 뒤 <b>대상자 목록</b> 화면에서 <b>"위험 알림 받기"</b>를 누르시면 됩니다.
+                  로그인한 뒤 <b>대상자 목록</b> 화면에서 <b>"위험 알림 받기"</b>를 누르시면 돼요.
                   허용 여부를 묻는 창이 뜨면 <b>허용</b>을 눌러주세요.
                 </p>
               )}
@@ -129,13 +129,13 @@ export default function Guide() {
               {env.perm === "denied" && (
                 <>
                   <p>
-                    전에 <b>거부</b>를 누르셨습니다. 브라우저가 다시 묻지 않으므로 설정에서 직접 풀어야 합니다.
+                    전에 <b>거부</b>를 누르셨어요. 브라우저가 다시 묻지 않아서 설정에서 직접 풀어야 해요.
                   </p>
                   {env.isIOS ? (
                     <ol>
                       <li>아이폰 <b>설정</b> 앱 → <b>알림</b></li>
                       <li>목록에서 <b>Callog</b>을 찾아 <b>"알림 허용"</b> 켜기</li>
-                      <li>Callog이 목록에 없으면 아직 설치가 안 된 것입니다 — 위 설치 안내부터</li>
+                      <li>Callog이 목록에 없으면 아직 설치가 안 된 거예요 — 위 설치 안내부터</li>
                     </ol>
                   ) : env.isAndroid ? (
                     <ol>
@@ -147,7 +147,7 @@ export default function Guide() {
                     <ol>
                       <li>
                         <b>Safari</b>: 설정(⌘,) → <b>웹사이트</b> → <b>알림</b> → 이 주소를 <b>허용</b>으로 변경.
-                        같은 화면 맨 아래 <b>"웹사이트에 알림 표시 권한 요청 허용"</b>도 켜져 있어야 합니다
+                        같은 화면 맨 아래 <b>"웹사이트에 알림 표시 권한 요청 허용"</b>도 켜져 있어야 해요
                       </li>
                       <li>
                         <b>Chrome</b>: 주소창 왼쪽 <b>자물쇠</b> → <b>사이트 설정</b> → <b>알림</b> → <b>허용</b>
@@ -164,9 +164,9 @@ export default function Guide() {
 
       <h2 className="gd-h2">어르신께는</h2>
       <p className="gd-note">
-        어르신은 이 안내를 보실 필요가 없습니다. <b>받으신 링크를 한 번만 누르시면</b> 됩니다.
+        어르신은 이 안내를 보실 필요가 없어요. <b>받으신 링크를 한 번만 누르시면</b> 돼요.
         글씨가 작으면 화면 위 <b>"가+ 화면 설정"</b>에서 크게 바꾸실 수 있고, 질문을 소리로 읽어드리는
-        <b> "읽어주기"</b>도 있습니다.
+        <b> "읽어주기"</b>도 있어요.
       </p>
 
       <a className="g-button" href="/">

@@ -47,7 +47,7 @@ export default function Reset() {
     e.preventDefault();
     setError(null);
     if (password !== confirm) {
-      setError("비밀번호가 서로 다릅니다");
+      setError("비밀번호가 서로 달라요");
       return;
     }
     setLoading(true);
@@ -56,7 +56,7 @@ export default function Reset() {
       if (error) throw error;
       setDone(true);
     } catch (err) {
-      setError(getAuthErrorMessage(err, "비밀번호를 바꾸지 못했습니다"));
+      setError(getAuthErrorMessage(err, "비밀번호를 바꾸지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ export default function Reset() {
   if (!ready) {
     return (
       <AppShell>
-        <p className="g-sub">확인 중입니다...</p>
+        <p className="g-sub">확인하고 있어요...</p>
       </AppShell>
     );
   }
@@ -74,7 +74,7 @@ export default function Reset() {
     return (
       <AppShell>
         <div className="g-header">비밀번호 재설정</div>
-        <h1 className="g-title">비밀번호를 바꿨습니다</h1>
+        <h1 className="g-title">비밀번호를 바꿨어요</h1>
         <p className="g-sub">새 비밀번호로 로그인해주세요.</p>
         <button className="g-button" onClick={() => navigate("/")}>
           로그인하러 가기
@@ -88,9 +88,9 @@ export default function Reset() {
     return (
       <AppShell>
         <div className="g-header">비밀번호 재설정</div>
-        <h1 className="g-title">링크가 유효하지 않습니다</h1>
+        <h1 className="g-title">이 링크는 쓸 수 없어요</h1>
         <p className="g-sub">
-          링크가 만료되었거나 이미 사용되었습니다. 재설정 메일을 다시 요청해주세요.
+          링크 유효 시간이 지났거나 이미 쓴 링크예요. 재설정 메일을 다시 받아 주세요.
         </p>
         <button className="g-button" onClick={() => navigate("/forgot")}>
           재설정 메일 다시 받기

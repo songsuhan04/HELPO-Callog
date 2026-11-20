@@ -35,7 +35,7 @@ export default function GStart() {
       if (error) throw error;
       navigate("/guardian");
     } catch (err) {
-      setError(getAuthErrorMessage(err, "로그인에 실패했습니다"));
+      setError(getAuthErrorMessage(err, "로그인하지 못했어요"));
     } finally {
       setLoading(false);
     }
@@ -47,13 +47,13 @@ export default function GStart() {
           (3회차 기술 멘토링, 2026-11-19). 홈 화면 아이콘(PWA)으로만 쓴다. */}
       <div className="g-header">Callog(콜록)</div>
       <h1 className="g-title">보호자로 시작하기</h1>
-      <p className="g-sub">어르신을 등록하고 초대하면, 어르신은 링크만 한 번 누르면 됩니다.</p>
+      <p className="g-sub">어르신은 링크만 누르면 돼요.</p>
 
       {mode === "choose" && (
         <>
           <GoogleButton />
           <p className="g-consent-note">
-            계속하면 <a href="/terms" target="_blank" rel="noreferrer">이용약관 및 개인정보 처리 안내</a>에 동의하는 것으로 봅니다.
+            계속하면 <a href="/terms" target="_blank" rel="noreferrer">이용약관 및 개인정보 처리 안내</a>에 동의하는 것으로 봐요.
           </p>
           <div className="g-or">또는</div>
           <button className="g-button g-button--text" onClick={() => navigate("/signup")}>

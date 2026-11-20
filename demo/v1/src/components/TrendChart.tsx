@@ -124,7 +124,7 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
 // 그래프를 못 보는 경우에도 추이를 알 수 있어야 한다
 function describe(points: TrendPoint[]): string {
   const recorded = points.filter((p) => p.level);
-  if (recorded.length === 0) return "최근 위험도 기록이 없습니다.";
+  if (recorded.length === 0) return "최근 위험도 기록이 없어요.";
   const counts = LEVELS.map((level) => `${level} ${recorded.filter((p) => p.level === level).length}일`);
   return `최근 ${points.length}일 중 ${recorded.length}일 기록 — ${counts.join(", ")}. 가장 최근은 ${
     recorded[recorded.length - 1].level

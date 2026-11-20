@@ -61,8 +61,8 @@ export default function AuthCallback() {
   if (failed) {
     return (
       <AppShell>
-        <h1 className="g-title">로그인을 마치지 못했습니다</h1>
-        <p className="g-sub">다시 시도해 주세요. 계속 안 되면 이메일로 로그인하셔도 됩니다.</p>
+        <h1 className="g-title">로그인을 마치지 못했어요</h1>
+        <p className="g-sub">다시 시도해 주세요. 계속 안 되면 이메일로 로그인해도 돼요.</p>
         <Link className="g-button" to="/">
           시작 화면으로
         </Link>
@@ -72,7 +72,7 @@ export default function AuthCallback() {
 
   return (
     <AppShell>
-      <h1 className="g-title">로그인 중입니다</h1>
+      <h1 className="g-title">로그인하고 있어요</h1>
       <p className="g-sub">잠시만 기다려 주세요.</p>
     </AppShell>
   );

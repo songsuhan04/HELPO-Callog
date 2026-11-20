@@ -105,11 +105,11 @@ export default function GList() {
     const { data: userData } = await supabase.auth.getUser();
     const email = userData.user?.email ?? "";
     const typed = window.prompt(
-      `정말 탈퇴하시겠어요?\n\n등록한 어르신 ${elders.length}명의 안부 기록·음성·영상편지가 모두 삭제되며 되돌릴 수 없습니다.\n\n확인을 위해 이메일을 그대로 입력해주세요:\n${email}`
+      `정말 탈퇴하시겠어요?\n\n등록한 어르신 ${elders.length}명의 안부 기록·음성·영상편지가 모두 지워지고 되돌릴 수 없어요.\n\n확인을 위해 이메일을 그대로 입력해 주세요:\n${email}`
     );
     if (typed === null) return;
     if (typed.trim() !== email) {
-      setError("이메일이 일치하지 않아 탈퇴를 취소했습니다.");
+      setError("이메일이 같지 않아 탈퇴를 취소했어요.");
       return;
     }
     setDeletingAccount(true);
@@ -117,23 +117,23 @@ export default function GList() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
-      if (!token) throw new Error("로그인이 필요합니다");
+      if (!token) throw new Error("로그인이 필요해요");
       const resp = await fetch("/api/delete-account", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await resp.json();
-      if (json.status !== "ok") throw new Error(json.error ?? "탈퇴에 실패했습니다");
+      if (json.status !== "ok") throw new Error(json.error ?? "탈퇴하지 못했어요");
       await supabase.auth.signOut();
       navigate("/");
     } catch (err) {
-      setError(getErrorMessage(err, "탈퇴에 실패했습니다"));
+      setError(getErrorMessage(err, "탈퇴하지 못했어요"));
       setDeletingAccount(false);
     }
   }
 
   async function deleteElder(elder: ElderRow) {
-    if (!window.confirm(`${elder.name}님을 목록에서 삭제할까요? 관련된 안부 기록·영상편지·위험도 이력이 모두 함께 삭제되며 되돌릴 수 없습니다.`)) return;
+    if (!window.confirm(`${elder.name}님을 목록에서 삭제할까요? 관련된 안부 기록·영상편지·위험도 이력이 모두 함께 지워지고 되돌릴 수 없어요.`)) return;
     try {
       // 수정과 마찬가지로 .select()가 없으면 RLS로 0건이 되어도 성공으로 돌아온다.
       // 그러면 화면에서만 사라지고 새로고침하면 되살아난다.
@@ -146,7 +146,7 @@ export default function GList() {
       assertWritten(data, "이 어르신을 삭제할");
       setElders((prev) => prev.filter((e) => e.id !== elder.id));
     } catch (err) {
-      setError(getErrorMessage(err, "삭제에 실패했습니다"));
+      setError(getErrorMessage(err, "지우지 못했어요"));
     }
   }
 
@@ -182,7 +182,7 @@ export default function GList() {
             <PushToggle />
           </div>
           <div className="g-aside-foot">
-            본 서비스는 의료기기가 아니며, 표시되는 위험도는 참고용 신호입니다.
+            위험도는 진단이 아니라 참고용 신호예요.
             <div className="g-build">빌드 {__BUILD_ID__}</div>
           </div>
         </>
@@ -191,7 +191,7 @@ export default function GList() {
       <div className="g-toolbar">
         <div>
           <h1 className="g-title">대상자 목록</h1>
-          <p className="g-sub">등록된 어르신 {elders.length}명의 오늘 상태입니다.</p>
+          <p className="g-sub">등록된 어르신 {elders.length}명의 오늘 상태예요.</p>
         </div>
         <button className="g-button" onClick={() => navigate("/guardian/elders/new")}>
           어르신 추가
@@ -215,7 +215,7 @@ export default function GList() {
       {error && <p className="g-error">{error}</p>}
       {loading && <p className="g-sub">불러오는 중...</p>}
       {!loading && elders.length === 0 && !error && (
-        <p className="g-sub">등록된 어르신이 없습니다. 어르신을 추가해보세요.</p>
+        <p className="g-sub">아직 등록한 어르신이 없어요. 아래 버튼으로 어르신을 등록해 주세요.</p>
       )}
 
       {elders.length > 0 && (

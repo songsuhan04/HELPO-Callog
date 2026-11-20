@@ -55,15 +55,15 @@ export async function isSubscribed(): Promise<boolean> {
  * 권한을 거부하면 Error를 던지므로 호출부에서 문구로 안내한다.
  */
 export async function subscribeToPush(): Promise<void> {
-  if (!pushConfigured) throw new Error("알림 기능이 설정되지 않았습니다(VAPID 키 없음)");
-  if (!pushSupported()) throw new Error("이 브라우저는 알림을 지원하지 않습니다");
+  if (!pushConfigured) throw new Error("알림 기능이 설정되지 않았어요(VAPID 키 없음)");
+  if (!pushSupported()) throw new Error("이 브라우저는 알림을 지원하지 않아요");
   if (needsHomeScreenInstall()) {
-    throw new Error("아이폰은 먼저 공유 버튼 → \"홈 화면에 추가\"로 설치한 뒤 알림을 켤 수 있습니다");
+    throw new Error("아이폰은 먼저 공유 버튼 → \"홈 화면에 추가\"로 설치한 뒤 알림을 켤 수 있어요");
   }
 
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
-    throw new Error("알림 권한이 허용되지 않았습니다. 브라우저 설정에서 이 사이트의 알림을 허용해주세요");
+    throw new Error("알림 권한이 꺼져 있어요. 브라우저 설정에서 이 사이트의 알림을 허용해 주세요");
   }
 
   const reg = await getRegistration();
@@ -78,12 +78,12 @@ export async function subscribeToPush(): Promise<void> {
 
   const json = sub.toJSON();
   if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) {
-    throw new Error("구독 정보를 만들지 못했습니다");
+    throw new Error("알림 연결을 만들지 못했어요");
   }
 
   const supabase = getSupabase();
   const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("로그인이 필요합니다");
+  if (!userData.user) throw new Error("로그인이 필요해요");
 
   // endpoint가 unique라 같은 기기에서 다시 켜도 행이 늘지 않는다
   const { error } = await supabase.from("push_subscription").upsert(
@@ -132,10 +132,10 @@ export async function turnOffEverywhere(): Promise<void> {
 
   const supabase = getSupabase();
   const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("로그인이 필요합니다");
+  if (!userData.user) throw new Error("로그인이 필요해요");
   const { error } = await supabase.from("push_subscription").delete().eq("family_account_id", userData.user.id);
   if (error) throw error;
   // 지워졌는지 직접 확인한다 — 권한 문제로 0건이 지워져도 에러 없이 성공으로 돌아오기 때문
   const left = await countAccountDevices();
-  if (left > 0) throw new Error("알림을 끄지 못했습니다. 다시 시도해주세요");
+  if (left > 0) throw new Error("알림을 끄지 못했어요. 다시 해 주세요");
 }

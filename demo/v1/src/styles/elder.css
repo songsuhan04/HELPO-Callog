@@ -1250,3 +1250,26 @@
     padding: 24px;
   }
 }
+
+/* 한 줄 안내 뒤의 "자세히" — 법적 문장을 접어 둔다. 누르는 곳 44px 이상 */
+.e-details summary,
+.g-details summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.e-details summary::-webkit-details-marker,
+.g-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.e-details[open],
+.g-details[open] {
+  padding-bottom: 8px;
+}

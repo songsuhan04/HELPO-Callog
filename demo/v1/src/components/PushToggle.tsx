@@ -60,7 +60,7 @@ export function PushToggle() {
     try {
       await action();
     } catch (err) {
-      setError(getErrorMessage(err, "알림 설정을 바꾸지 못했습니다"));
+      setError(getErrorMessage(err, "알림 설정을 바꾸지 못했어요"));
     } finally {
       await refresh().catch(() => {});
       setBusy(false);

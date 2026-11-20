@@ -24,7 +24,7 @@ export default function Invite() {
     getSupabase()
       .rpc("create_invite", { p_elder: elderId })
       .then(({ data, error }) => {
-        if (error) setError(getRpcErrorMessage(error, "초대 링크 생성에 실패했습니다"));
+        if (error) setError(getRpcErrorMessage(error, "초대 링크를 만들지 못했어요"));
         else setLink(`${window.location.origin}/e/${data as string}`);
         setLoading(false);
       });
@@ -41,14 +41,14 @@ export default function Invite() {
       <BackButton />
       <div className="g-header">초대</div>
       <h1 className="g-title">어르신께 링크를 보내세요</h1>
-      <p className="g-sub">어르신은 이 링크만 한 번 누르면 됩니다.</p>
+      <p className="g-sub">어르신은 이 링크만 한 번 누르면 돼요.</p>
       {/* 카톡으로 보내면 어르신이 카톡 인앱 브라우저로 여신다. 거기서는 읽어주기도 설치도
           알림도 되지 않고, 초대가 카톡 저장소에 묶여서 나중에 크롬으로 옮기면 연결이 끊긴다.
           문자로 보낸 링크는 기본 브라우저에서 열리므로 그 문제가 통째로 없다.
           근거: 실사용 — 갤럭시 카톡에서 읽어주기 실패·로딩 멈춤이 확인됐다. */}
       <p className="g-note">
         <b>카카오톡보다 문자로 보내주세요.</b> 카톡으로 보내면 어르신이 카톡 안에서 열게 되는데,
-        거기서는 읽어주기와 알림이 되지 않습니다.
+        거기서는 읽어주기와 알림이 안 돼요.
       </p>
 
       {loading && <p className="g-sub">링크 생성 중...</p>}

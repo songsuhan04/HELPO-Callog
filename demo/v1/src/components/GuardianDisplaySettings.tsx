@@ -63,7 +63,7 @@ export function GuardianDisplaySettings() {
                 닫기
               </button>
             </div>
-            <p className="g-sheet-sub">눌러보시고 편한 것으로 고르세요. 고르면 바로 바뀝니다.</p>
+            <p className="g-sheet-sub">편한 것으로 고르면 바로 바뀌어요.</p>
 
             <div className="g-opt-group">
               <div className="g-opt-legend">바탕</div>

@@ -42,7 +42,7 @@ export function InAppBrowserNotice({ reason, allowEscape = false }: Props) {
           {reason ? `${reason} ${here} 안에서는 되지 않아요.` : `${here} 안에서 열려 있어요.`}
         </p>
         <p className="e-escape-sub">
-          안부 여쭙는 건 그대로 하실 수 있어요. 그냥 이어서 하셔도 괜찮습니다.
+          안부 여쭙는 건 그대로 하실 수 있어요. 그냥 이어서 하셔도 괜찮아요.
         </p>
         <p className="e-escape-sub">
           소리로 읽어드리는 걸 쓰시려면, 가족분께 <b>"인터넷 창에서 열도록 링크를 다시
