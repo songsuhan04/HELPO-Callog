@@ -122,7 +122,7 @@ a {
 
 /* ===== 앱 셸 =====
  * 보호자 화면과 어르신 화면은 하는 일이 달라서 넓은 화면에서 다르게 펴진다.
- *  - 어르신: 읽기 좋은 폭의 한 단짜리 페이지로 두고, 글자와 버튼을 키운다(--e-zoom).
+ *  - 어르신: 휴대폰과 같은 폭(480px)의 한 단짜리 페이지. 글자 크기는 폭과 관계없이 같다.
  *  - 보호자: 모니터 폭을 그대로 쓴다(guardian.css의 .g-shell).
  */
 
@@ -135,27 +135,24 @@ a {
   background: var(--bg);
 }
 
+/* 입력 화면(로그인·가입·어르신 등록)은 휴대폰에서도 넓은 화면에서도 테두리 상자 없이 일반
+   페이지로 둔다. 상자에 넣으면 휴대폰 화면을 띄운 것처럼 보였고(3회차 기술 멘토링, 2026-11-19),
+   휴대폰에서는 화면 안에 상자가 또 생겨 폭만 좁아졌다(DESIGN.md 6장). */
 .app-card {
   width: 100%;
-  max-width: 520px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  padding: 32px 24px;
+  max-width: 560px;
+  background: transparent;
+  border: none;
+  padding: 8px 8px 0;
 }
 
-/* 넓은 화면의 입력 화면(로그인·가입·어르신 등록)은 테두리 상자 없이 일반 페이지로 둔다.
-   상자에 넣으면 휴대폰 화면을 띄운 것처럼 보였다(3회차 기술 멘토링, 2026-11-19). */
 @media (min-width: 768px) {
   .app-shell:not(.app-shell--wide):not(.app-shell--elder) {
     padding: 64px 24px 64px;
   }
 
   .app-shell:not(.app-shell--elder) > .app-card {
-    background: transparent;
-    border: none;
     padding: 0;
-    max-width: 560px;
   }
 }
 
