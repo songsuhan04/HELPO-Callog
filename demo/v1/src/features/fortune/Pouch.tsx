@@ -26,7 +26,7 @@ export function Pouch({ variant = "red", className }: { variant?: keyof typeof C
       <circle cx="80" cy="94" r="3.5" fill={c.cord} />
       {/* 福 */}
       <circle cx="60" cy="98" r="15" fill={c.cord} />
-      <text x="60" y="104" textAnchor="middle" fontSize="17" fontWeight="800" fill={c.mark}>
+      <text x="60" y="104" textAnchor="middle" fontSize="17" fontWeight="700" fill={c.mark}>
         福
       </text>
     </svg>

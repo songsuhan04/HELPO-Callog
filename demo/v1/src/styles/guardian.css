@@ -129,14 +129,14 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text);
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 700;
   padding: 8px 16px;
 }
 
 .g-sheet-title {
-  font-size: calc(18px * var(--font-scale));
-  font-weight: 800;
+  font-size: calc(20px * var(--font-scale));
+  font-weight: 700;
   margin: 0;
 }
 
@@ -186,7 +186,7 @@
   border-radius: var(--r);
   padding: 10px 6px;
   color: var(--text);
-  font-size: calc(13px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 700;
 }
 
@@ -245,7 +245,7 @@
   align-items: center;
   gap: 8px;
   font-size: calc(17px * var(--font-scale));
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text);
   flex: 1;
@@ -288,7 +288,7 @@
     display: block;
     margin-top: auto;
     padding: 0 8px;
-    font-size: calc(11.5px * var(--font-scale));
+    font-size: calc(13px * var(--font-scale));
     line-height: 1.55;
     color: var(--text-3);
   }
@@ -327,7 +327,7 @@
 /* ===== 글 ===== */
 
 .g-header {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   /* 영어 대문자 + 넓은 자간 꼬리표는 템플릿 같아 보여 뺐다(3회차 기술 멘토링) */
   color: var(--text-3);
@@ -338,8 +338,8 @@
 }
 
 .g-title {
-  font-size: calc(25px * var(--font-scale));
-  font-weight: 800;
+  font-size: calc(26px * var(--font-scale));
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.25;
   margin: 0 0 6px;
@@ -347,21 +347,21 @@
 }
 
 .g-title small {
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
   margin-left: 6px;
 }
 
 .g-sub {
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   color: var(--text-2);
   margin: 0 0 18px;
   line-height: 1.6;
 }
 
 .g-error {
-  font-size: calc(13.5px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   color: var(--crit-fg);
   background: var(--crit-bg);
   border-radius: var(--r-sm);
@@ -370,7 +370,7 @@
 }
 
 .g-legal {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
   line-height: 1.65;
   margin-top: 28px;
@@ -412,7 +412,7 @@ button.g-link {
   text-align: center;
   margin-top: 24px;
   color: var(--text-3);
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
 }
 
 /* 가운데 정렬만 하고 색은 .g-link의 강조색을 그대로 둔다 —
@@ -454,21 +454,21 @@ button.g-link {
 }
 
 .g-stat-label {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-2);
 }
 
 .g-stat-value {
   font-size: calc(26px * var(--font-scale));
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
 }
 
 .g-stat-value small {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
   margin-left: 3px;
@@ -489,7 +489,7 @@ button.g-link {
 }
 
 .g-card-title {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   letter-spacing: 0;
   color: var(--text-3);
@@ -553,14 +553,14 @@ button.g-link {
 }
 
 .g-list-name small {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
   margin-left: 5px;
 }
 
 .g-list-meta {
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
   line-height: 1.5;
   display: flex;
@@ -570,7 +570,7 @@ button.g-link {
 
 /* 오늘 안부 상태 — 클릭해서 상세로 들어가지 않아도 목록에서 바로 보이게 */
 .g-today-badge {
-  font-size: calc(11px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 999px;
@@ -598,7 +598,7 @@ button.g-link {
 }
 
 .g-rowaction {
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   color: var(--text-3);
   padding: 4px 8px;
@@ -612,8 +612,8 @@ button.g-link {
 
 /* 위험도 배지 — 색만으로 구분하지 않도록 글자도 함께 넣는다 */
 .g-pill {
-  font-size: calc(11.5px * var(--font-scale));
-  font-weight: 800;
+  font-size: calc(13px * var(--font-scale));
+  font-weight: 700;
   letter-spacing: 0.02em;
   padding: 3px 9px;
   border-radius: 6px;
@@ -645,7 +645,7 @@ button.g-link {
   padding: 13px 16px;
   border-radius: var(--r-sm);
   border: 1px solid transparent;
-  font-size: calc(14.5px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 700;
   background: var(--primary);
   color: var(--primary-ink);
@@ -701,7 +701,7 @@ button.g-link {
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--text-2);
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 600;
   margin: 0 8px 8px 0;
 }
@@ -795,7 +795,7 @@ button.g-link {
 }
 
 .g-consent-toggle {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--primary-hi);
   background: none;
   border: none;
@@ -806,7 +806,7 @@ button.g-link {
 }
 
 .g-consent-detail {
-  font-size: calc(12px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--text-2);
   background: var(--surface-2);
   border-radius: var(--r-sm);
@@ -821,7 +821,7 @@ button.g-link {
   background: var(--surface-2);
   border-radius: var(--r-sm);
   padding: 11px 13px;
-  font-size: calc(13px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   line-height: 1.65;
   color: var(--text-2);
   margin-top: 12px;
@@ -834,7 +834,7 @@ button.g-link {
 
 .g-note-label {
   display: block;
-  font-size: calc(10px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   letter-spacing: 0;
   color: var(--primary-hi);
@@ -842,7 +842,7 @@ button.g-link {
 }
 
 .g-timestamp {
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
   margin-bottom: 6px;
   font-variant-numeric: tabular-nums;
@@ -870,7 +870,7 @@ button.g-link {
 
 .g-letter-title {
   margin-bottom: 8px;
-  font-size: calc(14.5px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   font-weight: 600;
 }
 
@@ -889,7 +889,7 @@ button.g-link {
 .g-questions {
   margin: 0;
   padding-left: 20px;
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   line-height: 1.7;
 }
 
@@ -907,7 +907,7 @@ button.g-link {
 }
 
 .g-terms-section p {
-  font-size: calc(13.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   line-height: 1.75;
   color: var(--text-2);
   margin: 0 0 8px;
@@ -930,7 +930,7 @@ button.g-link {
 }
 
 .g-push-hint {
-  font-size: calc(11.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   line-height: 1.5;
   color: var(--text-3);
   margin: 0;
@@ -1004,7 +1004,7 @@ button.g-link {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   color: var(--text-2);
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   font-weight: 700;
   padding: 6px 10px;
 }
@@ -1048,7 +1048,7 @@ button.g-link {
 /* 구글 버튼 아래 고지 문구 — 체크박스 동의가 없는 경로(시작 화면)에서 쓴다 */
 .g-consent-note {
   margin: 8px 0 0;
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   line-height: 1.6;
   color: var(--text-3);
   text-align: center;
@@ -1063,7 +1063,7 @@ button.g-link {
   align-items: center;
   gap: 12px;
   margin: 18px 0;
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   color: var(--text-3);
 }
 .g-or::before,
@@ -1082,26 +1082,26 @@ button.g-link {
 .gd-step {
   display: flex; gap: 10px; align-items: baseline;
   background: var(--surface-2); border-radius: var(--r-sm);
-  padding: 11px 14px; font-size: calc(14.5px * var(--font-scale)); color: var(--text);
+  padding: 11px 14px; font-size: calc(15px * var(--font-scale)); color: var(--text);
 }
 .gd-step > span { min-width: 0; }
 .gd-step > b:first-child {
   flex: none; width: 20px; height: 20px; border-radius: 50%;
-  background: var(--primary); color: #fff; font-size: 12px;
+  background: var(--primary); color: #fff; font-size: 13px;
   display: grid; place-items: center; align-self: center;
 }
-.gd-note { font-size: calc(13.5px * var(--font-scale)); color: var(--text-2); line-height: 1.7; margin: 0 0 8px; }
-.gd-h2 { font-size: calc(17px * var(--font-scale)); font-weight: 700; margin: 28px 0 10px; }
+.gd-note { font-size: calc(15px * var(--font-scale)); color: var(--text-2); line-height: 1.7; margin: 0 0 8px; }
+.gd-h2 { font-size: calc(20px * var(--font-scale)); font-weight: 700; margin: 28px 0 10px; }
 
 .gd-card {
   border: 1px solid var(--line); border-radius: var(--r-sm);
   padding: 15px 17px; margin-bottom: 10px; background: var(--surface);
 }
-.gd-card h3 { font-size: calc(15px * var(--font-scale)); margin: 0 0 7px; }
-.gd-card p { font-size: calc(14px * var(--font-scale)); color: var(--text-2); margin: 0 0 7px; line-height: 1.7; }
+.gd-card h3 { font-size: calc(17px * var(--font-scale)); margin: 0 0 7px; }
+.gd-card p { font-size: calc(15px * var(--font-scale)); color: var(--text-2); margin: 0 0 7px; line-height: 1.7; }
 .gd-card p:last-child { margin-bottom: 0; }
 .gd-card b { color: var(--text); font-weight: 600; }
-.gd-card ol { margin: 6px 0 0; padding-left: 20px; font-size: calc(14px * var(--font-scale)); color: var(--text-2); line-height: 1.8; }
+.gd-card ol { margin: 6px 0 0; padding-left: 20px; font-size: calc(15px * var(--font-scale)); color: var(--text-2); line-height: 1.8; }
 
 /* 막힌 상태 / 끝난 상태를 색으로 가른다 */
 /* 글자색은 -fg 변형을 쓴다. 테마마다 바탕 대비에 맞춰 따로 정의돼 있다. */
@@ -1113,7 +1113,7 @@ button.g-link {
 .gd-url {
   /* 글씨체는 화면 전체에서 하나(Gothic A1)로 맞춘다 */
   font-family: inherit;
-  font-size: calc(12.5px * var(--font-scale));
+  font-size: calc(13px * var(--font-scale));
   background: var(--surface-2); border-radius: 6px; padding: 8px 10px;
   word-break: break-all; color: var(--text) !important;
 }

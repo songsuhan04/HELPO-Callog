@@ -77,7 +77,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: calc(16px * var(--font-scale));
+  font-size: calc(15px * var(--font-scale));
   line-height: 1.6;
   /* 한글은 기본값이면 단어 중간에서 끊긴다("전해볼까요" → "전 / 해볼까요").
      어절 단위로 끊고, 초대 링크처럼 띄어쓰기 없는 긴 문자열만 예외로 강제 줄바꿈한다. */
@@ -173,7 +173,7 @@ a {
   border-radius: var(--r-sm);
   background: var(--crit-bg);
   color: var(--crit-fg);
-  font-size: 14px;
+  font-size: 15px;
   text-align: center;
 }
 

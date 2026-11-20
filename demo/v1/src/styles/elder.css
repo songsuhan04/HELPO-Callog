@@ -95,6 +95,8 @@
   min-height: 100vh;
   background: transparent;
   color: var(--e-text);
+  /* 따로 크기를 정하지 않은 글은 어르신 본문 단계(17px). body는 보호자 본문(15px)이라 여기서 다시 잡는다 */
+  font-size: calc(17px * var(--e-fs, 1));
   border: none;
   border-radius: 0;
   padding: 24px 22px 56px;
@@ -129,14 +131,14 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
   margin-bottom: 28px;
   flex: none;
 }
 
 .e-brand {
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.01em;
   color: var(--e-text);
 }
@@ -171,7 +173,7 @@
   border: 1px solid var(--e-line);
   background: var(--e-card);
   color: var(--e-text);
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   font-weight: 700;
   flex: none;
 }
@@ -180,8 +182,8 @@
 
 .e-question {
   font-family: inherit;
-  font-size: calc(27px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(28px * var(--e-fs, 1));
+  font-weight: 700;
   line-height: 1.34;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -244,14 +246,14 @@
 }
 
 .e-card-label {
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .e-card-title {
-  font-size: calc(18px * var(--e-fs, 1));
+  font-size: calc(19px * var(--e-fs, 1));
   font-weight: 700;
   margin-bottom: 10px;
 }
@@ -272,8 +274,8 @@
 }
 
 .e-fortune-title {
-  font-size: calc(19px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   line-height: 1.4;
   margin: 4px 0 6px;
   color: var(--e-text);
@@ -357,7 +359,7 @@
 }
 
 .e-fortune-hint {
-  font-size: calc(16px * var(--e-fs, 1));
+  font-size: calc(17px * var(--e-fs, 1));
   font-weight: 700;
   color: var(--e-text-2);
   margin: 2px 0 4px;
@@ -421,8 +423,8 @@
   padding: 10px 0;
   border-radius: var(--r-md, 12px);
   background: var(--e-card-2);
-  font-size: calc(24px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   line-height: 1.3;
   color: var(--e-text);
 }
@@ -433,7 +435,7 @@
 }
 
 .e-pillar-label {
-  font-size: calc(13px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
 }
 
@@ -455,12 +457,12 @@
   padding: 8px 0;
   border-radius: var(--r-md, 12px);
   background: var(--e-card-2);
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
 }
 
 .e-element b {
-  font-size: calc(18px * var(--e-fs, 1));
+  font-size: calc(19px * var(--e-fs, 1));
   color: var(--e-text);
 }
 
@@ -488,7 +490,7 @@
   background: none;
   color: var(--e-text);
   font: inherit;
-  font-size: calc(16px * var(--e-fs, 1));
+  font-size: calc(17px * var(--e-fs, 1));
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -496,7 +498,7 @@
 }
 
 .e-fortune-saju-text {
-  font-size: calc(16px * var(--e-fs, 1));
+  font-size: calc(17px * var(--e-fs, 1));
   line-height: 1.6;
   color: var(--e-text);
   margin: 0 0 6px;
@@ -510,14 +512,14 @@
 }
 
 .e-fortune-text {
-  font-size: calc(18px * var(--e-fs, 1));
+  font-size: calc(19px * var(--e-fs, 1));
   line-height: 1.55;
   color: var(--e-text);
   margin: 0;
 }
 
 .e-fortune-note {
-  font-size: calc(13px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
   margin: 8px 0 0;
   text-align: center;
@@ -690,15 +692,15 @@
 }
 
 .e-stamps-title {
-  font-size: calc(19px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   margin: 0;
   color: var(--e-text);
 }
 
 .e-stamps-count {
-  font-size: calc(16px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(17px * var(--e-fs, 1));
+  font-weight: 700;
   color: var(--e-text-2);
   font-variant-numeric: tabular-nums;
 }
@@ -760,9 +762,9 @@
 }
 
 .e-stamp-date {
-  font-size: 11px;
-  font-size: max(11px, 16cqi);
-  font-weight: 800;
+  font-size: 13px;
+  font-size: max(13px, 18cqi);
+  font-weight: 700;
   color: #c8302f;
   margin-top: 3px;
   letter-spacing: -0.02em;
@@ -797,8 +799,8 @@
 }
 
 .e-wish-title {
-  font-size: calc(18px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   margin: 0 0 4px;
   color: var(--e-text);
 }
@@ -865,8 +867,8 @@
 }
 
 .e-badge-new {
-  font-size: calc(13px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(15px * var(--e-fs, 1));
+  font-weight: 700;
   color: var(--e-primary-ink);
   background: var(--e-accent);
   border-radius: 999px;
@@ -900,7 +902,7 @@
   background: var(--e-primary);
   color: var(--e-primary-ink);
   font-size: calc(19px * var(--e-fs, 1));
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   padding: calc(19px * var(--e-fs, 1)) 16px;
   margin-top: 14px;
@@ -974,7 +976,7 @@
 }
 
 .e-progress-label {
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   color: var(--e-text-2);
   font-weight: 700;
   flex: none;
@@ -1003,7 +1005,7 @@
 /* ===== 안내 문구 ===== */
 
 .e-notice {
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   line-height: 1.6;
   color: var(--e-text-2);
   background: var(--e-card-2);
@@ -1082,14 +1084,14 @@
 }
 
 .e-sheet-title {
-  font-size: calc(19px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   line-height: 1.3;
   margin: 0;
 }
 
 .e-sheet-sub {
-  font-size: calc(14px * var(--e-fs, 1));
+  font-size: calc(15px * var(--e-fs, 1));
   line-height: 1.45;
   color: var(--e-text-2);
   margin: 0 0 12px;
@@ -1138,7 +1140,7 @@
   border-radius: var(--r);
   padding: 11px 12px;
   color: var(--e-text);
-  font-size: calc(16px * var(--e-fs, 1));
+  font-size: calc(17px * var(--e-fs, 1));
   font-weight: 700;
 }
 
@@ -1158,7 +1160,7 @@
 }
 
 .e-opt-size {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* 119 직접 전화 안내 — 자주 누르는 버튼과 확실히 구분되도록 위쪽에 여백과 구분선을 둔다.
@@ -1187,8 +1189,8 @@
   border-radius: var(--r-lg);
   background: transparent;
   color: var(--e-accent);
-  font-size: calc(18px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(19px * var(--e-fs, 1));
+  font-weight: 700;
   padding: calc(16px * var(--e-fs, 1)) 16px;
   text-decoration: none;
 }
@@ -1212,8 +1214,8 @@
 }
 
 .e-escape-title {
-  font-size: calc(18px * var(--e-fs, 1));
-  font-weight: 800;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
   line-height: 1.5;
   color: var(--e-text);
   margin: 0 0 6px;
@@ -1232,7 +1234,7 @@
 }
 
 .e-escape-steps {
-  font-size: calc(16px * var(--e-fs, 1));
+  font-size: calc(17px * var(--e-fs, 1));
   line-height: 1.7;
   color: var(--e-text);
   margin: 8px 0 0;
