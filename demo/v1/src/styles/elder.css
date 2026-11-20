@@ -841,7 +841,7 @@
 }
 
 @keyframes e-stamp-slam {
-  0% { opacity: 0; transform: scale(2.2) rotate(-24deg); }
+  0% { opacity: 0; transform: scale(1.5) rotate(-16deg); }
   60% { opacity: 1; transform: scale(0.92) rotate(-6deg); }
   100% { opacity: 1; transform: scale(1) rotate(-8deg); }
 }

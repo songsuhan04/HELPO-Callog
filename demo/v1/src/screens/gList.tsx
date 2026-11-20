@@ -215,7 +215,12 @@ export default function GList() {
       {error && <p className="g-error">{error}</p>}
       {loading && <p className="g-sub">불러오는 중...</p>}
       {!loading && elders.length === 0 && !error && (
-        <p className="g-sub">아직 등록한 어르신이 없어요. 아래 버튼으로 어르신을 등록해 주세요.</p>
+        <>
+          <p className="g-sub">아직 등록한 어르신이 없어요. 어르신을 등록하면 초대 링크를 만들 수 있어요.</p>
+          <button className="g-button" onClick={() => navigate("/guardian/elders/new")}>
+            어르신 등록하기
+          </button>
+        </>
       )}
 
       {elders.length > 0 && (

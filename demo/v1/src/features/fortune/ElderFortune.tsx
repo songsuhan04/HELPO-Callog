@@ -160,6 +160,7 @@ export default function ElderFortune({
               </li>
             ))}
           </ol>
+          <p className="e-meta" style={{ marginBottom: 8 }}>진하게 칠한 일주가 나를 뜻해요.</p>
           <p className="e-fortune-saju-text">
             타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})이에요. {firstSentence}
           </p>
@@ -191,7 +192,7 @@ export default function ElderFortune({
           </button>
         </div>
         <p className="e-meta" style={{ marginTop: 12 }}>
-          오늘은 {fortune.todayGanZhi}일이에요.
+          오늘은 {fortune.todayGanZhi}일이에요. 날마다 바뀌는 그날의 기운이에요.
         </p>
         {SECTIONS.map((s, i) => (
           <div key={s.key} className="e-fortune-slip" style={{ animationDelay: `${i * 140}ms` }}>
