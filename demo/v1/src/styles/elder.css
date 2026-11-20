@@ -476,6 +476,25 @@
   border: 1px solid var(--e-line);
 }
 
+/* 사주 더보기/접기 — 글자 단추지만 누르는 면적은 어르신 손가락에 맞게 넉넉히 */
+.e-more {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin: 8px 0 0;
+  padding: 10px 0 2px;
+  border: none;
+  border-top: 1px solid var(--e-line);
+  background: none;
+  color: var(--e-text);
+  font: inherit;
+  font-size: calc(16px * var(--e-fs, 1));
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
 .e-fortune-saju-text {
   font-size: calc(16px * var(--e-fs, 1));
   line-height: 1.6;

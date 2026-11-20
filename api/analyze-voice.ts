@@ -36,6 +36,14 @@ async function assessRiskForVoice(admin: SupabaseClient, voiceResponseId: string
 // 오디오 내려받기와 Gemini 호출을 합쳐 실측 17초가 걸린다. 상한을 적어두지 않으면 더 짧은
 // 기본값에 걸려 조용히 잘리고, 그러면 실패 이유조차 남지 않는다.
 export const config = { maxDuration: 60 };
+
+// Gemini 호출 한 번에 기다리는 시간의 상한. 상한이 없을 때 Gemini가 느리면(새벽 2시대 =
+// 미국 서부 오전, 2026-11-19·20 연속) 재시도까지 기다리다 함수가 60초에 통째로 잘렸다.
+// 잘리면 아래 catch도 못 돌아서 "실패"조차 남지 않고 "대기 중"에 영영 멈춘다 — 보호자 화면에는
+// 다시 분석할 단추도 안 나왔다. 그래서 전체 마감을 함수 상한보다 일찍 잡고, 시도마다 남은
+// 시간만큼만 기다린다. 마감을 넘기면 "failed"로 남겨 보호자가 다시 분석할 수 있게 한다.
+const ANALYZE_DEADLINE_MS = 50_000;
+const GEMINI_ATTEMPT_MAX_MS = 35_000;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     res.status(405).end();
@@ -67,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const startedAt = Date.now();
   try {
     const { data: row, error } = await admin
       .from("voice_response")
@@ -78,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data: signed } = await admin.storage.from("voice").createSignedUrl(row.audio_url, 300);
     if (!signed) throw new Error("failed to sign audio url");
 
-    const audioResp = await fetch(signed.signedUrl);
+    const audioResp = await fetch(signed.signedUrl, { signal: AbortSignal.timeout(10_000) });
     const audioBuffer = Buffer.from(await audioResp.arrayBuffer());
 
     // 한 번 삐끗하면 그날 음성 분석이 영구히 사라진다 — 어르신은 말씀을 남겼는데 보호자에게는
@@ -86,11 +95,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 인식됐다. 일시적인 실패만 짧게 다시 시도한다(영구적 실패는 재시도해도 같다).
     const text = await retryTransient(
       async () => {
+        const remaining = ANALYZE_DEADLINE_MS - (Date.now() - startedAt);
+        // 남은 시간이 너무 적으면 시도하지 않는다 — 아래 오류는 재시도 대상이 아니라 바로 failed로 간다
+        if (remaining < 5_000) throw new Error("analysis deadline reached");
         const geminiResp = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // 시간이 다 되면 "The operation was aborted due to timeout" — lib/retry.ts가 timeout으로 알아본다
+        signal: AbortSignal.timeout(Math.min(GEMINI_ATTEMPT_MAX_MS, remaining)),
         body: JSON.stringify({
           contents: [
             {

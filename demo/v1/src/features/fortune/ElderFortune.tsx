@@ -84,6 +84,9 @@ export default function ElderFortune({
     if (isToday(ARRIVED_KEY, today)) return "waiting";
     return "ask";
   });
+  // 사주 풀이는 접어 둔다 — 명식표·일간 3문장·오행까지 다 펼치면 운세 쪽지보다 길어서
+  // 정작 오늘의 운세가 화면 아래로 밀렸다(2026-11-20 팀 의견). 한 줄 요약만 보이고 더보기로 편다.
+  const [sajuMore, setSajuMore] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -136,11 +139,13 @@ export default function ElderFortune({
     const spoken = [opener, ...SECTIONS.map((s) => `${s.title}. ${fortune.texts[s.key]}`)].join(" ");
     // 명식은 전통 순서대로 오른쪽이 년주 — 왼쪽부터 시·일·월·년
     const pillars = [...fortune.saju.pillars].reverse();
+    // 일간 설명의 첫 문장만 요약으로 보이고, 나머지 문장은 더보기에 둔다
+    const [firstSentence, ...restSentences] = fortune.saju.dayMasterText.split(/(?<=[.?!])\s+/);
     return (
       <section className="e-card e-fortune e-fortune--open" aria-live="polite">
         <h2 className="e-fortune-title">{opener}</h2>
-        {/* 나의 타고난 기운 — 일간 설명과 오행(팀 자료 2026-11-19). 태어난 시각은 받지 않아서
-            오행은 년·월·일 세 기둥(여섯 글자)으로 센다. */}
+        {/* 나의 타고난 기운 — 일간 설명과 오행(팀 자료 2026-11-19). 태어난 시각이 있으면
+            네 기둥(여덟 글자), 없으면 년·월·일 세 기둥(여섯 글자)으로 오행을 센다. */}
         <div className="e-fortune-saju">
           <div className="e-fortune-head">{name ? `${name}님의 사주` : "나의 사주"}</div>
           <ol className="e-pillars" aria-label="사주 명식">
@@ -155,21 +160,35 @@ export default function ElderFortune({
               </li>
             ))}
           </ol>
-          {fortune.saju.pillars.length < 4 && (
-            <p className="e-meta" style={{ marginBottom: 12 }}>태어난 시각을 등록하면 시주까지 볼 수 있어요.</p>
-          )}
           <p className="e-fortune-saju-text">
-            타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})이에요. {fortune.saju.dayMasterText}
+            타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})이에요. {firstSentence}
           </p>
-          <ul className="e-elements" aria-label="오행 개수">
-            {fortune.saju.elements.map((e) => (
-              <li key={e.label} className={e.count === 0 ? "e-element e-element--none" : "e-element"}>
-                <span>{e.label}</span>
-                <b>{e.count}</b>
-              </li>
-            ))}
-          </ul>
-          <p className="e-meta">{fortune.saju.elementText}</p>
+          {sajuMore && (
+            <div id="e-saju-more">
+              {restSentences.length > 0 && <p className="e-fortune-saju-text">{restSentences.join(" ")}</p>}
+              <ul className="e-elements" aria-label="오행 개수">
+                {fortune.saju.elements.map((e) => (
+                  <li key={e.label} className={e.count === 0 ? "e-element e-element--none" : "e-element"}>
+                    <span>{e.label}</span>
+                    <b>{e.count}</b>
+                  </li>
+                ))}
+              </ul>
+              <p className="e-meta">{fortune.saju.elementText}</p>
+              {fortune.saju.pillars.length < 4 && (
+                <p className="e-meta">태어난 시각을 등록하면 시주까지 볼 수 있어요.</p>
+              )}
+            </div>
+          )}
+          <button
+            type="button"
+            className="e-more"
+            aria-expanded={sajuMore}
+            aria-controls="e-saju-more"
+            onClick={() => setSajuMore((v) => !v)}
+          >
+            {sajuMore ? "접기" : "사주 더보기"}
+          </button>
         </div>
         <p className="e-meta" style={{ marginTop: 10 }}>
           오늘은 {fortune.todayGanZhi}일이에요.

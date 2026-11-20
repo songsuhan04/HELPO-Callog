@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { BrandLink } from "../components/BrandLink";
@@ -236,6 +236,20 @@ export default function GDetail() {
       setReanalyzing(false);
     }
   }
+
+  // 받아쓰기가 "대기 중"에 2분 넘게 멈춰 있으면(어르신 폰의 요청이 끊긴 경우) 보호자가 화면을
+  // 여는 순간 한 번 대신 다시 돌린다. 단추를 찾아 누르지 않아도 내용이 채워진다. 한 기록에
+  // 한 번만 — 그래도 안 되면 "다시 분석하기" 단추가 남는다.
+  const autoRetried = useRef<string | null>(null);
+  useEffect(() => {
+    if (!voice || voice.analysis_status !== "pending") return;
+    if (Date.now() - new Date(voice.created_at).getTime() < 2 * 60_000) return;
+    if (autoRetried.current === voice.id) return;
+    autoRetried.current = voice.id;
+    void reanalyze();
+    // reanalyze는 voice를 읽어 쓰는 일반 함수라 의존성에 넣지 않는다(매 렌더 새로 만들어진다)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voice?.id, voice?.analysis_status]);
 
   async function markChecked() {
     if (!risk) return;
