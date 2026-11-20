@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
-import { DisplaySettings } from "../components/DisplaySettings";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { createTestBlob, startRecording, type RecordingHandle } from "../lib/recorder";
 import { extensionForBlob } from "../lib/mediaType";
@@ -97,12 +97,9 @@ export default function ERecord() {
   if (stage === "record") {
     return (
       <AppShell variant="elder">
-        <div className="e-topbar">
-          <SpeakButton text={topic} />
-          <DisplaySettings />
-          <span className="e-brand">영상편지</span>
-        </div>
+        <ElderTopBar />
         <h1 className="e-question">{topic}</h1>
+        <SpeakButton text={topic} />
         {/* 주제는 어디까지나 권유다 — 다른 말을 하고 싶은 분을 막아서는 안 된다 */}
         <p className="e-lead">다른 하고 싶은 말씀이 있으면 그것을 하셔도 됩니다</p>
         <RecordingNotice />
@@ -136,10 +133,7 @@ export default function ERecord() {
   if (stage === "preview") {
     return (
       <AppShell variant="elder">
-        <div className="e-topbar">
-          <DisplaySettings />
-          <span className="e-brand">영상편지</span>
-        </div>
+        <ElderTopBar />
         <h1 className="e-question">이렇게 보낼까요?</h1>
         <p className="e-lead">다시 찍으시려면 아래 버튼을 눌러주세요</p>
 
@@ -157,10 +151,7 @@ export default function ERecord() {
 
   return (
     <AppShell variant="elder">
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">영상편지</span>
-      </div>
+      <ElderTopBar />
       <h1 className="e-question">영상편지를 보냈어요</h1>
 
       {previewUrl && <video key="sent" src={previewUrl} controls className="e-media e-media--live" />}

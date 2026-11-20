@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
-import { DisplaySettings } from "../components/DisplaySettings";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { getStoredElderProfileId, redeemInvite } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
@@ -81,10 +81,7 @@ export default function EInvited() {
 
   return (
     <AppShell variant="elder">
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">Callog</span>
-      </div>
+      <ElderTopBar brand />
       <div className="e-hero">
         <h1 className="e-question">{message}</h1>
         <p className="e-lead">하루에 한 번 잘 지내시는지 짧게 여쭐게요.</p>

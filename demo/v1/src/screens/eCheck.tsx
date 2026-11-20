@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { ProgressBar } from "../components/ProgressBar";
-import { DisplaySettings } from "../components/DisplaySettings";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { todaySeoul } from "../lib/date";
@@ -183,10 +183,7 @@ export default function ECheck() {
   if (loading)
     return (
       <AppShell variant="elder">
-        <div className="e-topbar">
-          <DisplaySettings />
-          <span className="e-brand">Callog</span>
-        </div>
+        <ElderTopBar />
         <div className="e-hero">
           <h1 className="e-question">오늘의 안부를 준비하고 있어요</h1>
           <p className="e-lead">잠시만 기다려 주세요.</p>
@@ -199,13 +196,7 @@ export default function ECheck() {
 
   return (
     <AppShell variant="elder">
-      <button className="e-back" onClick={goBack}>
-        ← 이전
-      </button>
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">Callog</span>
-      </div>
+      <ElderTopBar onBack={goBack} />
       {saveError && (
         <>
           <p className="e-error">{saveError}</p>

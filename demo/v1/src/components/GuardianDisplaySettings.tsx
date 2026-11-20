@@ -72,7 +72,7 @@ export function GuardianDisplaySettings() {
                   <button
                     key={option.id}
                     type="button"
-                    className="g-opt"
+                    className="g-opt g-opt--theme"
                     aria-pressed={theme === option.id}
                     onClick={() => chooseTheme(option.id)}
                     style={

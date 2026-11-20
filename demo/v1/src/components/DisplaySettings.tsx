@@ -47,7 +47,7 @@ export function DisplaySettings() {
 
   return (
     <>
-      <button type="button" className="e-pill" onClick={() => setOpen(true)}>
+      <button type="button" className="e-textbtn" onClick={() => setOpen(true)}>
         가+ 화면 설정
       </button>
 

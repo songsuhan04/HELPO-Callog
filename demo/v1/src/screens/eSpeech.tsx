@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
-import { DisplaySettings } from "../components/DisplaySettings";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { createTestBlob, startRecording, type RecordingHandle } from "../lib/recorder";
 import { extensionForBlob } from "../lib/mediaType";
@@ -126,14 +126,9 @@ export default function ESpeech() {
 
   return (
     <AppShell variant="elder">
-      <button className="e-back" onClick={() => navigate(-1)}>
-        ← 이전 화면
-      </button>
-      <div className="e-topbar">
-        <SpeakButton text={topic} />
-        <DisplaySettings />
-      </div>
+      <ElderTopBar onBack={() => navigate(-1)} />
       <h1 className="e-question">{topic}</h1>
+      <SpeakButton text={topic} />
       <p className="e-lead">천천히 말씀하시면 됩니다</p>
       <RecordingNotice />
       {error && <p className="e-error">{error}</p>}

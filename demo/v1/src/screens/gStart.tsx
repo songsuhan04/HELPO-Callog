@@ -56,10 +56,10 @@ export default function GStart() {
             계속하면 <a href="/terms" target="_blank" rel="noreferrer">이용약관 및 개인정보 처리 안내</a>에 동의하는 것으로 봅니다.
           </p>
           <div className="g-or">또는</div>
-          <button className="g-button g-button--secondary" onClick={() => navigate("/signup")}>
+          <button className="g-button g-button--text" onClick={() => navigate("/signup")}>
             이메일로 계정 만들기
           </button>
-          <button className="g-button g-button--secondary" onClick={() => setMode("login")}>
+          <button className="g-button g-button--text" onClick={() => setMode("login")}>
             이메일로 로그인
           </button>
         </>

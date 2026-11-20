@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
-import { DisplaySettings } from "../components/DisplaySettings";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSignedUrl } from "../lib/storage";
@@ -89,15 +89,13 @@ export default function EDone() {
 
   return (
     <AppShell variant="elder">
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">Callog</span>
-      </div>
+      <ElderTopBar />
       <div className="e-hero">
         <div className="e-hero-mark">✓</div>
         <h1 className="e-question">잘 하셨어요</h1>
         <p className="e-lead">오늘 안부를 가족에게 전했어요.</p>
       </div>
+      <SpeakButton text="오늘 안부를 가족에게 전했어요. 잘 하셨어요." />
 
       {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
       {answeredDates && (
@@ -118,7 +116,6 @@ export default function EDone() {
         </div>
       )}
 
-      <SpeakButton text="오늘 안부를 가족에게 전했어요. 잘 하셨어요." />
       {FEATURES.videoLetters && (
         <>
           <button className="e-primary" onClick={() => navigate("/elder/record")}>

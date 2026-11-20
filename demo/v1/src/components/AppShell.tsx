@@ -45,11 +45,15 @@ export function AppShell({ variant = "guardian", aside, children }: AppShellProp
     return (
       <div className="app-shell app-shell--wide">
         {banner}
-        <GuardianDisplaySettings />
         <div className="g-layout">
           <aside className="g-aside">{aside}</aside>
           <main className="g-main">
-            <div className="g-main-inner">{children}</div>
+            <div className="g-main-inner">
+              <div className="g-topbar">
+                <GuardianDisplaySettings />
+              </div>
+              {children}
+            </div>
           </main>
         </div>
       </div>
@@ -59,7 +63,9 @@ export function AppShell({ variant = "guardian", aside, children }: AppShellProp
   return (
     <div className="app-shell">
       {banner}
-      <GuardianDisplaySettings />
+      <div className="g-topbar">
+        <GuardianDisplaySettings />
+      </div>
       <div className="app-card">{children}</div>
     </div>
   );

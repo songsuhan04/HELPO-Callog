@@ -54,9 +54,12 @@
   --red: var(--crit);
 
   /* 치수 */
-  --r-sm: 12px;
+  /* 모서리는 8px(배지 안 작은 요소) · 16px(카드·선택지·입력칸) · 999px(버튼·배지) · 50%(원)만
+     (DESIGN.md 4장). 예전 12·22·26px 값은 모두 16px로 모았다. */
+  --r-xs: 8px;
+  --r-sm: 16px;
   --r: 16px;
-  --r-lg: 22px;
+  --r-lg: 16px;
   --shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.72);
   --shadow-frame: 0 40px 80px -30px rgba(0, 0, 0, 0.85);
 

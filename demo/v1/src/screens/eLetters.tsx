@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
-import { DisplaySettings } from "../components/DisplaySettings";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSignedUrl } from "../lib/storage";
 import { VideoDownloadButton } from "../components/VideoDownloadButton";
@@ -59,13 +59,7 @@ export default function ELetters() {
 
   return (
     <AppShell variant="elder">
-      <button className="e-back" onClick={() => navigate(-1)}>
-        ← 이전 화면
-      </button>
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">영상편지 모아보기</span>
-      </div>
+      <ElderTopBar onBack={() => navigate(-1)} />
       <h1 className="e-question">가족이 보낸 영상편지</h1>
       <SpeakButton text="가족이 보낸 영상편지입니다. 보고 싶은 편지를 눌러 재생해 주세요." />
 

@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
+import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
-import { DisplaySettings } from "../components/DisplaySettings";
 import { EmergencyCall } from "../components/EmergencyCall";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
@@ -118,10 +118,7 @@ export default function EHome() {
 
   return (
     <AppShell variant="elder">
-      <div className="e-topbar">
-        <DisplaySettings />
-        <span className="e-brand">Callog</span>
-      </div>
+      <ElderTopBar brand />
       <div className="e-hero">
         <h1 className="e-question">{message}</h1>
       </div>
@@ -136,7 +133,7 @@ export default function EHome() {
       )}
       {/* 처음 화면은 만세력 라이브러리를 싣지 않으므로 띠 동물 대신 학만 말한다 */}
       {!doneToday && (
-        <p className="e-meta" style={{ textAlign: "center", marginBottom: 16 }}>
+        <p className="e-meta" style={{ marginBottom: 16 }}>
           안부를 마치면 학이 오늘의 복주머니를 가져와요
         </p>
       )}
