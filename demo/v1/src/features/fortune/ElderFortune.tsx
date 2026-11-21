@@ -5,6 +5,7 @@ import { withSubject } from "./animal";
 import { Crane } from "./Crane";
 import { Pouch } from "./Pouch";
 import { birthAnimal, birthFromSolarDate, getFortune } from "./saju";
+import { logElderUsage } from "../../lib/usage";
 
 // 어르신 화면의 "오늘의 운세" 카드. 안부를 마친 뒤에 보여 준다(완료 화면, 이미 마친 날의 처음 화면).
 //
@@ -118,6 +119,7 @@ export default function ElderFortune({
       // 진동을 못 하는 기기(iOS 사파리 등) — 화면만으로도 열린 게 보인다
     }
     remember(OPENED_KEY, today);
+    logElderUsage("fortune_open");
     if (prefersReducedMotion()) {
       setStage("open");
       return;
@@ -186,7 +188,11 @@ export default function ElderFortune({
             className="e-more"
             aria-expanded={sajuMore}
             aria-controls="e-saju-more"
-            onClick={() => setSajuMore((v) => !v)}
+            onClick={() => {
+              // 펼칠 때만 센다 — "자세히 보기를 몇 명이 눌렀나"가 유료화 근거다
+              if (!sajuMore) logElderUsage("saju_more_open");
+              setSajuMore((v) => !v);
+            }}
           >
             {sajuMore ? "접기" : "사주 더보기"}
           </button>

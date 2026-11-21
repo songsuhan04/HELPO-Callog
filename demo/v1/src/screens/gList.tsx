@@ -5,6 +5,7 @@ import { BrandLink } from "../components/BrandLink";
 import { RiskDot, RiskPill } from "../components/RiskDot";
 import { MedicalDisclaimer } from "../components/MedicalDisclaimer";
 import { PushToggle } from "../components/PushToggle";
+import { TrialNotice } from "../components/TrialNotice";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getErrorMessage } from "../lib/errors";
 import { assertWritten } from "../lib/write";
@@ -277,6 +278,8 @@ export default function GList() {
           })}
         </div>
       )}
+
+      {!loading && <TrialNotice />}
 
       <MedicalDisclaimer />
     </AppShell>

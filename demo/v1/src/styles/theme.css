@@ -1,3 +1,12 @@
+/* 따옴표만 시스템 글꼴로 그린다. Gothic A1은 곧은 따옴표(")를 닫는 따옴표(”) 모양으로 그려서
+   "확인해 보세요"가 ”확인해 보세요”처럼 양쪽이 같은 방향으로 보였다(2026-11-21). unicode-range로
+   따옴표 글자에만 이 글꼴이 쓰이고, 나머지 글자는 그대로 Gothic A1이다. */
+@font-face {
+  font-family: "Callog Quotes";
+  src: local("Helvetica Neue"), local("HelveticaNeue"), local("Roboto"), local("Arial"), local("Apple SD Gothic Neo");
+  unicode-range: U+0022, U+0027, U+2018-201D;
+}
+
 /* Callog 디자인 토큰
  *
  * 색값은 눈대중이 아니라 알라미(Alarmy) UI 스크린샷 5장의 픽셀을 집계해 뽑은 실제 값이다.
@@ -66,7 +75,7 @@
   /* 접근성 — FontSizeToggle이 1 / 1.15 / 1.3으로 바꾼다 */
   --font-scale: 1;
 
-  --font-ui: "Gothic A1", "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+  --font-ui: "Callog Quotes", "Gothic A1", "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
 }
 
 * {

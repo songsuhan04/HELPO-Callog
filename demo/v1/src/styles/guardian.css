@@ -1170,9 +1170,9 @@ button.g-link {
 
 .gd-card ol > li {
   counter-increment: gd-num;
-  display: flex;
-  gap: 12px;
-  padding: 8px 0;
+  /* flex로 두면 문장 속 굵은 글씨(<b>)가 따로 칸이 되어 글이 세로로 갈라진다 — 번호만 왼쪽에 띄운다 */
+  position: relative;
+  padding: 8px 0 8px 1.75em;
   border-bottom: 1px solid var(--line);
 }
 
@@ -1182,7 +1182,17 @@ button.g-link {
 
 .gd-card ol > li::before {
   content: counter(gd-num);
-  min-width: 1.5em;
+  position: absolute;
+  left: 0;
+  top: 8px;
   font-weight: 700;
   color: var(--text-2);
+}
+
+/* 체험 기간 안내 — 보호자 대상자 목록 아래 */
+.g-trial-lead {
+  font-size: calc(15px * var(--font-scale));
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px;
 }
