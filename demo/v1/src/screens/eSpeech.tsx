@@ -10,7 +10,7 @@ import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { RecordingNotice } from "../components/RecordingNotice";
 import { todaySeoul } from "../lib/date";
-import { SPEECH_TOPICS } from "../lib/topics";
+import { SPEECH_TOPICS, speechExamples } from "../lib/topics";
 import { useDailyTopic } from "../lib/dailyPrompt";
 import { apiHeaders } from "../lib/api";
 
@@ -20,6 +20,7 @@ export const SCREEN_ID = "eSpeech";
 export default function ESpeech() {
   const navigate = useNavigate();
   const topic = useDailyTopic("speech", SPEECH_TOPICS);
+  const examples = speechExamples(topic);
   const [recording, setRecording] = useState<RecordingHandle | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,8 +129,17 @@ export default function ESpeech() {
     <AppShell variant="elder">
       <ElderTopBar onBack={() => navigate(-1)} />
       <h1 className="e-question">{topic}</h1>
-      <SpeakButton text={topic} />
+      <SpeakButton text={`${topic}. 예를 들면 ${examples[0]}, 또는 ${examples[1]}. 이렇게 말씀하셔도 돼요.`} />
       <p className="e-lead">천천히 말씀하시면 돼요</p>
+      {/* 무슨 말을 해야 할지 막막하지 않게 본보기 두 개 (lib/topics.ts) */}
+      <div className="e-examples">
+        <div className="e-examples-label">이렇게 말씀하셔도 돼요</div>
+        <ul>
+          {examples.map((example) => (
+            <li key={example}>“{example}”</li>
+          ))}
+        </ul>
+      </div>
       <RecordingNotice />
       {error && <p className="e-error">{error}</p>}
 

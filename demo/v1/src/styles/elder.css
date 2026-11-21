@@ -1278,3 +1278,28 @@
 .g-details[open] {
   padding-bottom: 8px;
 }
+
+/* 말하기 안부의 예시 답변 — 상자 없이 한 묶음, 따옴표로 "이렇게 말하면 된다"를 보인다 */
+.e-examples {
+  margin: 0 0 16px;
+}
+
+.e-examples-label {
+  font-size: calc(15px * var(--e-fs, 1));
+  font-weight: 600;
+  color: var(--e-text-2);
+  margin-bottom: 4px;
+}
+
+.e-examples ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.e-examples li {
+  font-size: calc(17px * var(--e-fs, 1));
+  line-height: 1.6;
+  color: var(--e-text);
+  padding: 4px 0;
+}
