@@ -54,12 +54,12 @@ export function TrialNotice() {
         <span>체험 기간 안내</span>
       </div>
       <p className="g-trial-lead">지금은 체험 기간이라 모든 기능이 무료로 열려 있어요.</p>
-      <p className="g-sub" style={{ margin: "0 0 16px" }}>
+      <p className="g-sub u-m0 u-mb16">
         나중에 유료로 바뀌어도 매일 안부, 위험 알림, 매일 운세는 계속 무료예요.
       </p>
       <p className="g-trial-lead">2027 신년운세를 부모님께 선물하고 싶으신가요?</p>
       {interested ? (
-        <p className="g-sub" style={{ margin: 0 }}>
+        <p className="g-sub u-m0">
           신청하셨어요. 출시되면 알려 드릴게요.
         </p>
       ) : (

@@ -29,7 +29,7 @@
   /* 글자 */
   --text: #f4f5f8;
   --text-2: #9ba1b2;
-  --text-3: #6b7181;
+  --text-3: #8d93a5;  /* 카드 바탕에서 4.5:1 이상(예전 #6b7181은 3.4:1) */
 
   /* 브랜드 */
   --primary: #404ed7;
@@ -202,4 +202,67 @@ a {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+
+/* ===== 여백·폭 유틸리티 =====
+ * 화면 코드의 style={{ marginTop: 16 }} 같은 인라인 값을 대신한다(DESIGN.md 3장, 디자인 점검 P2).
+ * 간격 값은 4/8/12/16 눈금만 쓴다. 입력칸 기본 폭(width:100%)보다 이겨야 해서 !important를 쓴다. */
+.u-m0 { margin: 0 !important; }
+.u-mt0 { margin-top: 0 !important; }
+.u-mt4 { margin-top: 4px !important; }
+.u-mt8 { margin-top: 8px !important; }
+.u-mt12 { margin-top: 12px !important; }
+.u-mt16 { margin-top: 16px !important; }
+.u-mb8 { margin-bottom: 8px !important; }
+.u-mb12 { margin-bottom: 12px !important; }
+.u-mb16 { margin-bottom: 16px !important; }
+.u-center { text-align: center !important; }
+.u-wauto { width: auto !important; }
+.u-wfull { width: 100% !important; }
+
+/* ===== 누름 반응 =====
+ * 눌러도 아무 반응이 없으면 "눌렸나?" 하고 다시 누른다. 살짝 작아졌다 돌아오게(120ms). */
+:where(button, a.g-button, [role="button"]):not(.g-list-item) {
+  transition: transform 120ms ease-out;
+}
+
+:where(button, a.g-button, [role="button"]):not(.g-list-item):not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* ===== 화면 전환 =====
+ * 화면이 바뀔 때 뚝 끊기지 않게 살짝 나타난다. 위치를 움직이는 transform은 화면 안의 떠 있는
+ * 창(화면 설정)의 기준점을 바꿔서 투명도만 쓴다. 어르신 화면은 조금 더 천천히. */
+.app-card,
+.g-main-inner {
+  animation: screen-fade 180ms ease-out backwards;
+}
+
+.app-card--elder {
+  animation-duration: 240ms;
+}
+
+.screen-in {
+  animation: screen-rise 220ms ease-out backwards;
+}
+
+@keyframes screen-fade {
+  from { opacity: 0; }
+}
+
+@keyframes screen-rise {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a.g-button, [role="button"]):not(.g-list-item):active {
+    transform: none;
+  }
+
+  .app-card,
+  .g-main-inner,
+  .screen-in {
+    animation: none;
+  }
 }

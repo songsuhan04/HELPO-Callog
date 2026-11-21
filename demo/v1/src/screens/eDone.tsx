@@ -86,6 +86,10 @@ export default function EDone() {
   }, []);
 
   const today = todaySeoul();
+  const stampSummary = answeredDates ? summarizeStamps(answeredDates, today) : null;
+  // 도장판을 다 채운 날은 달토끼 축하를 먼저, 오늘 운세는 그 아래로(디자인 점검 P3)
+  const stampsFirst = Boolean(stampSummary?.completedToday);
+  const stampCard = stampSummary && <StampCard summary={stampSummary} today={today} streak={streak} celebrate />;
 
   return (
     <AppShell variant="elder">
@@ -97,7 +101,9 @@ export default function EDone() {
       </div>
       <SpeakButton text="오늘 안부를 가족에게 전했어요. 잘 하셨어요." />
 
-      {/* 운세를 도장보다 위에 — 안부를 마친 뒤 바로 눈에 들어오게 */}
+      {stampsFirst && stampCard}
+
+      {/* 보통 날에는 운세를 도장보다 위에 — 안부를 마친 뒤 바로 눈에 들어오게 */}
       {birthDate !== undefined && (
         <Suspense fallback={null}>
           <ElderFortune birthDate={birthDate} birthTime={birthInfo.time} name={birthInfo.name} />
@@ -105,9 +111,7 @@ export default function EDone() {
       )}
 
       {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
-      {answeredDates && (
-        <StampCard summary={summarizeStamps(answeredDates, today)} today={today} streak={streak} celebrate />
-      )}
+      {!stampsFirst && stampCard}
 
       {FEATURES.videoLetters && letter && (
         <div className="e-card">

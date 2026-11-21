@@ -7,7 +7,7 @@ export function RecordingNotice() {
       본인 목소리만 녹음해 주세요.
       <details className="e-details">
         <summary>자세히</summary>
-        본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있습니다.
+        본인의 음성/모습만 녹화해 주세요. 타인의 동의 없는 촬영은 법적 책임을 질 수 있어요.
       </details>
     </div>
   );

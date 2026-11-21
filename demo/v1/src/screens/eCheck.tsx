@@ -206,14 +206,17 @@ export default function ECheck() {
         </>
       )}
       <ProgressBar current={index + 1} total={questions.length} />
-      <h1 className="e-question">{question.question}</h1>
-      <SpeakButton text={question.question} />
+      {/* 질문이 바뀔 때마다 새로 그려서 살짝 나타나게 한다(screen-in, 움직임 줄이기면 끔) */}
+      <div key={index} className="screen-in">
+        <h1 className="e-question">{question.question}</h1>
+        <SpeakButton text={question.question} />
 
-      {question.options.map((option) => (
-        <button key={option.text} className="e-choice" onClick={() => answer(option)}>
-          {option.text}
-        </button>
-      ))}
+        {question.options.map((option) => (
+          <button key={option.text} className="e-choice" onClick={() => answer(option)}>
+            {option.text}
+          </button>
+        ))}
+      </div>
     </AppShell>
   );
 }

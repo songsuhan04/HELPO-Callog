@@ -76,7 +76,7 @@ export default function GAdmin() {
   }, []);
 
   if (access === "checking") return null;
-  if (access === "denied") return <AppShell><p style={{ color: "var(--red)" }}>관리자 권한이 없어요.</p></AppShell>;
+  if (access === "denied") return <AppShell><p className="g-error">관리자 권한이 없어요.</p></AppShell>;
 
   const sorted = [...elders].sort((a, b) => {
     const levelDiff = SEVERITY[a.priority_status] - SEVERITY[b.priority_status];
@@ -120,14 +120,14 @@ export default function GAdmin() {
             <small>명</small>
           </div>
         </div>
-        <div className="g-stat" style={statStyle("var(--warn)")}>
+        <div className="g-stat" style={statStyle("var(--warn-fg)")}>
           <div className="g-stat-label">위험</div>
           <div className="g-stat-value">
             {counts["위험"] ?? 0}
             <small>명</small>
           </div>
         </div>
-        <div className="g-stat" style={statStyle("var(--crit)")}>
+        <div className="g-stat" style={statStyle("var(--crit-fg)")}>
           <div className="g-stat-label">심각</div>
           <div className="g-stat-value">
             {counts["심각"] ?? 0}

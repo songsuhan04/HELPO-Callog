@@ -17,6 +17,7 @@ import { shiftDateString, todaySeoul } from "../lib/date";
 import type { RiskLevel } from "../config/riskConstants";
 import { RETENTION } from "../config/retention";
 import { apiHeaders } from "../lib/api";
+import { assertWritten } from "../lib/write";
 
 const TREND_DAYS = 14;
 
@@ -28,6 +29,19 @@ interface ElderDetail {
   relationship: string;
   phone: string | null;
   priority_status: RiskLevel;
+  family_account_id: string;
+}
+
+// "2026. 11. 21. 오후 5:40:00" 대신 "오늘 오후 5:40", "어제 오전 9:12", "11월 18일 오후 3:05"
+function shortTime(iso: string): string {
+  const d = new Date(iso);
+  const time = d.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Seoul" });
+  const day = d.toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  const today = todaySeoul();
+  if (day === today) return `오늘 ${time}`;
+  if (day === shiftDateString(today, -1)) return `어제 ${time}`;
+  const [, m, dd] = day.split("-").map(Number);
+  return `${m}월 ${dd}일 ${time}`;
 }
 
 interface RiskRow {
@@ -73,13 +87,15 @@ export default function GDetail() {
   const [stampTotal, setStampTotal] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [myAccountId, setMyAccountId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabaseConfigured || !elderId) return;
     const supabase = getSupabase();
+    supabase.auth.getUser().then(({ data }) => setMyAccountId(data.user?.id ?? null));
     supabase
       .from("elder_profile")
-      .select("id,name,relationship,phone,priority_status")
+      .select("id,name,relationship,phone,priority_status,family_account_id")
       .eq("id", elderId)
       .single()
       .then(({ data, error }) => {
@@ -274,6 +290,22 @@ export default function GDetail() {
     navigate(`/guardian/elders/${elderId}/invite`);
   }
 
+  async function deleteElder() {
+    if (!elder) return;
+    if (!window.confirm(`${elder.name}님을 목록에서 삭제할까요? 관련된 안부 기록·영상편지·위험도 이력이 모두 함께 지워지고 되돌릴 수 없어요.`)) return;
+    setBusy(true);
+    try {
+      // .select()가 없으면 RLS로 0건이 되어도 성공으로 돌아온다(gList에서 옮겨 온 처리)
+      const { data, error } = await getSupabase().from("elder_profile").delete().eq("id", elder.id).select("id");
+      if (error) throw error;
+      assertWritten(data, "이 어르신을 삭제할");
+      navigate("/guardian");
+    } catch (err) {
+      setError(getErrorMessage(err, "지우지 못했어요"));
+      setBusy(false);
+    }
+  }
+
   async function deleteLetter(letter: LetterRow, from: "elder" | "family") {
     if (!window.confirm("이 영상편지를 지울까요? 되돌릴 수 없어요.")) return;
     await deleteFromBucket("letters", letter.video_url).catch(() => {});
@@ -303,17 +335,16 @@ export default function GDetail() {
       {/* 어르신 상세로 들어온 뒤 목록으로 돌아갈 길이 사이드바에만 있어 눈에 잘 안 띄었다.
           근거: 실사용 피드백 — "다시 리스트로 가는 버튼이 하나 있으면 좋겠다" */}
       <button className="g-back g-back--inline" onClick={() => navigate("/guardian")}>
-        ← 대상자 목록으로
+        ← 대상자 목록
       </button>
 
       <div className="g-toolbar">
         <div>
-          <div className="g-header">
-            <RiskPill level={elder.priority_status} />
-          </div>
+          {/* 위험도 배지를 이름 옆에 붙인다 — 따로 한 줄을 쓰면 위쪽에 줄이 너무 많이 쌓였다 */}
           <h1 className="g-title">
             {elder.name}
             <small>{elder.relationship}</small>
+            <RiskPill level={elder.priority_status} />
           </h1>
           <p className="g-sub">
             {streak > 0 && `${streak}일 연속 안부를 남기고 있어요. `}
@@ -352,8 +383,14 @@ export default function GDetail() {
         >
           지병 수정
         </button>
-        <button className="g-button g-button--secondary" onClick={reinvite} disabled={busy}>
-          재초대 (기기 변경 시)
+        {/* 버튼 안에서 두 줄로 깨지지 않게 짧게. 언제 쓰는지는 title로 */}
+        <button
+          className="g-button g-button--secondary"
+          onClick={reinvite}
+          disabled={busy}
+          title="어르신이 휴대폰을 바꿨을 때 새 초대 링크를 만들어요"
+        >
+          다시 초대하기
         </button>
       </div>
       {error && <p className="g-error">{error}</p>}
@@ -377,7 +414,7 @@ export default function GDetail() {
               </div>
               {/* 건너뛴 날에도 "왜 아무것도 없지?" 하고 헤매지 않도록 없다는 사실을 명시.
                   근거: 실사용 피드백 — "말하기 안부를 건너뛴 날에는 없습니다라고 뜨면 좋겠다" */}
-              <p className="g-sub" style={{ margin: 0 }}>오늘은 어르신이 말하기를 건너뛰셨어요.</p>
+              <p className="g-sub u-m0">오늘은 어르신이 말하기를 건너뛰셨어요.</p>
             </div>
           )}
 
@@ -389,17 +426,17 @@ export default function GDetail() {
               {/* 오늘 녹음이 없으면 예전 녹음이 잡히는데, 날짜를 분명히 하지 않으면
                   보호자가 오늘 것으로 오해한다. 근거: 실사용 피드백 */}
               {voice.checkinDate !== todaySeoul() && (
-                <p className="g-sub" style={{ margin: "0 0 8px" }}>
+                <p className="g-sub u-m0 u-mb8">
                   오늘은 말하기 안부가 없어요. 아래는 가장 최근 기록이에요.
                 </p>
               )}
-              <div className="g-timestamp">{new Date(voice.created_at).toLocaleString("ko-KR")}</div>
+              <div className="g-timestamp">{shortTime(voice.created_at)}</div>
               {voice.signedUrl ? (
-                <audio src={voice.signedUrl} controls style={{ width: "100%" }} />
+                <audio className="u-wfull" src={voice.signedUrl} controls />
               ) : (
                 // 파일은 보관 기간이 지나 지워졌지만 아래 받아쓴 내용은 남아 있다.
                 // 아무 설명 없이 재생기만 사라지면 고장으로 보인다.
-                <p className="g-sub" style={{ margin: "0 0 8px" }}>
+                <p className="g-sub u-m0 u-mb8">
                   음성 파일은 보관 기간({RETENTION.VOICE_AUDIO_DAYS}일)이 지나 지워졌어요. 아래 기록만 남아 있어요.
                 </p>
               )}
@@ -409,7 +446,7 @@ export default function GDetail() {
                   분석은 실측 20초 안팎이고 서버 상한이 60초라, 2분이 지나면 멈춘 것으로 본다. */}
               {voice.analysis_status === "pending" &&
                 Date.now() - new Date(voice.created_at).getTime() < 2 * 60_000 && (
-                  <p className="g-sub" style={{ margin: "8px 0 0" }}>
+                  <p className="g-sub u-m0 u-mt8">
                     AI가 받아쓰는 중이에요. 잠시 뒤 새로고침하면 내용이 보여요.
                   </p>
                 )}
@@ -436,13 +473,13 @@ export default function GDetail() {
                           주변 대화가 섞여 들어오는 경우도 있어 직접 들어보도록 안내한다. */}
                       <span className="g-note-label">AI가 받아쓴 내용</span>
                       {voice.transcript}
-                      <div className="g-legal" style={{ marginTop: 4 }}>
+                      <div className="g-legal u-mt4">
                         정확하지 않을 수 있어요. 위 음성을 직접 들어보고 확인해주세요.
                       </div>
                     </div>
                   )}
                   {voice.observations && (
-                    <div style={{ marginTop: voice.transcript ? 10 : 0 }}>
+                    <div className={voice.transcript ? "u-mt12" : undefined}>
                       <span className="g-note-label">AI 소견</span>
                       {voice.observations}
                     </div>
@@ -458,10 +495,10 @@ export default function GDetail() {
             <div className="g-card-title">
               <span>{elder.name}님이 보낸 영상편지</span>
             </div>
-            {letters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 받은 영상편지가 없어요.</p>}
+            {letters.length === 0 && <p className="g-sub u-m0">아직 받은 영상편지가 없어요.</p>}
             {letters.map((letter) => (
               <div key={letter.id} className="g-letter">
-                <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
+                <div className="g-timestamp">{shortTime(letter.sent_at)}</div>
                 <div className="g-letter-title">{letter.title}</div>
                 {letter.signedUrl && <video src={letter.signedUrl} controls className="g-media" />}
                 <div className="g-letter-actions">
@@ -482,10 +519,10 @@ export default function GDetail() {
             <div className="g-card-title">
               <span>내가 보낸 영상편지</span>
             </div>
-            {myLetters.length === 0 && <p className="g-sub" style={{ margin: 0 }}>아직 보낸 영상편지가 없어요.</p>}
+            {myLetters.length === 0 && <p className="g-sub u-m0">아직 보낸 영상편지가 없어요.</p>}
             {myLetters.map((letter) => (
               <div key={letter.id} className="g-letter">
-                <div className="g-timestamp">{new Date(letter.sent_at).toLocaleString("ko-KR")}</div>
+                <div className="g-timestamp">{shortTime(letter.sent_at)}</div>
                 <div className="g-letter-title">{letter.title}</div>
                 {letter.signedUrl && <video src={letter.signedUrl} controls className="g-media" />}
                 <div className="g-letter-actions">
@@ -503,6 +540,24 @@ export default function GDetail() {
           </div>
         </div>}
       </div>
+
+      {/* 수정·삭제는 목록의 행마다 두지 않고 여기에 한 번만 — 목록에 빨간 "삭제"가 줄마다
+          반복되고 누르기도 어려웠다(디자인 점검 P2). 관리자가 남의 어르신을 볼 때는 숨긴다. */}
+      {myAccountId && elder.family_account_id === myAccountId && (
+        <div className="g-card g-section">
+          <div className="g-card-title">
+            <span>어르신 정보</span>
+          </div>
+          <div className="g-actions">
+            <button className="g-button g-button--secondary" onClick={() => navigate(`/guardian/elders/${elderId}/edit`)}>
+              정보 수정
+            </button>
+            <button className="g-button g-button--danger" onClick={deleteElder} disabled={busy}>
+              목록에서 삭제
+            </button>
+          </div>
+        </div>
+      )}
 
       <MedicalDisclaimer />
     </AppShell>

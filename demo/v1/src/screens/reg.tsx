@@ -192,36 +192,38 @@ export default function Reg() {
         </div>
         <div className="g-field">
           <label>생신 (선택 — 어르신 화면의 오늘의 운세에 써요)</label>
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <select
-              value={birthCalendar}
-              onChange={(e) => setBirthCalendar(e.target.value as "solar" | "lunar")}
-              aria-label="양력 또는 음력"
-              style={{ width: "auto" }}
-            >
-              <option value="solar">양력</option>
-              <option value="lunar">음력</option>
-            </select>
-            <input inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1950" aria-label="태어난 해" style={{ width: 80 }} />
+          {/* 양력/음력을 위 줄에, 년·월·일을 아래 줄에 — 한 줄에 다 넣으면 390px 폭에서
+              "일"이 다음 줄로 떨어졌다(디자인 점검 P1) */}
+          <select
+            className="u-wauto u-mb8"
+            value={birthCalendar}
+            onChange={(e) => setBirthCalendar(e.target.value as "solar" | "lunar")}
+            aria-label="양력 또는 음력"
+          >
+            <option value="solar">양력</option>
+            <option value="lunar">음력</option>
+          </select>
+          <div className="g-date-row">
+            <input inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1950" aria-label="태어난 해" className="g-date-year" />
             <span>년</span>
-            <input inputMode="numeric" value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} placeholder="3" aria-label="태어난 달" style={{ width: 52 }} />
+            <input inputMode="numeric" value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} placeholder="3" aria-label="태어난 달" />
             <span>월</span>
-            <input inputMode="numeric" value={birthDay} onChange={(e) => setBirthDay(e.target.value)} placeholder="10" aria-label="태어난 날" style={{ width: 52 }} />
+            <input inputMode="numeric" value={birthDay} onChange={(e) => setBirthDay(e.target.value)} placeholder="10" aria-label="태어난 날" />
             <span>일</span>
           </div>
           {birthCalendar === "lunar" && (
-            <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, fontWeight: 400 }}>
-              <input type="checkbox" checked={birthLeap} onChange={(e) => setBirthLeap(e.target.checked)} style={{ width: "auto" }} />
+            <label className="g-check-inline">
+              <input className="u-wauto" type="checkbox" checked={birthLeap} onChange={(e) => setBirthLeap(e.target.checked)} />
               윤달이에요
             </label>
           )}
-          {birthCalendar === "lunar" && <div className="g-legal" style={{ marginTop: 4 }}>음력은 양력 날짜로 바꿔 저장해요.</div>}
+          {birthCalendar === "lunar" && <div className="g-legal u-mt4">음력은 양력 날짜로 바꿔 저장해요.</div>}
         </div>
         {FEATURES.birthTime && (
           <div className="g-field">
             <label htmlFor="birth-hour">태어난 시각 (선택 — 모르면 비워 두세요)</label>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <select id="birth-hour" value={birthHour} onChange={(e) => setBirthHour(e.target.value)} aria-label="태어난 시" style={{ width: "auto" }}>
+            <div className="g-inline-row">
+              <select className="u-wauto" id="birth-hour" value={birthHour} onChange={(e) => setBirthHour(e.target.value)} aria-label="태어난 시">
                 <option value="">모름</option>
                 {HOURS.map((h) => (
                   <option key={h} value={h}>
@@ -231,11 +233,11 @@ export default function Reg() {
               </select>
               <span>시</span>
               <select
+                className="u-wauto"
                 value={birthMinute}
                 onChange={(e) => setBirthMinute(e.target.value)}
                 aria-label="태어난 분"
                 disabled={birthHour === ""}
-                style={{ width: "auto" }}
               >
                 <option value="">0</option>
                 {MINUTES.slice(1).map((m) => (
@@ -246,7 +248,7 @@ export default function Reg() {
               </select>
               <span>분</span>
             </div>
-            <div className="g-legal" style={{ marginTop: 4 }}>
+            <div className="g-legal u-mt4">
               오늘의 운세에서 시주(태어난 시각의 기둥)를 볼 때만 써요. 시주는 2시간 단위로 바뀌어서 분까지 넣으면 더 정확해요.
             </div>
           </div>

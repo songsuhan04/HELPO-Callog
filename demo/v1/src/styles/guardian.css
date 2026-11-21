@@ -22,7 +22,7 @@
   --line: rgba(17, 19, 24, 0.12);
   --text: #111318;
   --text-2: #565c6b;
-  --text-3: #7a8094;
+  --text-3: #5f6573;  /* 흰 바탕에서 4.5:1 이상(예전 #7a8094는 3.7:1) */
   --primary: #2a37b8;
   --primary-hi: #3d4ad1;
   --primary-ink: #ffffff;
@@ -44,7 +44,7 @@
   --line: rgba(255, 246, 238, 0.14);
   --text: #fff6ee;
   --text-2: rgba(255, 246, 238, 0.68);
-  --text-3: rgba(255, 246, 238, 0.48);
+  --text-3: rgba(255, 246, 238, 0.58);  /* 4.5:1 이상(예전 0.48은 4.2:1) */
   --primary: #c4622a;
   --primary-hi: #d6763c;
   --primary-ink: #ffffff;
@@ -228,6 +228,9 @@
   .g-layout {
     grid-template-columns: 232px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
+    /* 사이드바 배경을 바깥 틀에 깔아 둔다. 사이드바 자체는 화면 높이만큼만 붙어 있어서
+       본문이 길면 아래쪽에서 배경이 끊겨 보였다. */
+    background: linear-gradient(to right, var(--aside-bg) 232px, transparent 232px);
   }
 }
 
@@ -272,6 +275,17 @@
   .g-brand {
     flex: none;
     padding: 0 8px 16px;
+  }
+}
+
+.g-aside .g-display-trigger {
+  flex: none;
+}
+
+@media (min-width: 1024px) {
+  .g-aside .g-display-trigger {
+    align-self: flex-start;
+    padding: 8px;
   }
 }
 
@@ -352,6 +366,13 @@
   line-height: 1.25;
   margin: 0 0 8px;
   text-wrap: balance;
+}
+
+.g-title .g-pill {
+  margin-left: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
 }
 
 .g-title small {
@@ -437,8 +458,9 @@ button.g-link {
 
 .g-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-  gap: 12px;
+  /* 안전·위험·심각 3칸을 항상 한 줄로 (좁은 화면에서 2+1로 깨지던 것) */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
   margin-bottom: 16px;
 }
 
@@ -570,6 +592,8 @@ button.g-link {
 
 /* 오늘 안부 상태 — 클릭해서 상세로 들어가지 않아도 목록에서 바로 보이게 */
 .g-today-badge {
+  white-space: nowrap;
+  flex: none;
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
   padding: 2px 8px;
@@ -598,10 +622,15 @@ button.g-link {
 }
 
 .g-rowaction {
+  /* 손가락으로 누르기 쉽게 높이 44px (예전 24px) */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: calc(13px * var(--font-scale));
   font-weight: 600;
-  color: var(--text-3);
-  padding: 4px 8px;
+  color: var(--text-2);
+  padding: 0 8px;
+  white-space: nowrap;
   border-radius: var(--r-xs);
   flex: none;
 }
@@ -679,23 +708,28 @@ button.g-link {
   flex: 1 1 140px;
 }
 
+/* 뒤로·로그아웃 같은 보조 동작은 테두리 없는 글자 버튼. 테두리 알약이 화면마다 쌓여
+   주 버튼과 경쟁했다(디자인 점검 P2). 누르는 높이는 44px을 지킨다. */
 .g-back {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  min-height: 44px;
+  background: none;
+  border: none;
   color: var(--text-2);
-  font-size: calc(13px * var(--font-scale));
+  font: inherit;
+  font-size: calc(15px * var(--font-scale));
   font-weight: 600;
-  padding: 8px 16px;
-  margin-bottom: 16px;
+  padding: 8px 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
 }
 
 .g-chip {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   padding: 8px 16px;
   border-radius: var(--r);
   border: 1px solid var(--line);
@@ -827,6 +861,14 @@ button.g-link {
   margin-top: 12px;
 }
 
+/* 카드 안에 들어가는 안내 — 회색 상자를 또 두지 않는다(카드 안에 카드 금지) */
+.g-note--plain {
+  background: none;
+  padding: 0;
+  font-size: calc(13px * var(--font-scale));
+  color: var(--text-3);
+}
+
 .g-note b {
   color: var(--text);
   font-weight: 700;
@@ -942,7 +984,7 @@ button.g-link {
 
 /* 상세 화면 본문 상단의 "목록으로" — 사이드바에만 두면 눈에 잘 안 띈다 */
 .g-back--inline {
-  margin-bottom: 16px;
+  margin: -8px 0 8px -4px;
 }
 
 /* 브랜드를 목록으로 돌아가는 링크로 쓴다 — button 기본 스타일을 지우고 g-brand 모양을 유지 */
@@ -980,9 +1022,13 @@ button.g-link {
 }
 
 /* 회원 탈퇴 — 되돌릴 수 없는 동작이라 로그아웃과 시각적으로 구분한다 */
+/* 회원 탈퇴 — 자주 누르는 버튼이 아니라서 빨간 버튼 대신 작은 밑줄 글자 */
 .g-back--danger {
-  color: var(--crit-fg);
-  border-color: var(--crit-fg);
+  color: var(--text-3);
+  font-size: calc(13px * var(--font-scale));
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* 비밀번호 입력 + 보기/숨기기 — 토글이 입력칸 오른쪽 안쪽에 앉는다 */
@@ -1195,4 +1241,84 @@ button.g-link {
   font-weight: 700;
   color: var(--text);
   margin: 0 0 4px;
+}
+
+/* 생신 년·월·일 — 칸이 화면 폭에 맞게 줄어들어 한 줄을 지킨다 */
+.g-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.g-date-row input {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 80px;
+}
+
+.g-date-row .g-date-year {
+  flex: 1.6 1 0;
+  max-width: 112px;
+}
+
+.g-date-row span {
+  flex: none;
+}
+
+/* 위험도 점 — 예전에는 RiskDot.tsx 인라인 스타일이었다 */
+.g-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.g-dot--안전 { background: var(--safe); }
+.g-dot--위험 { background: var(--warn); }
+.g-dot--심각 { background: var(--crit); }
+
+/* 체크박스 + 글자 한 줄(윤달 등) */
+.g-check-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+/* 선택칸 여러 개를 한 줄에(태어난 시·분) */
+.g-inline-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 버튼이 왜 안 눌리는지 바로 위에 적는 한 줄 */
+.g-hint {
+  font-size: calc(13px * var(--font-scale));
+  color: var(--text-2);
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+/* 시작 화면 로고 — 앱 아이콘 + 20px 이름 */
+.g-start-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: calc(20px * var(--font-scale));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.g-start-brand img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex: none;
 }

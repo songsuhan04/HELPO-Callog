@@ -45,7 +45,11 @@ export default function GStart() {
     <AppShell>
       {/* 그라데이션 앱 아이콘 이미지는 화면에서 뺐다 — AI로 만든 이미지처럼 보인다는 지적
           (3회차 기술 멘토링, 2026-11-19). 홈 화면 아이콘(PWA)으로만 쓴다. */}
-      <div className="g-header">Callog(콜록)</div>
+      {/* 새 앱 아이콘(2026-11-21) + 20px 로고로 첫 화면의 위계를 세운다 */}
+      <div className="g-start-brand">
+        <img src="/icon-192.png?v=2" alt="" width={40} height={40} />
+        <span>Callog(콜록)</span>
+      </div>
       <h1 className="g-title">보호자로 시작하기</h1>
       <p className="g-sub">어르신은 링크만 누르면 돼요.</p>
 
@@ -78,7 +82,7 @@ export default function GStart() {
             disabled={!supabaseConfigured}
             autoComplete="current-password"
           />
-          <label className="g-check" style={{ marginBottom: 16 }}>
+          <label className="g-check u-mb16">
             <input type="checkbox" checked={autoLogin} onChange={(e) => toggleAutoLogin(e.target.checked)} />
             로그인 상태 유지
           </label>

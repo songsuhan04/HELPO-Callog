@@ -46,12 +46,14 @@ export function AppShell({ variant = "guardian", aside, children }: AppShellProp
       <div className="app-shell app-shell--wide">
         {banner}
         <div className="g-layout">
-          <aside className="g-aside">{aside}</aside>
+          {/* 화면 설정은 사이드바(좁은 화면에서는 맨 위 띠) 안에 둔다. 본문 위에 따로 한 줄을
+              차지하면 상세 화면 위쪽에 줄이 4개 쌓였다(디자인 점검 P2). */}
+          <aside className="g-aside">
+            {aside}
+            <GuardianDisplaySettings />
+          </aside>
           <main className="g-main">
             <div className="g-main-inner">
-              <div className="g-topbar">
-                <GuardianDisplaySettings />
-              </div>
               {children}
             </div>
           </main>

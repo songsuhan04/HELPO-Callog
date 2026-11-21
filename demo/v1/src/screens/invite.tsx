@@ -64,7 +64,7 @@ export default function Invite() {
             링크 복사
           </button>
 
-          <div className="g-field" style={{ marginTop: 16 }}>
+          <div className="g-field u-mt16">
             <label>어르신 전화번호 (문자로 보내기)</label>
             <input value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="010-0000-0000" maxLength={13} />
           </div>
@@ -73,13 +73,13 @@ export default function Invite() {
           </a>
 
           <button
-            className="g-button g-button--secondary"
-            style={{ marginTop: 16 }}
+            className="g-button g-button--secondary u-mt16"
             onClick={() => navigate("/guardian/elders/new")}
           >
             어르신 추가
           </button>
-          <button className="g-button" onClick={() => navigate("/guardian")}>
+          {/* 이 화면의 주 버튼은 "문자로 보내기" 하나 — 파란 버튼이 두 개면 무엇을 먼저 할지 헷갈린다 */}
+          <button className="g-button g-button--secondary" onClick={() => navigate("/guardian")}>
             완료 — 대상자 목록으로
           </button>
           {/* 링크를 보낸 직후가 "이제 뭘 하지?"가 자연스러운 순간이다 */}

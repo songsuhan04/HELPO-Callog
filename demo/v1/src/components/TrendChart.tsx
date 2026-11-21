@@ -110,6 +110,8 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
 
       {points.map((p, i) => {
         if (points.length > 7 && i % 2 !== 0 && i !== points.length - 1) return null;
+        // "오늘" 바로 앞 날짜는 붙어서 "11/20오늘"처럼 겹친다
+        if (points.length > 7 && i === points.length - 2) return null;
         const label = i === points.length - 1 ? "오늘" : `${Number(p.date.slice(5, 7))}/${Number(p.date.slice(8, 10))}`;
         return (
           <text key={`t${i}`} x={xFor(i)} y={HEIGHT - 2} fontSize={9} fill="var(--text-3)" textAnchor="middle">

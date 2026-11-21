@@ -162,7 +162,7 @@ export default function ElderFortune({
               </li>
             ))}
           </ol>
-          <p className="e-meta" style={{ marginBottom: 8 }}>진하게 칠한 일주가 나를 뜻해요.</p>
+          <p className="e-meta u-mb8">진하게 칠한 일주가 나를 뜻해요.</p>
           <p className="e-fortune-saju-text">
             타고난 기운은 {fortune.saju.dayMaster}({fortune.saju.dayMasterPlain})이에요. {firstSentence}
           </p>
@@ -197,7 +197,7 @@ export default function ElderFortune({
             {sajuMore ? "접기" : "사주 더보기"}
           </button>
         </div>
-        <p className="e-meta" style={{ marginTop: 12 }}>
+        <p className="e-meta u-mt12">
           오늘은 {fortune.todayGanZhi}일이에요. 날마다 바뀌는 그날의 기운이에요.
         </p>
         {SECTIONS.map((s, i) => (
@@ -222,7 +222,7 @@ export default function ElderFortune({
         <button type="button" className="e-fortune-ask-art" onClick={startArrival} aria-label="오늘의 운세 보기">
           <Pouch className="e-fortune-ask-pouch" />
         </button>
-        <p className="e-meta" style={{ marginBottom: 12 }}>
+        <p className="e-meta u-mb12">
           학이 복주머니를 가져다 드려요
         </p>
         <button type="button" className="e-primary" onClick={startArrival}>

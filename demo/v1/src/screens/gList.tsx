@@ -8,7 +8,6 @@ import { PushToggle } from "../components/PushToggle";
 import { TrialNotice } from "../components/TrialNotice";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getErrorMessage } from "../lib/errors";
-import { assertWritten } from "../lib/write";
 import type { RiskLevel } from "../config/riskConstants";
 import { todaySeoul } from "../lib/date";
 import { hasAnswers } from "../lib/checkin";
@@ -20,18 +19,16 @@ interface ElderRow {
   name: string;
   relationship: string;
   priority_status: RiskLevel;
-  // 관리자 계정은 모든 어르신을 볼 수 있지만(읽기 전용) 고칠 수는 없다.
-  // 누구 것인지 알아야 수정·삭제를 보여줄지 정할 수 있다.
-  family_account_id: string;
 }
 
 type TodayStatus = "done" | "skipped" | "pending";
 
 const LEVELS: RiskLevel[] = ["안전", "위험", "심각"];
+// 숫자 글자색이라 글자용 색(-fg)을 쓴다. --warn(노랑)은 흰 바탕에서 2.3:1이라 읽기 어려웠다.
 const LEVEL_COLOR: Record<RiskLevel, string> = {
-  안전: "var(--safe)",
-  위험: "var(--warn)",
-  심각: "var(--crit)",
+  안전: "var(--safe-fg)",
+  위험: "var(--warn-fg)",
+  심각: "var(--crit-fg)",
 };
 // gAdmin.tsx와 동일한 정렬 기준 — 심각/위험이 있는 어르신이 위로 오게 해서
 // 여러 어르신을 등록해둔 보호자가 목록에서 바로 확인할 수 있게 한다
@@ -48,7 +45,6 @@ export default function GList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [myAccountId, setMyAccountId] = useState<string | null>(null);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
@@ -59,7 +55,7 @@ export default function GList() {
     const supabase = getSupabase();
     supabase
       .from("elder_profile")
-      .select("id,name,relationship,priority_status,family_account_id")
+      .select("id,name,relationship,priority_status")
       .order("created_at", { ascending: true })
       .then(async ({ data, error }) => {
         if (error) {
@@ -91,7 +87,6 @@ export default function GList() {
         setTodayStatus(statusMap);
       });
     supabase.rpc("is_admin").then(({ data }) => setIsAdmin(Boolean(data)));
-    supabase.auth.getUser().then(({ data }) => setMyAccountId(data.user?.id ?? null));
   }, []);
 
   async function logout() {
@@ -130,24 +125,6 @@ export default function GList() {
     } catch (err) {
       setError(getErrorMessage(err, "탈퇴하지 못했어요"));
       setDeletingAccount(false);
-    }
-  }
-
-  async function deleteElder(elder: ElderRow) {
-    if (!window.confirm(`${elder.name}님을 목록에서 삭제할까요? 관련된 안부 기록·영상편지·위험도 이력이 모두 함께 지워지고 되돌릴 수 없어요.`)) return;
-    try {
-      // 수정과 마찬가지로 .select()가 없으면 RLS로 0건이 되어도 성공으로 돌아온다.
-      // 그러면 화면에서만 사라지고 새로고침하면 되살아난다.
-      const { data, error } = await getSupabase()
-        .from("elder_profile")
-        .delete()
-        .eq("id", elder.id)
-        .select("id");
-      if (error) throw error;
-      assertWritten(data, "이 어르신을 삭제할");
-      setElders((prev) => prev.filter((e) => e.id !== elder.id));
-    } catch (err) {
-      setError(getErrorMessage(err, "지우지 못했어요"));
     }
   }
 
@@ -246,32 +223,6 @@ export default function GList() {
                 </div>
               </div>
               <RiskPill level={elder.priority_status} />
-              {/* 관리자 계정은 모든 어르신이 목록에 뜨지만 남의 어르신은 고칠 수 없다.
-                  버튼을 그대로 두면 눌러도 아무 일이 없어서 고장으로 보인다. */}
-              {elder.family_account_id === myAccountId && (
-                <>
-                  <span
-                    role="button"
-                    className="g-rowaction"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/guardian/elders/${elder.id}/edit`);
-                    }}
-                  >
-                    수정
-                  </span>
-                  <span
-                    role="button"
-                    className="g-rowaction g-rowaction--danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteElder(elder);
-                    }}
-                  >
-                    삭제
-                  </span>
-                </>
-              )}
               <span className="g-chev">›</span>
             </button>
             );

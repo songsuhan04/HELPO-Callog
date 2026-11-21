@@ -110,7 +110,7 @@ export default function Cond() {
       <p className="g-sub">고른 병에 맞춰 질문이 바뀌어요.</p>
 
       {CONDITION_CATEGORIES.map((category) => (
-        <div key={category} style={{ marginBottom: 16 }}>
+        <div className="u-mb16" key={category}>
           <div className="g-header">{category}</div>
           {getConditionsByCategory(category).map((c) => (
             <Chip key={c.id} label={c.label} selected={selected.includes(c.id)} onClick={() => toggle(c.id)} />
@@ -123,7 +123,7 @@ export default function Cond() {
         <input value={customText} onChange={(e) => setCustomText(e.target.value)} placeholder="예: 갑상선 질환" />
       </div>
 
-      <div className="g-card" style={{ marginBottom: 16 }}>
+      <div className="g-card u-mb16">
         <div className="g-card-title">
           <span>어르신께 매일 물을 질문 {preview.length}개</span>
         </div>
@@ -132,7 +132,7 @@ export default function Cond() {
             <li key={i}>{q}</li>
           ))}
         </ol>
-        <div className="g-note">
+        <div className="g-note g-note--plain">
           같은 질문을 날마다 다른 말로 여쭤요. 질문 수는 매일 같아요.
           {rotatesConditions && (
             <div>· 지병 질문은 하루 {MAX_CONDITION_QUESTIONS}개까지 묻고, 날마다 돌아가며 바뀌어요.</div>
@@ -161,14 +161,14 @@ export default function Cond() {
         <ConsentItem
           checked={consentHealth}
           onChange={setConsentHealth}
-          label="(필수) 건강 관련 민감정보 수집·이용에 동의합니다"
+          label="(필수) 건강 관련 민감정보 수집·이용에 동의해요"
           detail={
             <>
               <div>수집 항목: 지병명(사전 정의 목록 또는 직접 입력), 매일의 안부 체크 응답(복약·식사·외출·몸 상태 등), 말하기 안부 음성</div>
               <div>수집 목적: 지병에 맞춘 안부 질문 생성, 위험도 산정 시 가중치 반영</div>
               <div>보유 기간: 어르신 등록 해제 시까지</div>
-              <div>대리 입력: 보호자가 어르신을 대신하여 입력하며, 어르신 본인의 사전 동의를 받았음을 전제로 합니다.</div>
-              <div>동의를 거부할 권리가 있으나, 안부 응답 자체가 건강에 관한 정보에 해당하므로 동의하지 않으면 서비스를 이용할 수 없습니다.</div>
+              <div>대리 입력: 보호자가 어르신을 대신하여 입력하며, 어르신 본인의 사전 동의를 받았다는 것을 전제로 해요.</div>
+              <div>동의를 거부할 권리가 있으나, 안부 응답 자체가 건강에 관한 정보에 해당하므로 동의하지 않으면 서비스를 이용할 수 없어요.</div>
             </>
           }
         />

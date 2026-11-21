@@ -81,7 +81,7 @@ export function StampCard({
       </ol>
       <p className="e-stamps-message">{message}</p>
       {(streak > 1 || summary.cardsDone > 0) && (
-        <p className="e-meta" style={{ textAlign: "center" }}>
+        <p className="e-meta u-center">
           {streak > 1 ? `${streak}일 연속으로 오셨어요` : ""}
           {streak > 1 && summary.cardsDone > 0 ? ", " : ""}
           {summary.cardsDone > 0 ? `지금까지 도장판 ${summary.cardsDone}장을 채우셨어요` : ""}

@@ -770,6 +770,11 @@
   letter-spacing: -0.02em;
 }
 
+/* 어두운 테마에서는 인주색 날짜가 3.1:1로 흐렸다 — 한 단계 밝게 */
+:root:not([data-elder-theme="daylight"]) .e-stamp-date {
+  color: #ff7a6b;
+}
+
 :root[data-elder-theme="maxcontrast"] .e-stamp--on,
 :root[data-elder-theme="maxcontrast"] .e-stamp-date {
   border-color: #ff5a4f;
@@ -1297,16 +1302,14 @@
   padding: 0;
 }
 
-/* 예시 하나를 말풍선 하나로 — 글 두 줄만 있으면 문자처럼 지나쳐서, 어르신 화면답게 크게(멘토 의견) */
+/* 예시 답은 크게(멘토 의견), 하지만 상자는 두지 않는다. 테두리 상자면 고르는 버튼처럼
+   보여 어르신이 누르려 한다(디자인 점검 P2). 큰 따옴표 글자만으로 "이렇게 말하면 돼요"를 보인다. */
 .e-examples li {
-  font-size: calc(19px * var(--e-fs, 1));
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
+  line-height: 1.45;
   color: var(--e-text);
-  background: var(--e-card);
-  border: 1px solid var(--e-line);
-  border-radius: var(--r) var(--r) var(--r) var(--r-xs);
-  padding: 16px;
+  padding: 4px 0;
 }
 
 .e-examples li + li {
