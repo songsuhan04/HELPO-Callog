@@ -37,7 +37,7 @@ self.addEventListener("push", (event) => {
 
   const title = payload.title || "Callog(콜록)";
   const options = {
-    body: payload.body || "확인이 필요한 알림이 있습니다.",
+    body: payload.body || "확인이 필요한 알림이 있어요.",
     icon: "/icon-192.png",
     badge: "/icon-192.png",
     // 같은 어르신에 대한 알림이 여러 번 오면 쌓이지 않고 최신 것으로 대체된다
