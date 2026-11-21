@@ -97,15 +97,16 @@ export default function EDone() {
       </div>
       <SpeakButton text="오늘 안부를 가족에게 전했어요. 잘 하셨어요." />
 
-      {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
-      {answeredDates && (
-        <StampCard summary={summarizeStamps(answeredDates, today)} today={today} streak={streak} celebrate />
-      )}
-
+      {/* 운세를 도장보다 위에 — 안부를 마친 뒤 바로 눈에 들어오게 */}
       {birthDate !== undefined && (
         <Suspense fallback={null}>
           <ElderFortune birthDate={birthDate} birthTime={birthInfo.time} name={birthInfo.name} />
         </Suspense>
+      )}
+
+      {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
+      {answeredDates && (
+        <StampCard summary={summarizeStamps(answeredDates, today)} today={today} streak={streak} celebrate />
       )}
 
       {FEATURES.videoLetters && letter && (
@@ -126,7 +127,8 @@ export default function EDone() {
           </button>
         </>
       )}
-      <button className={FEATURES.videoLetters ? "e-secondary" : "e-primary"} onClick={() => navigate("/elder/home")}>
+      {/* 이 화면의 주요 행동은 운세 보기라 "처음 화면으로"는 보조 버튼으로 둔다(한 화면에 꽉 찬 버튼 하나) */}
+      <button className="e-secondary" onClick={() => navigate("/elder/home")}>
         처음 화면으로
       </button>
     </AppShell>

@@ -209,13 +209,18 @@ export default function ElderFortune({
   // ── ask: 직접 시작 ─────────────────────────────────────────
   if (stage === "ask") {
     return (
-      <section className="e-card e-fortune">
-        <h2 className="e-fortune-title">오늘의 운세를 볼까요?</h2>
+      // 안부를 마친 뒤 눈에 잘 띄어야 한다 — 글 한 줄과 버튼만 있을 때는 지나치기 쉬웠다(멘토 의견
+      // 2026-11-21). 복주머니 그림을 크게 두고, 그림을 눌러도 시작되게 한다.
+      <section className="e-card e-fortune e-fortune--ask">
+        <h2 className="e-fortune-title">오늘의 운세가 도착했어요</h2>
+        <button type="button" className="e-fortune-ask-art" onClick={startArrival} aria-label="오늘의 운세 보기">
+          <Pouch className="e-fortune-ask-pouch" />
+        </button>
         <p className="e-meta" style={{ marginBottom: 12 }}>
-          학이 오늘의 복주머니를 가져다 드려요
+          학이 복주머니를 가져다 드려요
         </p>
         <button type="button" className="e-primary" onClick={startArrival}>
-          네, 볼게요
+          운세 보기
         </button>
       </section>
     );
