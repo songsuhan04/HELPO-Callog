@@ -25,7 +25,9 @@
 // 나머지 표현과 '돌아가는 질문'은 새로 쓴 것이다. 골다공증·눈·신장·난청 질문은 공공 자료를
 // 근거로 새로 넣었다(아래 3번 주석). 나머지도 근거가 모이면 같은 방식으로 바꾼다.
 
-export type Category = "medication" | "meal" | "outing" | "mood" | "condition" | "other";
+// "family" = 보호자가 직접 만든 질문(family_question). 어르신 화면이 매일 질문 뒤에 붙이고,
+// 선택지는 모두 severity "ok"라 위험도 점수에 들어가지 않는다(2026-11-22).
+export type Category = "medication" | "meal" | "outing" | "mood" | "condition" | "other" | "family";
 export type Severity = "ok" | "warn" | "danger";
 
 export interface QuestionOption {

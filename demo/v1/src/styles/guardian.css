@@ -631,8 +631,17 @@ button.g-link {
   color: var(--text-2);
   padding: 0 8px;
   white-space: nowrap;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
   border-radius: var(--r-xs);
   flex: none;
+}
+
+.g-rowaction:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .g-rowaction--danger {
@@ -1321,4 +1330,78 @@ button.g-link {
   height: 40px;
   border-radius: 10px;
   flex: none;
+}
+
+/* ===== 부모님께 묻고 싶은 질문 (components/FamilyQuestions.tsx) ===== */
+.g-fq-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.g-fq-item--off .g-fq-question {
+  color: var(--text-3);
+}
+
+.g-fq-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.g-fq-question {
+  font-size: calc(15px * var(--font-scale));
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.g-fq-meta,
+.g-fq-answers {
+  font-size: calc(13px * var(--font-scale));
+  color: var(--text-3);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.g-fq-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--text-2);
+}
+
+.g-fq-answers b {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.g-fq-form {
+  margin-top: 16px;
+}
+
+.g-fq-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 16px;
+}
+
+/* 예시 질문 — 누르면 입력칸에 채워진다. 칩과 구분되게 밑줄 글자 */
+.g-fq-example {
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font: inherit;
+  font-size: calc(13px * var(--font-scale));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.g-fq-presets {
+  display: flex;
+  flex-wrap: wrap;
 }

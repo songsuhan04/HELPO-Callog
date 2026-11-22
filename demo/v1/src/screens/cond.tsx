@@ -134,6 +134,7 @@ export default function Cond() {
         </ol>
         <div className="g-note g-note--plain">
           같은 질문을 날마다 다른 말로 여쭤요. 질문 수는 매일 같아요.
+          <div>· 보호자가 직접 만든 질문(상세 화면 "부모님께 묻고 싶은 질문")은 이 뒤에 더해져요.</div>
           {rotatesConditions && (
             <div>· 지병 질문은 하루 {MAX_CONDITION_QUESTIONS}개까지 묻고, 날마다 돌아가며 바뀌어요.</div>
           )}

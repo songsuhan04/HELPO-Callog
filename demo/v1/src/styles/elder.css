@@ -1338,3 +1338,15 @@
     animation: none;
   }
 }
+
+/* 보호자가 직접 만든 질문의 꼬리표 — 누가 묻는지 보이면 더 반갑게 답하신다 */
+.e-family-tag {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--e-card-2);
+  color: var(--e-text);
+  font-size: calc(15px * var(--e-fs, 1));
+  font-weight: 700;
+}

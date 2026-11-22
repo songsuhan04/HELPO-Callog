@@ -9,6 +9,7 @@ import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { todaySeoul } from "../lib/date";
 import { fetchDailyPrompt } from "../lib/dailyPrompt";
 import { apiHeaders } from "../lib/api";
+import { fetchFamilyQuestionsForElder } from "../lib/familyQuestions";
 import {
   selectDailyQuestions,
   usableQuestions,
@@ -109,7 +110,10 @@ export default function ECheck() {
       // 위험도 계산·무응답 알림이 모두 "행이 있으면 응답한 것"으로 보기 때문에, 화면만 열고
       // 나간 어르신이 "오늘 완료"로 보이고 무응답 알림까지 막혔다.
       // 준비한 질문은 서버가 daily_prompt에 저장한다(api/generate-questions.ts).
-      setQuestions(list);
+
+      // 4. 보호자가 직접 만든 질문을 맨 뒤에 붙인다. 없거나 못 읽으면 오늘 질문만 묻는다.
+      const family = elderId ? await fetchFamilyQuestionsForElder(elderId) : [];
+      setQuestions([...list, ...family]);
       setLoading(false);
     }
 
@@ -208,6 +212,8 @@ export default function ECheck() {
       <ProgressBar current={index + 1} total={questions.length} />
       {/* 질문이 바뀔 때마다 새로 그려서 살짝 나타나게 한다(screen-in, 움직임 줄이기면 끔) */}
       <div key={index} className="screen-in">
+        {/* 보호자가 직접 만든 질문 — 누가 묻는지 알면 더 반갑게 답하신다 */}
+        {question.category === "family" && <p className="e-family-tag">가족이 궁금해해요</p>}
         <h1 className="e-question">{question.question}</h1>
         <SpeakButton text={question.question} />
 
