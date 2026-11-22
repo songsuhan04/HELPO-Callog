@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Pouch } from "../fortune/Pouch";
 import { CARD_SIZE, type StampSummary, wishFor } from "./stamps";
+import { elderScopedKey } from "../../lib/elderSession";
 
 // 출석도장판(어르신 처음·완료 화면). 계산은 stamps.ts, 여기는 보여 주기만 한다.
 //
@@ -11,9 +12,10 @@ import { CARD_SIZE, type StampSummary, wishFor } from "./stamps";
 const STAMPED_KEY = "callog.stampAnimatedOn";
 const WISH_KEY = "callog.wishOpenedCard";
 
+// 어르신마다 따로 기억한다(한 기기에서 여러 어르신 링크를 열 수 있다)
 function readKey(key: string): string | null {
   try {
-    return window.localStorage.getItem(key);
+    return window.localStorage.getItem(elderScopedKey(key));
   } catch {
     return null;
   }
@@ -21,7 +23,7 @@ function readKey(key: string): string | null {
 
 function writeKey(key: string, value: string) {
   try {
-    window.localStorage.setItem(key, value);
+    window.localStorage.setItem(elderScopedKey(key), value);
   } catch {
     // 저장이 안 되면 다음에 한 번 더 보일 뿐이다
   }

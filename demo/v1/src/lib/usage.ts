@@ -13,7 +13,8 @@ export function logElderUsage(event: ElderUsageEvent): void {
   const elderId = getStoredElderProfileId();
   if (!supabaseConfigured || !elderId) return;
   const today = todaySeoul();
-  const key = `callog.usage.${event}`;
+  // 어르신마다 따로 — 한 기기에서 두 어르신이 쓰면 뒷사람 기록이 빠졌다
+  const key = `callog.usage.${event}.${elderId}`;
   try {
     if (window.localStorage.getItem(key) === today) return;
   } catch {

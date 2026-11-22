@@ -31,6 +31,13 @@ export function getStoredElderProfileId(): string | null {
   return window.localStorage.getItem(ELDER_PROFILE_KEY);
 }
 
+// 이 기기에 저장하는 "오늘 운세를 열었다" 같은 기억은 어르신마다 따로 둔다.
+// 예전에는 기기 하나에 하나뿐이라, 한 휴대폰으로 두 어르신 링크를 열면 앞사람이 연 복주머니가
+// 뒷사람에게도 이미 열린 채로 보였다(2026-11-22 확인).
+export function elderScopedKey(base: string): string {
+  return `${base}.${getStoredElderProfileId() ?? "none"}`;
+}
+
 export function clearStoredElderProfileId(): void {
   window.localStorage.removeItem(ELDER_PROFILE_KEY);
 }

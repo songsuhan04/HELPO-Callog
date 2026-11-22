@@ -6,6 +6,7 @@ import { Crane } from "./Crane";
 import { Pouch } from "./Pouch";
 import { birthAnimal, birthFromSolarDate, getFortune } from "./saju";
 import { logElderUsage } from "../../lib/usage";
+import { elderScopedKey } from "../../lib/elderSession";
 
 // 어르신 화면의 "오늘의 운세" 카드. 안부를 마친 뒤에 보여 준다(완료 화면, 이미 마친 날의 처음 화면).
 //
@@ -42,7 +43,7 @@ const ARRIVED_KEY = "callog.fortuneArrivedOn";
 
 function isToday(key: string, today: string): boolean {
   try {
-    return window.localStorage.getItem(key) === today;
+    return window.localStorage.getItem(elderScopedKey(key)) === today;
   } catch {
     return false;
   }
@@ -50,7 +51,7 @@ function isToday(key: string, today: string): boolean {
 
 function remember(key: string, today: string) {
   try {
-    window.localStorage.setItem(key, today);
+    window.localStorage.setItem(elderScopedKey(key), today);
   } catch {
     // 저장이 안 되면 다음에 처음부터 한 번 더 보일 뿐이다
   }
