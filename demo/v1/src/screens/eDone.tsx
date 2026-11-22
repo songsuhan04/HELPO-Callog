@@ -10,6 +10,7 @@ import { computeStreak } from "../lib/streak";
 import { hasAnswers } from "../lib/checkin";
 import { FEATURES } from "../config/features";
 import { StampCard } from "../features/attendance/StampCard";
+import { FamilyMessageCard } from "../components/FamilyMessageCard";
 import { summarizeStamps } from "../features/attendance/stamps";
 import { todaySeoul } from "../lib/date";
 
@@ -112,6 +113,9 @@ export default function EDone() {
 
       {/* 출석도장 — 방금 마친 오늘 도장이 찍히는 순간을 보여 준다 */}
       {!stampsFirst && stampCard}
+
+      {/* 안부를 마친 뒤에도 가족이 남긴 말을 한 번 더 보여 드린다 */}
+      <FamilyMessageCard />
 
       {FEATURES.videoLetters && letter && (
         <div className="e-card">

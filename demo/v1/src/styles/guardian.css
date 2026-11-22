@@ -1405,3 +1405,9 @@ button.g-link {
   display: flex;
   flex-wrap: wrap;
 }
+
+/* 가족 한마디 — 읽으신 시각은 안전 색으로 */
+.g-fm-read {
+  color: var(--safe-fg);
+  font-weight: 700;
+}

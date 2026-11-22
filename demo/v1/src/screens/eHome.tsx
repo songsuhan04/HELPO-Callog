@@ -4,6 +4,7 @@ import { AppShell } from "../components/AppShell";
 import { ElderTopBar } from "../components/ElderTopBar";
 import { SpeakButton } from "../components/SpeakButton";
 import { EmergencyCall } from "../components/EmergencyCall";
+import { FamilyMessageCard } from "../components/FamilyMessageCard";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { getSignedUrl } from "../lib/storage";
@@ -137,6 +138,9 @@ export default function EHome() {
           안부를 마치면 학이 오늘의 복주머니를 가져와요
         </p>
       )}
+
+      {/* 가족 한마디 — 영상편지 자리에 글로. 최근 7일 안에 온 글이 없으면 보이지 않는다 */}
+      <FamilyMessageCard />
 
       {FEATURES.videoLetters && letter?.signedUrl && (
         <div className="e-card">

@@ -1350,3 +1350,19 @@
   font-size: calc(15px * var(--e-fs, 1));
   font-weight: 700;
 }
+
+/* 가족 한마디 — 보호자가 남긴 짧은 글. 어르신이 바로 읽으시게 크게 */
+.e-family-msg-body {
+  font-size: calc(22px * var(--e-fs, 1));
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--e-text);
+  margin: 4px 0 4px;
+  word-break: keep-all;
+}
+
+.e-family-msg-time {
+  font-size: calc(15px * var(--e-fs, 1));
+  color: var(--e-text-2);
+  margin: 0 0 12px;
+}

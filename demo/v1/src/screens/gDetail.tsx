@@ -19,6 +19,8 @@ import { RETENTION } from "../config/retention";
 import { apiHeaders } from "../lib/api";
 import { assertWritten } from "../lib/write";
 import { FamilyQuestions } from "../components/FamilyQuestions";
+import { FamilyMessages } from "../components/FamilyMessages";
+import { shortTime } from "../lib/shortTime";
 
 const TREND_DAYS = 14;
 
@@ -33,17 +35,6 @@ interface ElderDetail {
   family_account_id: string;
 }
 
-// "2026. 11. 21. 오후 5:40:00" 대신 "오늘 오후 5:40", "어제 오전 9:12", "11월 18일 오후 3:05"
-function shortTime(iso: string): string {
-  const d = new Date(iso);
-  const time = d.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Seoul" });
-  const day = d.toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
-  const today = todaySeoul();
-  if (day === today) return `오늘 ${time}`;
-  if (day === shiftDateString(today, -1)) return `어제 ${time}`;
-  const [, m, dd] = day.split("-").map(Number);
-  return `${m}월 ${dd}일 ${time}`;
-}
 
 interface RiskRow {
   reason: string;
@@ -543,7 +534,13 @@ export default function GDetail() {
       </div>
 
       {/* 보호자가 직접 만드는 질문 — 본인 어르신일 때만(관리자가 남의 어르신을 볼 때는 숨김) */}
-      {myAccountId && elder.family_account_id === myAccountId && elderId && <FamilyQuestions elderId={elderId} />}
+      {myAccountId && elder.family_account_id === myAccountId && elderId && (
+        <>
+          {/* 보호자 → 어르신: 한마디로 전하고(가족 한마디), 질문으로 묻는다(부모님께 묻고 싶은 질문) */}
+          <FamilyMessages elderId={elderId} />
+          <FamilyQuestions elderId={elderId} />
+        </>
+      )}
 
       {/* 수정·삭제는 목록의 행마다 두지 않고 여기에 한 번만 — 목록에 빨간 "삭제"가 줄마다
           반복되고 누르기도 어려웠다(디자인 점검 P2). 관리자가 남의 어르신을 볼 때는 숨긴다. */}
