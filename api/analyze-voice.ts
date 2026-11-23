@@ -178,6 +178,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .update({ analysis_status: "failed", analysis_json: { error: reason } })
       .eq("id", voiceResponseId);
     await assessRiskForVoice(admin, voiceResponseId);
-    res.status(200).json({ status: "failed", error: reason });
+    // 내부 오류 문구(Gemini 응답 등)는 응답에 싣지 않는다 — 이유는 위 로그와 analysis_json에 남는다.
+    // 화면은 error가 없으면 "분석하지 못했어요"를 띄운다(2026-11-23 보안 점검)
+    res.status(200).json({ status: "failed" });
   }
 }

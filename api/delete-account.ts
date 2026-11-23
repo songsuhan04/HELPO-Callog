@@ -83,6 +83,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ status: "ok", elders: elderIds.length, removedFiles });
   } catch (err) {
-    res.status(500).json({ status: "failed", error: err instanceof Error ? err.message : String(err) });
+    // 내부 오류 문구는 로그에만 남긴다. 화면은 error가 없으면 "탈퇴하지 못했어요"를 띄운다(2026-11-23 보안 점검)
+    console.error("delete-account: 탈퇴 실패", err instanceof Error ? err.message : err);
+    res.status(500).json({ status: "failed" });
   }
 }

@@ -1,9 +1,43 @@
 {
   "buildCommand": "cd demo/v1 && npm install && npm run build",
   "outputDirectory": "demo/v1/dist",
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
   "crons": [
-    { "path": "/api/cleanup-old-letters", "schedule": "0 18 * * *" },
-    { "path": "/api/check-no-response", "schedule": "0 12 * * *" }
+    {
+      "path": "/api/cleanup-old-letters",
+      "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/check-no-response",
+      "schedule": "0 12 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(self), microphone=(self), geolocation=()"
+        }
+      ]
+    }
   ]
 }

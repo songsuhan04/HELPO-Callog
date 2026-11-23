@@ -24,6 +24,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await assessRisk(caller.admin, elderProfileId, date, "checkin");
     res.status(200).json({ status: "ok" });
   } catch (err) {
-    res.status(200).json({ status: "failed", error: err instanceof Error ? err.message : String(err) });
+    // 내부 오류 문구는 로그에만 남기고 응답에는 싣지 않는다(2026-11-23 보안 점검)
+    console.error("assess-risk: 판정 실패", err instanceof Error ? err.message : err);
+    res.status(200).json({ status: "failed" });
   }
 }
