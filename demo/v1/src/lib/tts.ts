@@ -51,7 +51,8 @@ export function stopSpeaking() {
  */
 export async function speak(
   text: string,
-  handlers: { onFailure?: (reason: SpeakFailure) => void; onEnd?: () => void } = {}
+  handlers: { onFailure?: (reason: SpeakFailure) => void; onEnd?: () => void } = {},
+  options: { restart?: boolean } = {}
 ): Promise<void> {
   const { onFailure, onEnd } = handlers;
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -62,11 +63,16 @@ export async function speak(
 
   const synth = window.speechSynthesis;
 
-  // 이미 읽고 있으면 멈추기만 한다(같은 버튼을 토글로 쓰기 위함)
   if (synth.speaking || synth.pending) {
     synth.cancel();
-    onEnd?.();
-    return;
+    if (!options.restart) {
+      // 이미 읽고 있으면 멈추기만 한다(같은 버튼을 토글로 쓰기 위함)
+      onEnd?.();
+      return;
+    }
+    // 이어 읽기(다음 질문·다시 듣기): 멈춘 뒤 새로 읽는다. cancel 직후 바로 speak하면
+    // 크롬이 무시하는 버그가 있어 잠깐 기다린다(위 머리말).
+    await new Promise((r) => setTimeout(r, 80));
   }
 
   const voices = cachedVoices.length > 0 ? cachedVoices : await loadVoices();

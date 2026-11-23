@@ -7,7 +7,7 @@ import { InAppBrowserNotice } from "./InAppBrowserNotice";
 //
 // 예전에는 눌러도 아무 반응이 없으면 왜 안 되는지 알 수 없었다. 지금은
 // ① 읽는 중임을 버튼에 표시하고 ② 한 번 더 누르면 멈추며 ③ 실패하면 이유를 보여준다.
-export function SpeakButton({ text }: { text: string }) {
+export function SpeakButton({ text, label = "읽어주기" }: { text: string; label?: string }) {
   const [speaking, setSpeaking] = useState(false);
   const [failure, setFailure] = useState<SpeakFailure | null>(null);
 
@@ -31,7 +31,7 @@ export function SpeakButton({ text }: { text: string }) {
   return (
     <>
       <button type="button" className="e-speak" onClick={handleClick}>
-        {speaking ? "그만 듣기" : "읽어주기"}
+        {speaking ? "그만 듣기" : label}
       </button>
       {/* 인앱 브라우저에는 speechSynthesis 자체가 없다. "지원하지 않아요"라는 빨간 글씨만
           남기면 어르신이 하실 수 있는 게 없으므로, 나가는 길을 바로 보여준다. */}

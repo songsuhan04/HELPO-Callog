@@ -184,6 +184,17 @@
   flex: none;
 }
 
+/* 이어서 읽어주기가 켜졌을 때 — 다시 듣기 · 그만 듣기를 나란히 */
+.e-speak-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.e-speak-row .e-speak {
+  margin: 0;
+}
+
 /* ===== 본문 ===== */
 
 .e-question {

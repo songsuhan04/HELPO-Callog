@@ -139,7 +139,10 @@ export default function ElderFortune({
   // ── open: 운세 쪽지 ─────────────────────────────────────────
   if (stage === "open" && fortune) {
     const opener = helper ? `${withSubject(helper.name)} 복주머니를 열어 드렸어요` : "복주머니가 열렸어요";
-    const spoken = [opener, ...SECTIONS.map((s) => `${s.title}. ${fortune.texts[s.key]}`)].join(" ");
+    // 읽어주기는 칸마다 첫 문장만 — 전부 읽으면 30초가 넘어 끝까지 듣기 어렵다(2026-11-23
+    // "간단히 읽어 주면 좋겠다"). 나머지는 화면 글로 본다.
+    const firstOf = (t: string) => t.split(/(?<=[.?!])\s+/)[0];
+    const spoken = [opener + ".", ...SECTIONS.map((s) => `${s.title}. ${firstOf(fortune.texts[s.key])}`)].join(" ");
     // 명식은 전통 순서대로 오른쪽이 년주 — 왼쪽부터 시·일·월·년
     const pillars = [...fortune.saju.pillars].reverse();
     // 일간 설명의 첫 문장만 요약으로 보이고, 나머지 문장은 더보기에 둔다
@@ -147,6 +150,9 @@ export default function ElderFortune({
     return (
       <section className="e-card e-fortune e-fortune--open" aria-live="polite">
         <h2 className="e-fortune-title">{opener}</h2>
+        {/* 쪽지 세 장만 짧게 읽는다(사주 풀이는 빼고). 예전에는 맨 아래에 있어 있는 줄 모르셨다 —
+            제목 바로 아래로 올렸다(2026-11-23 어르신 의견) */}
+        <SpeakButton text={spoken} label="운세 읽어주기" />
         {/* 나의 타고난 기운 — 일간 설명과 오행(팀 자료 2026-11-19). 태어난 시각이 있으면
             네 기둥(여덟 글자), 없으면 년·월·일 세 기둥(여섯 글자)으로 오행을 센다. */}
         <div className="e-fortune-saju">
@@ -207,7 +213,6 @@ export default function ElderFortune({
             <p className="e-fortune-text">{fortune.texts[s.key]}</p>
           </div>
         ))}
-        <SpeakButton text={spoken} />
         <p className="e-fortune-note">재미로 봐 주세요.</p>
       </section>
     );

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { ElderTopBar } from "../components/ElderTopBar";
-import { SpeakButton } from "../components/SpeakButton";
+import { speak, speakFailureMessage, stopSpeaking, type SpeakFailure } from "../lib/tts";
+import { detectInApp } from "../lib/inAppBrowser";
+import { InAppBrowserNotice } from "../components/InAppBrowserNotice";
 import { ProgressBar } from "../components/ProgressBar";
 import { getStoredElderProfileId } from "../lib/elderSession";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
@@ -43,6 +45,41 @@ export default function ECheck() {
   const [loading, setLoading] = useState(true);
   const [slow, setSlow] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // 이어서 읽어주기 — 한 번 켜면 다음 질문이 나올 때마다 읽어 드린다.
+  // 예전에는 질문마다 "읽어주기"를 눌러야 해서 다섯 번을 눌러야 했다(2026-11-23 어르신 의견).
+  // 다섯 문항을 한꺼번에 읽으면 다시 듣기 어렵고 몇 번째 질문인지 놓치므로, 질문 하나씩
+  // 읽되 켜 두면 이어서 읽는다. "다시 듣기"로 반복하고 "그만 듣기"로 끈다.
+  const [autoRead, setAutoRead] = useState(false);
+  const [readFailure, setReadFailure] = useState<SpeakFailure | null>(null);
+
+  // 화면을 벗어나면 읽던 것을 멈춘다
+  useEffect(() => stopSpeaking, []);
+
+  // 답을 누른 그 순간(사용자 동작 안)에 읽기 시작한다 — 아이폰은 화면이 바뀐 뒤 저절로
+  // 소리 내는 것을 막는 경우가 있어, 그려진 뒤(useEffect)가 아니라 누른 자리에서 부른다.
+  function readAloud(text: string) {
+    setReadFailure(null);
+    speak(
+      text,
+      {
+        onFailure: (reason) => {
+          setReadFailure(reason);
+          setAutoRead(false);
+        },
+      },
+      { restart: true }
+    );
+  }
+
+  function startAutoRead() {
+    setAutoRead(true);
+    readAloud(questions[index].question);
+  }
+
+  function stopAutoRead() {
+    setAutoRead(false);
+    stopSpeaking();
+  }
 
   // 3초가 지나도 안 뜨면 기다려도 되는 상황임을 알려드린다
   useEffect(() => {
@@ -128,6 +165,7 @@ export default function ECheck() {
     if (index > 0) {
       setAnswers((prev) => prev.slice(0, -1));
       setIndex((i) => i - 1);
+      if (autoRead) readAloud(questions[index - 1].question);
     } else {
       navigate("/elder/home");
     }
@@ -148,7 +186,9 @@ export default function ECheck() {
     setAnswers(next);
     if (index + 1 < questions.length) {
       setIndex(index + 1);
+      if (autoRead) readAloud(questions[index + 1].question);
     } else {
+      stopSpeaking();
       finish(next);
     }
   }
@@ -215,7 +255,26 @@ export default function ECheck() {
         {/* 보호자가 직접 만든 질문 — 누가 묻는지 알면 더 반갑게 답하신다 */}
         {question.category === "family" && <p className="e-family-tag">가족이 궁금해해요</p>}
         <h1 className="e-question">{question.question}</h1>
-        <SpeakButton text={question.question} />
+        {autoRead ? (
+          <div className="e-speak-row">
+            <button type="button" className="e-speak" onClick={() => readAloud(question.question)}>
+              다시 듣기
+            </button>
+            <button type="button" className="e-speak" onClick={stopAutoRead}>
+              그만 듣기
+            </button>
+          </div>
+        ) : (
+          <button type="button" className="e-speak" onClick={startAutoRead}>
+            읽어주기
+          </button>
+        )}
+        {autoRead && index + 1 < questions.length && <p className="e-meta u-mb12">다음 질문도 이어서 읽어 드려요.</p>}
+        {readFailure === "unsupported" && detectInApp() ? (
+          <InAppBrowserNotice reason="읽어주기는" />
+        ) : (
+          readFailure && <p className="e-error">{speakFailureMessage(readFailure)}</p>
+        )}
 
         {question.options.map((option) => (
           <button key={option.text} className="e-choice" onClick={() => answer(option)}>
